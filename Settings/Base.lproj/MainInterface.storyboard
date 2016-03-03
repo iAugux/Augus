@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="M4Y-Lb-cyx">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+    </dependencies>
+    <scenes>
+        <!--Today View Controller-->
+        <scene sceneID="cwh-vc-ff4">
+            <objects>
+                <viewController id="M4Y-Lb-cyx" customClass="TodayViewController" customModule="Settings" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Ft6-oW-KC0"/>
+                        <viewControllerLayoutGuide type="bottom" id="FKl-LY-JtV"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" simulatedAppContext="notificationCenter" id="S3S-Oj-5AN">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="82"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="ymU-pq-2pX" userLabel="Settings">
+                                <rect key="frame" x="16" y="0.0" width="288" height="40"/>
+                                <subviews>
+                                    <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1Ep-kd-sQh" userLabel="Wifi">
+                                        <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="1Ep-kd-sQh" secondAttribute="height" id="KSg-yS-1gy"/>
+                                        </constraints>
+                                        <inset key="imageEdgeInsets" minX="8" minY="8" maxX="8" maxY="8"/>
+                                        <state key="normal" image="wifi"/>
+                                        <connections>
+                                            <action selector="openWifiSetting:" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="rZc-7K-Om2"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="98v-uA-ihn" userLabel="Cellular">
+                                        <rect key="frame" x="50" y="0.0" width="40" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="98v-uA-ihn" secondAttribute="height" id="l9D-dQ-Yqo"/>
+                                        </constraints>
+                                        <inset key="imageEdgeInsets" minX="8" minY="8" maxX="8" maxY="8"/>
+                                        <state key="normal" image="cellular"/>
+                                        <connections>
+                                            <action selector="openCellularSetting:" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="OOe-wL-aQv"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="q7i-eY-9Rz" userLabel="Battery">
+                                        <rect key="frame" x="99" y="0.0" width="40" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="q7i-eY-9Rz" secondAttribute="height" id="dna-hd-Cby"/>
+                                        </constraints>
+                                        <inset key="imageEdgeInsets" minX="7" minY="7" maxX="7" maxY="7"/>
+                                        <state key="normal" image="battery"/>
+                                        <connections>
+                                            <action selector="openBatterySetting:" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="EEh-kD-hA3"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="o1s-kx-222" userLabel="Personal Hotspot">
+                                        <rect key="frame" x="149" y="0.0" width="40" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="o1s-kx-222" secondAttribute="height" id="9vU-OB-sA6"/>
+                                        </constraints>
+                                        <inset key="imageEdgeInsets" minX="-2" minY="-2" maxX="0.0" maxY="0.0"/>
+                                        <state key="normal" image="hotspot"/>
+                                        <connections>
+                                            <action selector="openPersonalHotspotSetting:" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="KUt-OX-O9X"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6Na-YW-Fsd" userLabel="Siri">
+                                        <rect key="frame" x="199" y="0.0" width="40" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="6Na-YW-Fsd" secondAttribute="height" id="70g-Jm-nse"/>
+                                        </constraints>
+                                        <inset key="imageEdgeInsets" minX="10" minY="10" maxX="10" maxY="10"/>
+                                        <state key="normal" image="siri"/>
+                                        <connections>
+                                            <action selector="openSiriSetting:" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="Nea-Jl-ucc"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xV4-HT-m8X" userLabel="Settings">
+                                        <rect key="frame" x="248" y="0.0" width="40" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="xV4-HT-m8X" secondAttribute="height" id="vdc-hv-75K"/>
+                                        </constraints>
+                                        <inset key="imageEdgeInsets" minX="10" minY="10" maxX="10" maxY="10"/>
+                                        <state key="normal" image="settings"/>
+                                        <connections>
+                                            <action selector="openSettings:" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="22Q-b9-puh"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="bottom" secondItem="q7i-eY-9Rz" secondAttribute="bottom" id="0kX-WI-pa9"/>
+                                    <constraint firstAttribute="bottom" secondItem="98v-uA-ihn" secondAttribute="bottom" id="HXZ-4a-dnp"/>
+                                    <constraint firstItem="98v-uA-ihn" firstAttribute="top" secondItem="ymU-pq-2pX" secondAttribute="top" id="J4g-Nv-ebS"/>
+                                    <constraint firstItem="1Ep-kd-sQh" firstAttribute="top" secondItem="ymU-pq-2pX" secondAttribute="top" id="KjX-XQ-2AT"/>
+                                    <constraint firstAttribute="bottom" secondItem="xV4-HT-m8X" secondAttribute="bottom" id="Myz-SC-jlo"/>
+                                    <constraint firstItem="6Na-YW-Fsd" firstAttribute="top" secondItem="ymU-pq-2pX" secondAttribute="top" id="Yej-oI-8nk"/>
+                                    <constraint firstItem="o1s-kx-222" firstAttribute="top" secondItem="ymU-pq-2pX" secondAttribute="top" id="anq-el-fL3"/>
+                                    <constraint firstAttribute="height" constant="40" id="byc-C5-lBd"/>
+                                    <constraint firstItem="xV4-HT-m8X" firstAttribute="top" secondItem="ymU-pq-2pX" secondAttribute="top" id="e4a-ag-DQi"/>
+                                    <constraint firstAttribute="bottom" secondItem="1Ep-kd-sQh" secondAttribute="bottom" id="f2K-Fk-Jd3"/>
+                                    <constraint firstAttribute="bottom" secondItem="o1s-kx-222" secondAttribute="bottom" id="h1o-9L-Z6J"/>
+                                    <constraint firstAttribute="bottom" secondItem="6Na-YW-Fsd" secondAttribute="bottom" id="sfE-lt-HTV"/>
+                                    <constraint firstItem="q7i-eY-9Rz" firstAttribute="top" secondItem="ymU-pq-2pX" secondAttribute="top" id="yjk-WK-CGk"/>
+                                </constraints>
+                            </stackView>
+                            <visualEffectView opaque="NO" userInteractionEnabled="NO" alpha="0.10000000000000001" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="a8G-2i-n9x" userLabel="Separator">
+                                <rect key="frame" x="24" y="41" width="272" height="1"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" id="Xn6-bi-yro">
+                                    <rect key="frame" x="0.0" y="0.0" width="272" height="1"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <visualEffectView opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="IVT-FD-JrC">
+                                            <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                                            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" id="efR-bT-NJr">
+                                                <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            </view>
+                                            <vibrancyEffect>
+                                                <blurEffect style="dark"/>
+                                            </vibrancyEffect>
+                                        </visualEffectView>
+                                    </subviews>
+                                </view>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="1" id="NE2-6A-hrF"/>
+                                </constraints>
+                                <vibrancyEffect>
+                                    <blurEffect style="dark"/>
+                                </vibrancyEffect>
+                            </visualEffectView>
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="V2f-i3-Ibq" userLabel="Apps">
+                                <rect key="frame" x="16" y="42" width="288" height="40"/>
+                                <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iRU-ZC-xTm" userLabel="Surge">
+                                        <rect key="frame" x="0.0" y="0.0" width="89" height="40"/>
+                                        <subviews>
+                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="kxR-sC-avi">
+                                                <rect key="frame" x="0.0" y="0.0" width="49" height="40"/>
+                                                <subviews>
+                                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BHY-gh-e2q">
+                                                        <rect key="frame" x="0.0" y="0.0" width="51" height="31"/>
+                                                        <color key="onTintColor" red="0.74007147550582886" green="0.50519394874572754" blue="0.90242213010787964" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <connections>
+                                                            <action selector="surgeAutoCloseSwitchDidTap:" destination="M4Y-Lb-cyx" eventType="valueChanged" id="X8b-Pr-SLo"/>
+                                                        </connections>
+                                                    </switch>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Auto Close" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rLM-0m-afp">
+                                                        <rect key="frame" x="6" y="32" width="39" height="9"/>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="7"/>
+                                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                            </stackView>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KGy-Rl-wLF" userLabel="Surge">
+                                                <rect key="frame" x="49" y="0.0" width="40" height="40"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" secondItem="KGy-Rl-wLF" secondAttribute="height" id="4d7-mJ-I2h"/>
+                                                    <constraint firstAttribute="height" constant="40" id="OMb-vp-JzP"/>
+                                                </constraints>
+                                                <inset key="imageEdgeInsets" minX="8" minY="8" maxX="8" maxY="8"/>
+                                                <state key="normal" image="surge_logo"/>
+                                                <connections>
+                                                    <action selector="surgeToggleDidTap:" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="sG7-vl-dgf"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
+                                    <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KCO-oa-wuk" userLabel="MacID">
+                                        <rect key="frame" x="248" y="0.0" width="40" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="KCO-oa-wuk" secondAttribute="height" id="It2-zF-3Qv"/>
+                                        </constraints>
+                                        <inset key="imageEdgeInsets" minX="8" minY="8" maxX="8" maxY="8"/>
+                                        <state key="normal" image="mac_id"/>
+                                        <connections>
+                                            <action selector="macIDSendClipboard:" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="ckw-l2-wC9"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="3FG-BE-0FJ"/>
+                                    <constraint firstItem="KCO-oa-wuk" firstAttribute="top" secondItem="V2f-i3-Ibq" secondAttribute="top" id="W1L-Bh-2Qk"/>
+                                    <constraint firstAttribute="bottom" secondItem="KCO-oa-wuk" secondAttribute="bottom" id="XCx-qj-AUc"/>
+                                </constraints>
+                            </stackView>
+                        </subviews>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="ymU-pq-2pX" secondAttribute="trailing" constant="16" id="26i-ZL-wj3"/>
+                            <constraint firstItem="a8G-2i-n9x" firstAttribute="leading" secondItem="1Ep-kd-sQh" secondAttribute="leading" constant="8" id="50u-l4-ayf"/>
+                            <constraint firstAttribute="trailing" secondItem="V2f-i3-Ibq" secondAttribute="trailing" constant="16" id="JIv-Jv-v8d"/>
+                            <constraint firstItem="ymU-pq-2pX" firstAttribute="top" secondItem="Ft6-oW-KC0" secondAttribute="bottom" id="ivC-N0-TC5"/>
+                            <constraint firstItem="V2f-i3-Ibq" firstAttribute="top" secondItem="ymU-pq-2pX" secondAttribute="bottom" constant="2" id="lYW-58-Ul6"/>
+                            <constraint firstItem="a8G-2i-n9x" firstAttribute="trailing" secondItem="xV4-HT-m8X" secondAttribute="trailing" constant="-8" id="luV-l8-P9y"/>
+                            <constraint firstItem="a8G-2i-n9x" firstAttribute="top" secondItem="ymU-pq-2pX" secondAttribute="bottom" constant="1" id="nDb-FN-MY3"/>
+                            <constraint firstItem="V2f-i3-Ibq" firstAttribute="leading" secondItem="S3S-Oj-5AN" secondAttribute="leading" constant="16" id="psd-0A-sma"/>
+                            <constraint firstItem="ymU-pq-2pX" firstAttribute="leading" secondItem="S3S-Oj-5AN" secondAttribute="leading" constant="16" id="v7D-2K-jfE"/>
+                        </constraints>
+                    </view>
+                    <extendedEdge key="edgesForExtendedLayout"/>
+                    <nil key="simulatedStatusBarMetrics"/>
+                    <nil key="simulatedTopBarMetrics"/>
+                    <nil key="simulatedBottomBarMetrics"/>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="320" height="82"/>
+                    <connections>
+                        <outlet property="surgeAutoCloseSwitch" destination="BHY-gh-e2q" id="lD5-ku-VrT"/>
+                        <outlet property="surgeButton" destination="KGy-Rl-wLF" id="KiI-iE-EP3"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="vXp-U4-Rya" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="516" y="285"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="battery" width="25" height="25"/>
+        <image name="cellular" width="32" height="32"/>
+        <image name="hotspot" width="25" height="25"/>
+        <image name="mac_id" width="32" height="32"/>
+        <image name="settings" width="25" height="25"/>
+        <image name="siri" width="25" height="25"/>
+        <image name="surge_logo" width="32" height="32"/>
+        <image name="wifi" width="24" height="24"/>
+    </resources>
+</document>
