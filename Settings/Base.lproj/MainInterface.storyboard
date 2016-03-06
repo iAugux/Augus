@@ -14,7 +14,7 @@
                         <viewControllerLayoutGuide type="bottom" id="FKl-LY-JtV"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" simulatedAppContext="notificationCenter" id="S3S-Oj-5AN">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="82"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="88"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="ymU-pq-2pX" userLabel="Settings">
@@ -130,17 +130,17 @@
                                     <blurEffect style="dark"/>
                                 </vibrancyEffect>
                             </visualEffectView>
-                            <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="V2f-i3-Ibq" userLabel="Apps">
-                                <rect key="frame" x="16" y="42" width="288" height="40"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="equalCentering" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="V2f-i3-Ibq" userLabel="Apps">
+                                <rect key="frame" x="16" y="44" width="288" height="40"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iRU-ZC-xTm" userLabel="Surge">
-                                        <rect key="frame" x="0.0" y="0.0" width="89" height="40"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="90" height="40"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="kxR-sC-avi">
-                                                <rect key="frame" x="0.0" y="0.0" width="49" height="40"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="50" height="40"/>
                                                 <subviews>
                                                     <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BHY-gh-e2q">
-                                                        <rect key="frame" x="0.0" y="0.0" width="51" height="31"/>
+                                                        <rect key="frame" x="1" y="0.0" width="51" height="31"/>
                                                         <color key="onTintColor" red="0.74007147550582886" green="0.50519394874572754" blue="0.90242213010787964" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <connections>
                                                             <action selector="surgeAutoCloseSwitchDidTap:" destination="M4Y-Lb-cyx" eventType="valueChanged" id="X8b-Pr-SLo"/>
@@ -155,7 +155,7 @@
                                                 </subviews>
                                             </stackView>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KGy-Rl-wLF" userLabel="Surge">
-                                                <rect key="frame" x="49" y="0.0" width="40" height="40"/>
+                                                <rect key="frame" x="50" y="0.0" width="40" height="40"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" secondItem="KGy-Rl-wLF" secondAttribute="height" id="4d7-mJ-I2h"/>
                                                     <constraint firstAttribute="height" constant="40" id="OMb-vp-JzP"/>
@@ -167,8 +167,33 @@
                                                 </connections>
                                             </button>
                                         </subviews>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="90" id="uxg-kc-6R0"/>
+                                        </constraints>
                                     </stackView>
-                                    <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KCO-oa-wuk" userLabel="MacID">
+                                    <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qQI-bB-T5Q" userLabel="MacID">
+                                        <rect key="frame" x="152" y="0.0" width="40" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="qQI-bB-T5Q" secondAttribute="height" id="J3m-vL-lGY"/>
+                                        </constraints>
+                                        <inset key="imageEdgeInsets" minX="8" minY="8" maxX="8" maxY="8"/>
+                                        <state key="normal" image="mac_id"/>
+                                        <connections>
+                                            <action selector="macIDLock:" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="yEi-bL-bhG"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WcG-2c-zbh" userLabel="MacID">
+                                        <rect key="frame" x="200" y="0.0" width="40" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="WcG-2c-zbh" secondAttribute="height" id="AoG-xb-NlU"/>
+                                        </constraints>
+                                        <inset key="imageEdgeInsets" minX="8" minY="8" maxX="8" maxY="8"/>
+                                        <state key="normal" image="mac_id"/>
+                                        <connections>
+                                            <action selector="macIDWake:" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="0UY-Gc-t04"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KCO-oa-wuk" userLabel="MacIDClipboard">
                                         <rect key="frame" x="248" y="0.0" width="40" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="KCO-oa-wuk" secondAttribute="height" id="It2-zF-3Qv"/>
@@ -183,8 +208,14 @@
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="3FG-BE-0FJ"/>
+                                    <constraint firstItem="qQI-bB-T5Q" firstAttribute="top" secondItem="V2f-i3-Ibq" secondAttribute="top" id="HAG-ev-Amb"/>
                                     <constraint firstItem="KCO-oa-wuk" firstAttribute="top" secondItem="V2f-i3-Ibq" secondAttribute="top" id="W1L-Bh-2Qk"/>
                                     <constraint firstAttribute="bottom" secondItem="KCO-oa-wuk" secondAttribute="bottom" id="XCx-qj-AUc"/>
+                                    <constraint firstAttribute="bottom" secondItem="qQI-bB-T5Q" secondAttribute="bottom" id="nU6-bE-2hi"/>
+                                    <constraint firstItem="KCO-oa-wuk" firstAttribute="leading" secondItem="WcG-2c-zbh" secondAttribute="trailing" constant="8" id="uxd-Pk-MKu"/>
+                                    <constraint firstItem="WcG-2c-zbh" firstAttribute="top" secondItem="V2f-i3-Ibq" secondAttribute="top" id="vP1-07-80D"/>
+                                    <constraint firstAttribute="bottom" secondItem="WcG-2c-zbh" secondAttribute="bottom" id="vgO-FE-Zet"/>
+                                    <constraint firstItem="WcG-2c-zbh" firstAttribute="leading" secondItem="qQI-bB-T5Q" secondAttribute="trailing" constant="8" id="xrb-Ur-fKT"/>
                                 </constraints>
                             </stackView>
                         </subviews>
@@ -193,7 +224,7 @@
                             <constraint firstItem="a8G-2i-n9x" firstAttribute="leading" secondItem="1Ep-kd-sQh" secondAttribute="leading" constant="8" id="50u-l4-ayf"/>
                             <constraint firstAttribute="trailing" secondItem="V2f-i3-Ibq" secondAttribute="trailing" constant="16" id="JIv-Jv-v8d"/>
                             <constraint firstItem="ymU-pq-2pX" firstAttribute="top" secondItem="Ft6-oW-KC0" secondAttribute="bottom" id="ivC-N0-TC5"/>
-                            <constraint firstItem="V2f-i3-Ibq" firstAttribute="top" secondItem="ymU-pq-2pX" secondAttribute="bottom" constant="2" id="lYW-58-Ul6"/>
+                            <constraint firstItem="V2f-i3-Ibq" firstAttribute="top" secondItem="ymU-pq-2pX" secondAttribute="bottom" constant="4" id="lYW-58-Ul6"/>
                             <constraint firstItem="a8G-2i-n9x" firstAttribute="trailing" secondItem="xV4-HT-m8X" secondAttribute="trailing" constant="-8" id="luV-l8-P9y"/>
                             <constraint firstItem="a8G-2i-n9x" firstAttribute="top" secondItem="ymU-pq-2pX" secondAttribute="bottom" constant="1" id="nDb-FN-MY3"/>
                             <constraint firstItem="V2f-i3-Ibq" firstAttribute="leading" secondItem="S3S-Oj-5AN" secondAttribute="leading" constant="16" id="psd-0A-sma"/>
@@ -205,8 +236,11 @@
                     <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-                    <size key="freeformSize" width="320" height="82"/>
+                    <size key="freeformSize" width="320" height="88"/>
                     <connections>
+                        <outlet property="macIDClipboardButton" destination="KCO-oa-wuk" id="6fb-wg-ArM"/>
+                        <outlet property="macIDLockButton" destination="qQI-bB-T5Q" id="a2l-hZ-mqk"/>
+                        <outlet property="macIDWakeButton" destination="WcG-2c-zbh" id="lcO-SF-e4v"/>
                         <outlet property="surgeAutoCloseSwitch" destination="BHY-gh-e2q" id="lD5-ku-VrT"/>
                         <outlet property="surgeButton" destination="KGy-Rl-wLF" id="KiI-iE-EP3"/>
                     </connections>

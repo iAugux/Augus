@@ -12,10 +12,27 @@ import UIKit
 // MARK: - MacID
 extension TodayViewController {
     
-    @IBAction func macIDSendClipboard(sender: AnyObject) {
-        openSettingWithURL(AppsURL.MacID.rawValue)
+    internal func configureMacIDPanel() {
+        macIDClipboardButton.setImageForMacIDButton(UIColor.yellowColor())
+        macIDWakeButton.setImageForMacIDButton(UIColor.greenColor())
     }
-
+    
+    @IBAction func macIDSendClipboard(sender: AnyObject) {
+        openSettingWithURL(AppsURL.MacID.scheme)
+    }
+    
+    @IBAction func macIDLock(sender: AnyObject) {
+        openSettingWithURL(AppsURL.MacIDLock.scheme)
+    }
+    
+    @IBAction func macIDWake(sender: AnyObject) {
+        openSettingWithURL(AppsURL.MacIDWake.scheme)
+    }
+    
+    private func image(named: String) -> UIImage? {
+        return UIImage(named: "mac_id")?.imageWithRenderingMode(.AlwaysTemplate)
+    }
+    
 }
 
 
@@ -35,7 +52,7 @@ extension TodayViewController {
     }
     
     internal func openSurgeApp() {
-        let url = AppsURL.Surge.rawValue
+        let url = AppsURL.Surge.scheme
         openSettingWithURL(url)
     }
     
@@ -46,7 +63,23 @@ extension TodayViewController {
     
     @IBAction func surgeToggleDidTap(sender: AnyObject) {
         
-        let url = surgeAutoCloseSwitch.on ? AppsURL.SurgeAutoClose.rawValue : AppsURL.SurgeToggle.rawValue        
+        let url = surgeAutoCloseSwitch.on ? AppsURL.SurgeAutoClose.scheme : AppsURL.SurgeToggle.scheme        
         openSettingWithURL(url)
     }
 }
+
+extension UIButton {
+    
+    private func setImageForMacIDButton(tintColor: UIColor) {
+        setImage("mac_id", tintColor: tintColor)
+    }
+
+    private func setImage(named: String, tintColor: UIColor) {
+        imageView?.tintColor = tintColor
+        imageView?.layer.cornerRadius = imageView!.bounds.width / 2
+        imageView?.layer.borderWidth  = 1.5
+        imageView?.layer.borderColor  = UIColor.whiteColor().CGColor
+        setImage(UIImage(named: named)?.imageWithRenderingMode(.AlwaysTemplate), forState: .Normal)
+    }
+    
+   }

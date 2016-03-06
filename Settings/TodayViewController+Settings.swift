@@ -13,31 +13,31 @@ import Foundation
 extension TodayViewController {
     
     @IBAction func openSettings(sender: AnyObject) {
-        openSettingWithURL(SettingsURL.Settings.rawValue)
+        openSettingWithURL(SettingsURL.Settings.scheme)
     }
     
     @IBAction func openWifiSetting(sender: AnyObject) {
-        openSettingWithURL(SettingsURL.Wifi.rawValue)
+        openSettingWithURL(SettingsURL.Wifi.scheme)
     }
     
     @IBAction func openBatterySetting(sender: AnyObject) {
-        openSettingWithURL(SettingsURL.Battery.rawValue)
+        openSettingWithURL(SettingsURL.Battery.scheme)
     }
     
     @IBAction func openCellularSetting(sender: AnyObject) {
-        openSettingWithURL(SettingsURL.Cellular.rawValue)
+        openSettingWithURL(SettingsURL.Cellular.scheme)
     }
     
     @IBAction func openPersonalHotspotSetting(sender: AnyObject) {
-        openSettingWithURL(SettingsURL.PersonalHotspot.rawValue)
+        openSettingWithURL(SettingsURL.PersonalHotspot.scheme)
     }
     
     @IBAction func openSiriSetting(sender: AnyObject) {
-        openSettingWithURL(SettingsURL.Siri.rawValue)
+        openSettingWithURL(SettingsURL.Siri.scheme)
     }
     
     @IBAction func openDeveloperSetting(sender: AnyObject) {
-        openSettingWithURL(SettingsURL.Developer.rawValue)
+        openSettingWithURL(SettingsURL.Developer.scheme)
     }
     
 }

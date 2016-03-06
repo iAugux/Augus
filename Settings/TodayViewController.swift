@@ -13,6 +13,9 @@ import NotificationCenter
 class TodayViewController: UIViewController, NCWidgetProviding {
         
     @IBOutlet weak var surgeButton: UIButton!
+    @IBOutlet weak var macIDLockButton: UIButton!
+    @IBOutlet weak var macIDWakeButton: UIButton!
+    @IBOutlet weak var macIDClipboardButton: UIButton!
     
     @IBOutlet weak var surgeAutoCloseSwitch: UISwitch! {
         didSet {
@@ -22,8 +25,9 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        preferredContentSize = CGSizeMake(0, 90.0)
+        preferredContentSize = CGSizeMake(0, 86.0)
         configureSurgePanel()
+        configureMacIDPanel()
     }
     
     override func didReceiveMemoryWarning() {
