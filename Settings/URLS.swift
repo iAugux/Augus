@@ -27,16 +27,17 @@ enum SettingsURL: String {
 private let bluetoothUUID = "C3B46A81-4F90-9B01-47FB-B04D70FF87D0"
 
 enum AppsURL: String {
-    case MacID
+    case MacIDClipboard
     case MacIDLock
     case MacIDWake
+    case MacID           = "macid://wake/xxx" // just for opening MacID App
     case Surge           = "surge://"
     case SurgeToggle     = "surge:///toggle"
     case SurgeAutoClose  = "surge:///toggle?autoclose=true"
     
     var scheme: String {
         switch self {
-        case .MacID:
+        case .MacIDClipboard:
             return "macid://send-clipboard/\(bluetoothUUID)"
         case .MacIDLock:
             return "macid://lock/\(bluetoothUUID)"

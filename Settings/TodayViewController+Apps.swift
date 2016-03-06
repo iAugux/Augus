@@ -15,10 +15,14 @@ extension TodayViewController {
     internal func configureMacIDPanel() {
         macIDClipboardButton.setImageForMacIDButton(UIColor.yellowColor())
         macIDWakeButton.setImageForMacIDButton(UIColor.greenColor())
+        
+        macIDClipboardButton.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: "openMacID"))
+        macIDWakeButton.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: "openMacID"))
+        macIDLockButton.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: "openMacID"))
     }
     
     @IBAction func macIDSendClipboard(sender: AnyObject) {
-        openSettingWithURL(AppsURL.MacID.scheme)
+        openSettingWithURL(AppsURL.MacIDClipboard.scheme)
     }
     
     @IBAction func macIDLock(sender: AnyObject) {
@@ -27,6 +31,10 @@ extension TodayViewController {
     
     @IBAction func macIDWake(sender: AnyObject) {
         openSettingWithURL(AppsURL.MacIDWake.scheme)
+    }
+    
+    internal func openMacID() {
+        openSettingWithURL(AppsURL.MacID.scheme)
     }
     
     private func image(named: String) -> UIImage? {
