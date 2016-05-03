@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="M4Y-Lb-cyx">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="M4Y-Lb-cyx">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
     </dependencies>
     <scenes>
@@ -139,7 +139,7 @@
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="kxR-sC-avi">
                                                 <rect key="frame" x="0.0" y="0.0" width="50" height="40"/>
                                                 <subviews>
-                                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BHY-gh-e2q">
+                                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" verticalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BHY-gh-e2q">
                                                         <rect key="frame" x="1" y="0.0" width="51" height="31"/>
                                                         <color key="onTintColor" red="0.74007147550582886" green="0.50519394874572754" blue="0.90242213010787964" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <connections>
@@ -147,12 +147,19 @@
                                                         </connections>
                                                     </switch>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Auto Close" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rLM-0m-afp">
-                                                        <rect key="frame" x="6" y="32" width="39" height="9"/>
+                                                        <rect key="frame" x="0.0" y="31" width="50" height="9"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="9" id="HXc-Ph-kAG"/>
+                                                        </constraints>
                                                         <fontDescription key="fontDescription" type="system" pointSize="7"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                 </subviews>
+                                                <constraints>
+                                                    <constraint firstItem="rLM-0m-afp" firstAttribute="leading" secondItem="kxR-sC-avi" secondAttribute="leading" id="LRY-dk-LNJ"/>
+                                                    <constraint firstAttribute="trailing" secondItem="rLM-0m-afp" secondAttribute="trailing" id="UVb-7k-9Mn"/>
+                                                </constraints>
                                             </stackView>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KGy-Rl-wLF" userLabel="Surge">
                                                 <rect key="frame" x="50" y="0.0" width="40" height="40"/>
@@ -171,6 +178,18 @@
                                             <constraint firstAttribute="width" constant="90" id="uxg-kc-6R0"/>
                                         </constraints>
                                     </stackView>
+                                    <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Bjp-fH-lQ9" userLabel="Tumblr">
+                                        <rect key="frame" x="104" y="0.0" width="40" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="Bjp-fH-lQ9" secondAttribute="height" id="P8l-Si-4zw"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="SnellRoundhand" family="Snell Roundhand" pointSize="22"/>
+                                        <inset key="imageEdgeInsets" minX="8" minY="8" maxX="8" maxY="8"/>
+                                        <state key="normal" title="T"/>
+                                        <connections>
+                                            <action selector="openTumblr:" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="vQE-9s-N8k"/>
+                                        </connections>
+                                    </button>
                                     <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qQI-bB-T5Q" userLabel="MacID">
                                         <rect key="frame" x="152" y="0.0" width="40" height="40"/>
                                         <constraints>
@@ -208,9 +227,12 @@
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="3FG-BE-0FJ"/>
+                                    <constraint firstItem="qQI-bB-T5Q" firstAttribute="leading" secondItem="Bjp-fH-lQ9" secondAttribute="trailing" constant="8" id="DYr-lx-3e7"/>
                                     <constraint firstItem="qQI-bB-T5Q" firstAttribute="top" secondItem="V2f-i3-Ibq" secondAttribute="top" id="HAG-ev-Amb"/>
                                     <constraint firstItem="KCO-oa-wuk" firstAttribute="top" secondItem="V2f-i3-Ibq" secondAttribute="top" id="W1L-Bh-2Qk"/>
                                     <constraint firstAttribute="bottom" secondItem="KCO-oa-wuk" secondAttribute="bottom" id="XCx-qj-AUc"/>
+                                    <constraint firstItem="Bjp-fH-lQ9" firstAttribute="top" secondItem="V2f-i3-Ibq" secondAttribute="top" id="dJd-6W-3rd"/>
+                                    <constraint firstAttribute="bottom" secondItem="Bjp-fH-lQ9" secondAttribute="bottom" id="kgd-Vc-Pb0"/>
                                     <constraint firstAttribute="bottom" secondItem="qQI-bB-T5Q" secondAttribute="bottom" id="nU6-bE-2hi"/>
                                     <constraint firstItem="KCO-oa-wuk" firstAttribute="leading" secondItem="WcG-2c-zbh" secondAttribute="trailing" constant="8" id="uxd-Pk-MKu"/>
                                     <constraint firstItem="WcG-2c-zbh" firstAttribute="top" secondItem="V2f-i3-Ibq" secondAttribute="top" id="vP1-07-80D"/>
@@ -243,6 +265,7 @@
                         <outlet property="macIDWakeButton" destination="WcG-2c-zbh" id="lcO-SF-e4v"/>
                         <outlet property="surgeAutoCloseSwitch" destination="BHY-gh-e2q" id="lD5-ku-VrT"/>
                         <outlet property="surgeButton" destination="KGy-Rl-wLF" id="KiI-iE-EP3"/>
+                        <outlet property="tumblrButton" destination="Bjp-fH-lQ9" id="OKg-cT-OZs"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vXp-U4-Rya" userLabel="First Responder" sceneMemberID="firstResponder"/>

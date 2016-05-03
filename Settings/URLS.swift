@@ -24,7 +24,7 @@ enum SettingsURL: String {
 }
 
 
-private let bluetoothUUID = "C3B46A81-4F90-9B01-47FB-B04D70FF87D0"
+private let bluetoothUUID = "A1DFBC54-A551-8796-672F-0A2AC9860D09"
 
 enum AppsURL: String {
     case MacIDClipboard
@@ -34,6 +34,8 @@ enum AppsURL: String {
     case Surge           = "surge://"
     case SurgeToggle     = "surge:///toggle"
     case SurgeAutoClose  = "surge:///toggle?autoclose=true"
+    
+    case Tumblr          = "tumblr://"
     
     var scheme: String {
         switch self {

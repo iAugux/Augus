@@ -17,6 +17,8 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     @IBOutlet weak var macIDWakeButton: UIButton!
     @IBOutlet weak var macIDClipboardButton: UIButton!
     
+    @IBOutlet weak var tumblrButton: UIButton!
+    
     @IBOutlet weak var surgeAutoCloseSwitch: UISwitch! {
         didSet {
             surgeAutoCloseSwitch.shouldSwitch(kSurgeAutoClose, defaultBool: kSurgeAutoCloseDefaultBool)
@@ -30,6 +32,12 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         configureMacIDPanel()
     }
     
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+            let hideTumblr = GroupUserDefaults?.getBool(kHideTumblrKey, defaultKeyValue: false) ?? false
+            tumblrButton.hidden = hideTumblr
+    }
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.

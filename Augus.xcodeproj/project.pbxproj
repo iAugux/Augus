@@ -7,6 +7,28 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B10024841CD8AA0100CE11BE /* PasscodeLock.strings in Resources */ = {isa = PBXBuildFile; fileRef = B10024701CD8AA0100CE11BE /* PasscodeLock.strings */; };
+		B10024851CD8AA0100CE11BE /* Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10024721CD8AA0100CE11BE /* Functions.swift */; };
+		B10024861CD8AA0100CE11BE /* ChangePasscodeState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10024741CD8AA0100CE11BE /* ChangePasscodeState.swift */; };
+		B10024871CD8AA0100CE11BE /* ConfirmPasscodeState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10024751CD8AA0100CE11BE /* ConfirmPasscodeState.swift */; };
+		B10024881CD8AA0100CE11BE /* EnterPasscodeState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10024761CD8AA0100CE11BE /* EnterPasscodeState.swift */; };
+		B10024891CD8AA0100CE11BE /* PasscodeLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10024771CD8AA0100CE11BE /* PasscodeLock.swift */; };
+		B100248A1CD8AA0100CE11BE /* SetPasscodeState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10024781CD8AA0100CE11BE /* SetPasscodeState.swift */; };
+		B100248B1CD8AA0100CE11BE /* PasscodeLockPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10024791CD8AA0100CE11BE /* PasscodeLockPresenter.swift */; };
+		B100248C1CD8AA0100CE11BE /* PasscodeLockViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100247A1CD8AA0100CE11BE /* PasscodeLockViewController.swift */; };
+		B100248D1CD8AA0100CE11BE /* PasscodeLockConfigurationType.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100247C1CD8AA0100CE11BE /* PasscodeLockConfigurationType.swift */; };
+		B100248E1CD8AA0100CE11BE /* PasscodeLockStateType.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100247D1CD8AA0100CE11BE /* PasscodeLockStateType.swift */; };
+		B100248F1CD8AA0100CE11BE /* PasscodeLockType.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100247E1CD8AA0100CE11BE /* PasscodeLockType.swift */; };
+		B10024901CD8AA0100CE11BE /* PasscodeRepositoryType.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100247F1CD8AA0100CE11BE /* PasscodeRepositoryType.swift */; };
+		B10024911CD8AA0100CE11BE /* PasscodeLockView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B10024811CD8AA0100CE11BE /* PasscodeLockView.xib */; };
+		B10024921CD8AA0100CE11BE /* PasscodeSignButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10024821CD8AA0100CE11BE /* PasscodeSignButton.swift */; };
+		B10024931CD8AA0100CE11BE /* PasscodeSignPlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10024831CD8AA0100CE11BE /* PasscodeSignPlaceholderView.swift */; };
+		B10024951CD8AB1200CE11BE /* UserDefaultsPasscodeRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10024941CD8AB1200CE11BE /* UserDefaultsPasscodeRepository.swift */; };
+		B10024971CD8AB2000CE11BE /* PasscodeLockConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10024961CD8AB2000CE11BE /* PasscodeLockConfiguration.swift */; };
+		B10024991CD8AE0700CE11BE /* NSUserDefaults+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10024981CD8AE0700CE11BE /* NSUserDefaults+Extension.swift */; };
+		B100249A1CD8AE1100CE11BE /* NSUserDefaults+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10024981CD8AE0700CE11BE /* NSUserDefaults+Extension.swift */; };
+		B100249F1CD8BC4C00CE11BE /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100249E1CD8BC4C00CE11BE /* Common.swift */; };
+		B10024A01CD8BC5000CE11BE /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100249E1CD8BC4C00CE11BE /* Common.swift */; };
 		B121B1B41C7D6DD000DC0C05 /* URLS.swift in Sources */ = {isa = PBXBuildFile; fileRef = B121B1B21C7D6DCB00DC0C05 /* URLS.swift */; };
 		B121B1B61C7D80FE00DC0C05 /* TodayViewController+Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B121B1B51C7D80FE00DC0C05 /* TodayViewController+Settings.swift */; };
 		B121B1B81C7D810B00DC0C05 /* TodayViewController+Apps.swift in Sources */ = {isa = PBXBuildFile; fileRef = B121B1B71C7D810B00DC0C05 /* TodayViewController+Apps.swift */; };
@@ -57,6 +79,28 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		B10024711CD8AA0100CE11BE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/PasscodeLock.strings; sourceTree = "<group>"; };
+		B10024721CD8AA0100CE11BE /* Functions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Functions.swift; sourceTree = "<group>"; };
+		B10024741CD8AA0100CE11BE /* ChangePasscodeState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangePasscodeState.swift; sourceTree = "<group>"; };
+		B10024751CD8AA0100CE11BE /* ConfirmPasscodeState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfirmPasscodeState.swift; sourceTree = "<group>"; };
+		B10024761CD8AA0100CE11BE /* EnterPasscodeState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnterPasscodeState.swift; sourceTree = "<group>"; };
+		B10024771CD8AA0100CE11BE /* PasscodeLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasscodeLock.swift; sourceTree = "<group>"; };
+		B10024781CD8AA0100CE11BE /* SetPasscodeState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetPasscodeState.swift; sourceTree = "<group>"; };
+		B10024791CD8AA0100CE11BE /* PasscodeLockPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasscodeLockPresenter.swift; sourceTree = "<group>"; };
+		B100247A1CD8AA0100CE11BE /* PasscodeLockViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasscodeLockViewController.swift; sourceTree = "<group>"; };
+		B100247C1CD8AA0100CE11BE /* PasscodeLockConfigurationType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasscodeLockConfigurationType.swift; sourceTree = "<group>"; };
+		B100247D1CD8AA0100CE11BE /* PasscodeLockStateType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasscodeLockStateType.swift; sourceTree = "<group>"; };
+		B100247E1CD8AA0100CE11BE /* PasscodeLockType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasscodeLockType.swift; sourceTree = "<group>"; };
+		B100247F1CD8AA0100CE11BE /* PasscodeRepositoryType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasscodeRepositoryType.swift; sourceTree = "<group>"; };
+		B10024811CD8AA0100CE11BE /* PasscodeLockView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PasscodeLockView.xib; sourceTree = "<group>"; };
+		B10024821CD8AA0100CE11BE /* PasscodeSignButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasscodeSignButton.swift; sourceTree = "<group>"; };
+		B10024831CD8AA0100CE11BE /* PasscodeSignPlaceholderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasscodeSignPlaceholderView.swift; sourceTree = "<group>"; };
+		B10024941CD8AB1200CE11BE /* UserDefaultsPasscodeRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserDefaultsPasscodeRepository.swift; sourceTree = "<group>"; };
+		B10024961CD8AB2000CE11BE /* PasscodeLockConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasscodeLockConfiguration.swift; sourceTree = "<group>"; };
+		B10024981CD8AE0700CE11BE /* NSUserDefaults+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSUserDefaults+Extension.swift"; sourceTree = "<group>"; };
+		B100249B1CD8B71A00CE11BE /* Settings.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = Settings.entitlements; path = ../Settings/Settings.entitlements; sourceTree = "<group>"; };
+		B100249C1CD8B95300CE11BE /* Augus.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Augus.entitlements; sourceTree = "<group>"; };
+		B100249E1CD8BC4C00CE11BE /* Common.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
 		B121B1B21C7D6DCB00DC0C05 /* URLS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLS.swift; sourceTree = "<group>"; };
 		B121B1B51C7D80FE00DC0C05 /* TodayViewController+Settings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TodayViewController+Settings.swift"; sourceTree = "<group>"; };
 		B121B1B71C7D810B00DC0C05 /* TodayViewController+Apps.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TodayViewController+Apps.swift"; sourceTree = "<group>"; };
@@ -106,11 +150,78 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B100246E1CD8A9EF00CE11BE /* ThirdParty */ = {
+			isa = PBXGroup;
+			children = (
+				B100246F1CD8AA0100CE11BE /* PasscodeLock */,
+			);
+			name = ThirdParty;
+			sourceTree = "<group>";
+		};
+		B100246F1CD8AA0100CE11BE /* PasscodeLock */ = {
+			isa = PBXGroup;
+			children = (
+				B10024961CD8AB2000CE11BE /* PasscodeLockConfiguration.swift */,
+				B10024941CD8AB1200CE11BE /* UserDefaultsPasscodeRepository.swift */,
+				B10024701CD8AA0100CE11BE /* PasscodeLock.strings */,
+				B10024721CD8AA0100CE11BE /* Functions.swift */,
+				B10024731CD8AA0100CE11BE /* PasscodeLock */,
+				B10024791CD8AA0100CE11BE /* PasscodeLockPresenter.swift */,
+				B100247A1CD8AA0100CE11BE /* PasscodeLockViewController.swift */,
+				B100247B1CD8AA0100CE11BE /* Protocols */,
+				B10024801CD8AA0100CE11BE /* Views */,
+			);
+			path = PasscodeLock;
+			sourceTree = "<group>";
+		};
+		B10024731CD8AA0100CE11BE /* PasscodeLock */ = {
+			isa = PBXGroup;
+			children = (
+				B10024741CD8AA0100CE11BE /* ChangePasscodeState.swift */,
+				B10024751CD8AA0100CE11BE /* ConfirmPasscodeState.swift */,
+				B10024761CD8AA0100CE11BE /* EnterPasscodeState.swift */,
+				B10024771CD8AA0100CE11BE /* PasscodeLock.swift */,
+				B10024781CD8AA0100CE11BE /* SetPasscodeState.swift */,
+			);
+			path = PasscodeLock;
+			sourceTree = "<group>";
+		};
+		B100247B1CD8AA0100CE11BE /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				B100247C1CD8AA0100CE11BE /* PasscodeLockConfigurationType.swift */,
+				B100247D1CD8AA0100CE11BE /* PasscodeLockStateType.swift */,
+				B100247E1CD8AA0100CE11BE /* PasscodeLockType.swift */,
+				B100247F1CD8AA0100CE11BE /* PasscodeRepositoryType.swift */,
+			);
+			path = Protocols;
+			sourceTree = "<group>";
+		};
+		B10024801CD8AA0100CE11BE /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B10024811CD8AA0100CE11BE /* PasscodeLockView.xib */,
+				B10024821CD8AA0100CE11BE /* PasscodeSignButton.swift */,
+				B10024831CD8AA0100CE11BE /* PasscodeSignPlaceholderView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		B100249D1CD8BC2D00CE11BE /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				B100249E1CD8BC4C00CE11BE /* Common.swift */,
+			);
+			name = Common;
+			sourceTree = "<group>";
+		};
 		B16FEB6A1C78E10800FEB550 = {
 			isa = PBXGroup;
 			children = (
+				B100249D1CD8BC2D00CE11BE /* Common */,
 				B16FEB751C78E10800FEB550 /* Augus */,
 				B16FEB9E1C78E11200FEB550 /* SettingsWidget */,
+				B100246E1CD8A9EF00CE11BE /* ThirdParty */,
 				B16FEBAD1C78E4E000FEB550 /* Extensions */,
 				B16FEB8A1C78E10800FEB550 /* AugusTests */,
 				B16FEB9B1C78E11200FEB550 /* Frameworks */,
@@ -131,10 +242,12 @@
 		B16FEB751C78E10800FEB550 /* Augus */ = {
 			isa = PBXGroup;
 			children = (
+				B100249C1CD8B95300CE11BE /* Augus.entitlements */,
 				B16FEB761C78E10800FEB550 /* AppDelegate.swift */,
 				B16FEB781C78E10800FEB550 /* ViewController.swift */,
 				B16FEB7A1C78E10800FEB550 /* Main.storyboard */,
 				B16FEB7F1C78E10800FEB550 /* LaunchScreen.storyboard */,
+				B100249B1CD8B71A00CE11BE /* Settings.entitlements */,
 				B16FEB7D1C78E10800FEB550 /* Assets.xcassets */,
 				B16FEB821C78E10800FEB550 /* Info.plist */,
 			);
@@ -176,6 +289,7 @@
 		B16FEBAD1C78E4E000FEB550 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				B10024981CD8AE0700CE11BE /* NSUserDefaults+Extension.swift */,
 				B16FEBAE1C78E4E000FEB550 /* UIButton+Extension.swift */,
 				B121B1B91C7DA81C00DC0C05 /* UISwitch+Extension.swift */,
 			);
@@ -252,6 +366,11 @@
 					B16FEB721C78E10800FEB550 = {
 						CreatedOnToolsVersion = 7.2.1;
 						DevelopmentTeam = J4Z2NCTR3S;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
 					};
 					B16FEB861C78E10800FEB550 = {
 						CreatedOnToolsVersion = 7.2.1;
@@ -260,6 +379,11 @@
 					B16FEB991C78E11200FEB550 = {
 						CreatedOnToolsVersion = 7.2.1;
 						DevelopmentTeam = J4Z2NCTR3S;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -290,7 +414,9 @@
 			files = (
 				B16FEB811C78E10800FEB550 /* LaunchScreen.storyboard in Resources */,
 				B16FEBB01C78F8C700FEB550 /* Assets.xcassets in Resources */,
+				B10024911CD8AA0100CE11BE /* PasscodeLockView.xib in Resources */,
 				B16FEB7C1C78E10800FEB550 /* Main.storyboard in Resources */,
+				B10024841CD8AA0100CE11BE /* PasscodeLock.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -317,8 +443,26 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B100248A1CD8AA0100CE11BE /* SetPasscodeState.swift in Sources */,
+				B10024891CD8AA0100CE11BE /* PasscodeLock.swift in Sources */,
+				B100248D1CD8AA0100CE11BE /* PasscodeLockConfigurationType.swift in Sources */,
+				B10024921CD8AA0100CE11BE /* PasscodeSignButton.swift in Sources */,
+				B10024951CD8AB1200CE11BE /* UserDefaultsPasscodeRepository.swift in Sources */,
+				B10024881CD8AA0100CE11BE /* EnterPasscodeState.swift in Sources */,
 				B16FEB791C78E10800FEB550 /* ViewController.swift in Sources */,
+				B100248F1CD8AA0100CE11BE /* PasscodeLockType.swift in Sources */,
+				B100249F1CD8BC4C00CE11BE /* Common.swift in Sources */,
+				B10024931CD8AA0100CE11BE /* PasscodeSignPlaceholderView.swift in Sources */,
+				B100248B1CD8AA0100CE11BE /* PasscodeLockPresenter.swift in Sources */,
+				B10024861CD8AA0100CE11BE /* ChangePasscodeState.swift in Sources */,
+				B100248C1CD8AA0100CE11BE /* PasscodeLockViewController.swift in Sources */,
+				B100248E1CD8AA0100CE11BE /* PasscodeLockStateType.swift in Sources */,
+				B10024971CD8AB2000CE11BE /* PasscodeLockConfiguration.swift in Sources */,
 				B16FEB771C78E10800FEB550 /* AppDelegate.swift in Sources */,
+				B10024851CD8AA0100CE11BE /* Functions.swift in Sources */,
+				B10024991CD8AE0700CE11BE /* NSUserDefaults+Extension.swift in Sources */,
+				B10024871CD8AA0100CE11BE /* ConfirmPasscodeState.swift in Sources */,
+				B10024901CD8AA0100CE11BE /* PasscodeRepositoryType.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -334,11 +478,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B10024A01CD8BC5000CE11BE /* Common.swift in Sources */,
 				B16FEBA01C78E11200FEB550 /* TodayViewController.swift in Sources */,
 				B121B1B81C7D810B00DC0C05 /* TodayViewController+Apps.swift in Sources */,
 				B121B1B61C7D80FE00DC0C05 /* TodayViewController+Settings.swift in Sources */,
 				B121B1BA1C7DA81C00DC0C05 /* UISwitch+Extension.swift in Sources */,
 				B16FEBC61C7B48B000FEB550 /* UIButton+Extension.swift in Sources */,
+				B100249A1CD8AE1100CE11BE /* NSUserDefaults+Extension.swift in Sources */,
 				B121B1B41C7D6DD000DC0C05 /* URLS.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -359,6 +505,14 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		B10024701CD8AA0100CE11BE /* PasscodeLock.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B10024711CD8AA0100CE11BE /* en */,
+			);
+			name = PasscodeLock.strings;
+			sourceTree = "<group>";
+		};
 		B16FEB7A1C78E10800FEB550 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -473,12 +627,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Augus/Augus.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				INFOPLIST_FILE = Augus/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.iAugus.Augus;
+				PRODUCT_BUNDLE_IDENTIFIER = com.iAugus.iAugus;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -487,12 +642,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Augus/Augus.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				INFOPLIST_FILE = Augus/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.iAugus.Augus;
+				PRODUCT_BUNDLE_IDENTIFIER = com.iAugus.iAugus;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -524,12 +680,15 @@
 		B16FEBA91C78E11200FEB550 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Settings/Settings.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = Settings/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.iAugus.Augus.Settings;
+				PRODUCT_BUNDLE_IDENTIFIER = com.iAugus.iAugus.Setting;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
@@ -537,12 +696,15 @@
 		B16FEBAA1C78E11200FEB550 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Settings/Settings.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = Settings/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.iAugus.Augus.Settings;
+				PRODUCT_BUNDLE_IDENTIFIER = com.iAugus.iAugus.Setting;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
 			};
 			name = Release;

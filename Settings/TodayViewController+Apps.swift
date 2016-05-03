@@ -16,9 +16,9 @@ extension TodayViewController {
         macIDClipboardButton.setImageForMacIDButton(UIColor.yellowColor())
         macIDWakeButton.setImageForMacIDButton(UIColor.greenColor())
         
-        macIDClipboardButton.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: "openMacID"))
-        macIDWakeButton.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: "openMacID"))
-        macIDLockButton.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: "openMacID"))
+        macIDClipboardButton.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(TodayViewController.openMacID)))
+        macIDWakeButton.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(TodayViewController.openMacID)))
+        macIDLockButton.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(TodayViewController.openMacID)))
     }
     
     @IBAction func macIDSendClipboard(sender: AnyObject) {
@@ -55,7 +55,7 @@ extension TodayViewController {
         
         surgeAutoCloseSwitch.transform = CGAffineTransformMakeScale(0.55, 0.55)
         
-        let recognizer = UILongPressGestureRecognizer(target: self, action: "openSurgeApp")
+        let recognizer = UILongPressGestureRecognizer(target: self, action: #selector(TodayViewController.openSurgeApp))
         surgeButton?.addGestureRecognizer(recognizer)
     }
     
@@ -73,6 +73,13 @@ extension TodayViewController {
         
         let url = surgeAutoCloseSwitch.on ? AppsURL.SurgeAutoClose.scheme : AppsURL.SurgeToggle.scheme        
         openSettingWithURL(url)
+    }
+}
+
+extension TodayViewController {
+    
+    @IBAction func openTumblr(sender: AnyObject) {
+        openSettingWithURL(AppsURL.Tumblr.scheme)
     }
 }
 
