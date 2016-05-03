@@ -16,7 +16,8 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var tumblrImageView: UIImageView! {
         didSet {
-            hideTumblrOrNot()
+            let hidden = GroupUserDefaults?.getBool(kHideTumblrKey, defaultKeyValue: false) ?? false
+            tumblrImageView.alpha = hidden ? 0.3 : 1
         }
     }
     
@@ -37,7 +38,7 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         configurePasscodeIndicator()
         configureTumblrImageView()
     }
@@ -79,10 +80,11 @@ extension ViewController {
     
     @objc private func hideTumblrOrNot() {
         let hidden = GroupUserDefaults?.getBool(kHideTumblrKey, defaultKeyValue: false) ?? false
-        tumblrImageView.alpha = hidden ? 1 : 0.3
+        tumblrImageView.alpha = !hidden ? 0.3 : 1
         GroupUserDefaults?.setBool(!hidden, forKey: kHideTumblrKey)
         GroupUserDefaults?.synchronize()
     }
+
 }
 
 
