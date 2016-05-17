@@ -243,11 +243,11 @@
 			isa = PBXGroup;
 			children = (
 				B100249C1CD8B95300CE11BE /* Augus.entitlements */,
+				B100249B1CD8B71A00CE11BE /* Settings.entitlements */,
 				B16FEB761C78E10800FEB550 /* AppDelegate.swift */,
 				B16FEB781C78E10800FEB550 /* ViewController.swift */,
 				B16FEB7A1C78E10800FEB550 /* Main.storyboard */,
 				B16FEB7F1C78E10800FEB550 /* LaunchScreen.storyboard */,
-				B100249B1CD8B71A00CE11BE /* Settings.entitlements */,
 				B16FEB7D1C78E10800FEB550 /* Assets.xcassets */,
 				B16FEB821C78E10800FEB550 /* Info.plist */,
 			);

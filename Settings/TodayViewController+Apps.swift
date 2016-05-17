@@ -55,12 +55,15 @@ extension TodayViewController {
         
         surgeAutoCloseSwitch.transform = CGAffineTransformMakeScale(0.55, 0.55)
         
-        let recognizer = UILongPressGestureRecognizer(target: self, action: #selector(TodayViewController.openSurgeApp))
+        let recognizer = UILongPressGestureRecognizer(target: self, action: #selector(surgeToggleDidLongPress(_:)))
         surgeButton?.addGestureRecognizer(recognizer)
     }
     
-    internal func openSurgeApp() {
-        let url = AppsURL.Surge.scheme
+    internal func surgeToggleDidLongPress(sender: UILongPressGestureRecognizer) {
+        
+        guard sender.state == .Began else { return }
+        
+        let url = surgeAutoCloseSwitch.on ? AppsURL.SurgeAutoClose.scheme : AppsURL.SurgeToggle.scheme
         openSettingWithURL(url)
     }
     
@@ -70,8 +73,7 @@ extension TodayViewController {
     }
     
     @IBAction func surgeToggleDidTap(sender: AnyObject) {
-        
-        let url = surgeAutoCloseSwitch.on ? AppsURL.SurgeAutoClose.scheme : AppsURL.SurgeToggle.scheme        
+        let url = AppsURL.Surge.scheme
         openSettingWithURL(url)
     }
 }
