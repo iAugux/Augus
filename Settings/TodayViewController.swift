@@ -27,7 +27,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        preferredContentSize = CGSizeMake(0, 86.0)
+        preferredContentSize = CGSizeMake(0, 130.0)
         configureSurgePanel()
         configureMacIDPanel()
     }

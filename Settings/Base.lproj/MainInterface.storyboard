@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="M4Y-Lb-cyx">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="M4Y-Lb-cyx">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
@@ -14,7 +14,7 @@
                         <viewControllerLayoutGuide type="bottom" id="FKl-LY-JtV"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" simulatedAppContext="notificationCenter" id="S3S-Oj-5AN">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="88"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="130"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="ymU-pq-2pX" userLabel="Settings">
@@ -240,17 +240,120 @@
                                     <constraint firstItem="WcG-2c-zbh" firstAttribute="leading" secondItem="qQI-bB-T5Q" secondAttribute="trailing" constant="8" id="xrb-Ur-fKT"/>
                                 </constraints>
                             </stackView>
+                            <visualEffectView opaque="NO" userInteractionEnabled="NO" alpha="0.10000000149011612" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fPU-9W-n7e" userLabel="Separator">
+                                <rect key="frame" x="24" y="85" width="272" height="1"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" id="QRX-t1-CnX">
+                                    <rect key="frame" x="0.0" y="0.0" width="272" height="1"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <visualEffectView opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="olX-mm-QhK">
+                                            <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                                            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" id="zsg-DG-Sba">
+                                                <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            </view>
+                                            <vibrancyEffect>
+                                                <blurEffect style="dark"/>
+                                            </vibrancyEffect>
+                                        </visualEffectView>
+                                    </subviews>
+                                </view>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="1" id="3Ew-UW-ZCg"/>
+                                </constraints>
+                                <vibrancyEffect>
+                                    <blurEffect style="dark"/>
+                                </vibrancyEffect>
+                            </visualEffectView>
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="OnM-xG-R6B" userLabel="Settings">
+                                <rect key="frame" x="16" y="88" width="288" height="40"/>
+                                <subviews>
+                                    <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aQ8-8O-XzH" userLabel="Wifi">
+                                        <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="aQ8-8O-XzH" secondAttribute="height" id="m1S-ec-fzM"/>
+                                        </constraints>
+                                        <inset key="imageEdgeInsets" minX="8" minY="8" maxX="8" maxY="8"/>
+                                    </button>
+                                    <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vgo-IE-251" userLabel="Cellular">
+                                        <rect key="frame" x="50" y="0.0" width="40" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="Vgo-IE-251" secondAttribute="height" id="1FR-vg-n7a"/>
+                                        </constraints>
+                                        <inset key="imageEdgeInsets" minX="8" minY="8" maxX="8" maxY="8"/>
+                                    </button>
+                                    <button opaque="NO" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dhn-uJ-MEI" userLabel="Battery">
+                                        <rect key="frame" x="99" y="0.0" width="40" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="dhn-uJ-MEI" secondAttribute="height" id="Aoz-Mw-qWy"/>
+                                        </constraints>
+                                        <inset key="imageEdgeInsets" minX="7" minY="7" maxX="7" maxY="7"/>
+                                    </button>
+                                    <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0g8-jb-If5" userLabel="Personal Hotspot">
+                                        <rect key="frame" x="149" y="0.0" width="40" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="0g8-jb-If5" secondAttribute="height" id="4ii-PU-6FU"/>
+                                        </constraints>
+                                        <inset key="imageEdgeInsets" minX="-2" minY="-2" maxX="0.0" maxY="0.0"/>
+                                    </button>
+                                    <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GPj-lx-B2V" userLabel="Siri">
+                                        <rect key="frame" x="199" y="0.0" width="40" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="GPj-lx-B2V" secondAttribute="height" id="YHh-gZ-K2T"/>
+                                        </constraints>
+                                        <inset key="imageEdgeInsets" minX="7" minY="7" maxX="7" maxY="7"/>
+                                        <state key="normal" image="otp_auth"/>
+                                        <connections>
+                                            <action selector="openOTPAuth:" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="sFZ-dy-0tf"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dU4-nw-hZq" userLabel="Settings">
+                                        <rect key="frame" x="248" y="0.0" width="40" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="dU4-nw-hZq" secondAttribute="height" id="WrX-k8-xB3"/>
+                                        </constraints>
+                                        <inset key="imageEdgeInsets" minX="8" minY="8" maxX="8" maxY="8"/>
+                                        <state key="normal" image="1password"/>
+                                        <connections>
+                                            <action selector="open1Password:" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="7J3-bW-e0x"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="bottom" secondItem="Vgo-IE-251" secondAttribute="bottom" id="0Gt-pv-hwu"/>
+                                    <constraint firstItem="aQ8-8O-XzH" firstAttribute="top" secondItem="OnM-xG-R6B" secondAttribute="top" id="44c-EH-VqW"/>
+                                    <constraint firstAttribute="bottom" secondItem="GPj-lx-B2V" secondAttribute="bottom" id="Atp-2U-TGq"/>
+                                    <constraint firstAttribute="bottom" secondItem="dU4-nw-hZq" secondAttribute="bottom" id="Efv-4d-zmj"/>
+                                    <constraint firstAttribute="bottom" secondItem="dhn-uJ-MEI" secondAttribute="bottom" id="GeV-Vr-r2s"/>
+                                    <constraint firstItem="dhn-uJ-MEI" firstAttribute="top" secondItem="OnM-xG-R6B" secondAttribute="top" id="T6E-fB-ERK"/>
+                                    <constraint firstItem="dU4-nw-hZq" firstAttribute="top" secondItem="OnM-xG-R6B" secondAttribute="top" id="XsU-Uh-xEK"/>
+                                    <constraint firstAttribute="bottom" secondItem="aQ8-8O-XzH" secondAttribute="bottom" id="Ye0-wz-5fc"/>
+                                    <constraint firstAttribute="bottom" secondItem="0g8-jb-If5" secondAttribute="bottom" id="l6S-vl-cpO"/>
+                                    <constraint firstItem="0g8-jb-If5" firstAttribute="top" secondItem="OnM-xG-R6B" secondAttribute="top" id="p9G-kW-hUO"/>
+                                    <constraint firstAttribute="height" constant="40" id="qqv-rs-eC0"/>
+                                    <constraint firstItem="Vgo-IE-251" firstAttribute="top" secondItem="OnM-xG-R6B" secondAttribute="top" id="t2v-jD-Dh3"/>
+                                    <constraint firstItem="GPj-lx-B2V" firstAttribute="top" secondItem="OnM-xG-R6B" secondAttribute="top" id="tIO-NI-deY"/>
+                                </constraints>
+                            </stackView>
                         </subviews>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="ymU-pq-2pX" secondAttribute="trailing" constant="16" id="26i-ZL-wj3"/>
                             <constraint firstItem="a8G-2i-n9x" firstAttribute="leading" secondItem="1Ep-kd-sQh" secondAttribute="leading" constant="8" id="50u-l4-ayf"/>
+                            <constraint firstAttribute="trailing" secondItem="OnM-xG-R6B" secondAttribute="trailing" constant="16" id="BPF-Ea-jkb"/>
+                            <constraint firstItem="fPU-9W-n7e" firstAttribute="trailing" secondItem="a8G-2i-n9x" secondAttribute="trailing" id="Gh2-tS-pl7"/>
                             <constraint firstAttribute="trailing" secondItem="V2f-i3-Ibq" secondAttribute="trailing" constant="16" id="JIv-Jv-v8d"/>
+                            <constraint firstItem="fPU-9W-n7e" firstAttribute="top" secondItem="V2f-i3-Ibq" secondAttribute="bottom" constant="1" id="NQV-b4-HCS"/>
+                            <constraint firstItem="OnM-xG-R6B" firstAttribute="top" secondItem="V2f-i3-Ibq" secondAttribute="bottom" constant="4" id="YIy-aF-jvS"/>
+                            <constraint firstItem="OnM-xG-R6B" firstAttribute="leading" secondItem="S3S-Oj-5AN" secondAttribute="leading" constant="16" id="fCj-J8-oL3"/>
                             <constraint firstItem="ymU-pq-2pX" firstAttribute="top" secondItem="Ft6-oW-KC0" secondAttribute="bottom" id="ivC-N0-TC5"/>
                             <constraint firstItem="V2f-i3-Ibq" firstAttribute="top" secondItem="ymU-pq-2pX" secondAttribute="bottom" constant="4" id="lYW-58-Ul6"/>
                             <constraint firstItem="a8G-2i-n9x" firstAttribute="trailing" secondItem="xV4-HT-m8X" secondAttribute="trailing" constant="-8" id="luV-l8-P9y"/>
                             <constraint firstItem="a8G-2i-n9x" firstAttribute="top" secondItem="ymU-pq-2pX" secondAttribute="bottom" constant="1" id="nDb-FN-MY3"/>
                             <constraint firstItem="V2f-i3-Ibq" firstAttribute="leading" secondItem="S3S-Oj-5AN" secondAttribute="leading" constant="16" id="psd-0A-sma"/>
                             <constraint firstItem="ymU-pq-2pX" firstAttribute="leading" secondItem="S3S-Oj-5AN" secondAttribute="leading" constant="16" id="v7D-2K-jfE"/>
+                            <constraint firstItem="fPU-9W-n7e" firstAttribute="leading" secondItem="a8G-2i-n9x" secondAttribute="leading" id="xuz-8s-f0o"/>
                         </constraints>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout"/>
@@ -258,7 +361,7 @@
                     <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-                    <size key="freeformSize" width="320" height="88"/>
+                    <size key="freeformSize" width="320" height="130"/>
                     <connections>
                         <outlet property="macIDClipboardButton" destination="KCO-oa-wuk" id="6fb-wg-ArM"/>
                         <outlet property="macIDLockButton" destination="qQI-bB-T5Q" id="a2l-hZ-mqk"/>
@@ -274,10 +377,12 @@
         </scene>
     </scenes>
     <resources>
+        <image name="1password" width="37" height="37"/>
         <image name="battery" width="25" height="25"/>
         <image name="cellular" width="32" height="32"/>
         <image name="hotspot" width="25" height="25"/>
         <image name="mac_id" width="32" height="32"/>
+        <image name="otp_auth" width="67" height="67"/>
         <image name="settings" width="25" height="25"/>
         <image name="siri" width="25" height="25"/>
         <image name="surge_logo" width="32" height="32"/>

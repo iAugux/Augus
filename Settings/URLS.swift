@@ -34,7 +34,8 @@ enum AppsURL: String {
     case Surge           = "surge://"
     case SurgeToggle     = "surge:///toggle"
     case SurgeAutoClose  = "surge:///toggle?autoclose=true"
-    
+    case OnePassword     = "onepassword://launch"
+    case OTPAuth         = "otpauth://"
     case Tumblr          = "tumblr://"
     
     var scheme: String {

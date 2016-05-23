@@ -78,6 +78,21 @@ extension TodayViewController {
     }
 }
 
+
+// MARK: - 
+
+extension TodayViewController {
+    
+    @IBAction func open1Password(sender: AnyObject) {
+        openSettingWithURL(AppsURL.OnePassword.scheme)
+    }
+    
+    @IBAction func openOTPAuth(sender: AnyObject) {
+        openSettingWithURL(AppsURL.OTPAuth.scheme)
+    }
+    
+}
+
 extension TodayViewController {
     
     @IBAction func openTumblr(sender: AnyObject) {
