@@ -288,14 +288,22 @@
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="dhn-uJ-MEI" secondAttribute="height" id="Aoz-Mw-qWy"/>
                                         </constraints>
-                                        <inset key="imageEdgeInsets" minX="7" minY="7" maxX="7" maxY="7"/>
+                                        <inset key="imageEdgeInsets" minX="6" minY="6" maxX="6" maxY="6"/>
+                                        <state key="normal" image="notes"/>
+                                        <connections>
+                                            <action selector="openNotes:" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="VNm-OC-X29"/>
+                                        </connections>
                                     </button>
                                     <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0g8-jb-If5" userLabel="Personal Hotspot">
                                         <rect key="frame" x="149" y="0.0" width="40" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="0g8-jb-If5" secondAttribute="height" id="4ii-PU-6FU"/>
                                         </constraints>
-                                        <inset key="imageEdgeInsets" minX="-2" minY="-2" maxX="0.0" maxY="0.0"/>
+                                        <inset key="imageEdgeInsets" minX="5" minY="5" maxX="5" maxY="5"/>
+                                        <state key="normal" image="Reminders"/>
+                                        <connections>
+                                            <action selector="openReminders:" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="aHL-wN-mTH"/>
+                                        </connections>
                                     </button>
                                     <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GPj-lx-B2V" userLabel="Siri">
                                         <rect key="frame" x="199" y="0.0" width="40" height="40"/>
@@ -378,11 +386,13 @@
     </scenes>
     <resources>
         <image name="1password" width="37" height="37"/>
+        <image name="Reminders" width="37" height="37"/>
         <image name="battery" width="25" height="25"/>
         <image name="cellular" width="32" height="32"/>
         <image name="hotspot" width="25" height="25"/>
         <image name="mac_id" width="32" height="32"/>
-        <image name="otp_auth" width="67" height="67"/>
+        <image name="notes" width="37" height="37"/>
+        <image name="otp_auth" width="37" height="37"/>
         <image name="settings" width="25" height="25"/>
         <image name="siri" width="25" height="25"/>
         <image name="surge_logo" width="32" height="32"/>

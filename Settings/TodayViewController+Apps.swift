@@ -91,6 +91,14 @@ extension TodayViewController {
         openSettingWithURL(AppsURL.OTPAuth.scheme)
     }
     
+    @IBAction func openReminders(sender: AnyObject) {
+        openSettingWithURL(AppsURL.Reminders.scheme)
+    }
+    
+    @IBAction func openNotes(sender: AnyObject) {
+        openSettingWithURL(AppsURL.Notes.scheme)
+    }
+    
 }
 
 extension TodayViewController {
