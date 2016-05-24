@@ -31,3 +31,9 @@
 
 /* Touch ID Fallback Button */
 "PasscodeLockTouchIDButton" = "Enter Passcode";
+
+"PasscodeLockChangePasscode" = "Change Passcode";
+
+
+"PasscodeLockCancel" = "Cancel";
+"PasscodeLockDelete" = "Delete";

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AudioToolbox
 
 public class PasscodeLockViewController: UIViewController, PasscodeLockTypeDelegate {
     
@@ -87,6 +88,9 @@ public class PasscodeLockViewController: UIViewController, PasscodeLockTypeDeleg
         deleteSignButton?.enabled = false
         
         setupEvents()
+        
+        cancelButton?.setTitle(localizedStringFor("PasscodeLockCancel", comment: ""), forState: .Normal)
+        deleteSignButton?.setTitle(localizedStringFor("PasscodeLockDelete", comment: ""), forState: .Normal)
     }
     
     public override func viewDidAppear(animated: Bool) {
@@ -104,6 +108,8 @@ public class PasscodeLockViewController: UIViewController, PasscodeLockTypeDeleg
         descriptionLabel?.text = passcodeLock.state.description
         cancelButton?.hidden = !passcodeLock.state.isCancellableAction
         touchIDButton?.hidden = !passcodeLock.isTouchIDAllowed
+        
+        cancelButton?.userInteractionEnabled = !(cancelButton?.hidden ?? true)
     }
     
     // MARK: - Events
@@ -190,6 +196,9 @@ public class PasscodeLockViewController: UIViewController, PasscodeLockTypeDeleg
     // MARK: - Animations
     
     internal func animateWrongPassword() {
+        
+        // vibrate
+        AudioServicesPlayAlertSound(kSystemSoundID_Vibrate)
         
         deleteSignButton?.enabled = false
         isPlaceholdersAnimationCompleted = false

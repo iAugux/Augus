@@ -9,10 +9,10 @@
 import UIKit
 
 public class PasscodeLockPresenter {
-    
+
     private var mainWindow: UIWindow?
     
-    private lazy var passcodeLockWindow: UIWindow = {
+    private(set) lazy var passcodeLockWindow: UIWindow = {
         
         let window = UIWindow(frame: UIScreen.mainScreen().bounds)
         
