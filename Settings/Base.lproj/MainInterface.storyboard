@@ -277,14 +277,14 @@
                                         <inset key="imageEdgeInsets" minX="8" minY="8" maxX="8" maxY="8"/>
                                     </button>
                                     <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vgo-IE-251" userLabel="Cellular">
-                                        <rect key="frame" x="50" y="0.0" width="40" height="40"/>
+                                        <rect key="frame" x="42" y="0.0" width="40" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="Vgo-IE-251" secondAttribute="height" id="1FR-vg-n7a"/>
                                         </constraints>
                                         <inset key="imageEdgeInsets" minX="8" minY="8" maxX="8" maxY="8"/>
                                     </button>
                                     <button opaque="NO" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dhn-uJ-MEI" userLabel="Battery">
-                                        <rect key="frame" x="99" y="0.0" width="40" height="40"/>
+                                        <rect key="frame" x="84" y="0.0" width="40" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="dhn-uJ-MEI" secondAttribute="height" id="Aoz-Mw-qWy"/>
                                         </constraints>
@@ -295,7 +295,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0g8-jb-If5" userLabel="Personal Hotspot">
-                                        <rect key="frame" x="149" y="0.0" width="40" height="40"/>
+                                        <rect key="frame" x="126" y="0.0" width="40" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="0g8-jb-If5" secondAttribute="height" id="4ii-PU-6FU"/>
                                         </constraints>
@@ -305,8 +305,19 @@
                                             <action selector="openReminders:" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="aHL-wN-mTH"/>
                                         </connections>
                                     </button>
+                                    <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ywF-CX-sqH" userLabel="Siri">
+                                        <rect key="frame" x="168" y="2" width="37" height="37"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="ywF-CX-sqH" secondAttribute="height" id="gLg-WG-erQ"/>
+                                        </constraints>
+                                        <inset key="imageEdgeInsets" minX="6" minY="6" maxX="6" maxY="6"/>
+                                        <state key="normal" image="duet"/>
+                                        <connections>
+                                            <action selector="openDuetDisplay:" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="Sbd-Ux-zmI"/>
+                                        </connections>
+                                    </button>
                                     <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GPj-lx-B2V" userLabel="Siri">
-                                        <rect key="frame" x="199" y="0.0" width="40" height="40"/>
+                                        <rect key="frame" x="206" y="0.0" width="40" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="GPj-lx-B2V" secondAttribute="height" id="YHh-gZ-K2T"/>
                                         </constraints>
@@ -332,6 +343,7 @@
                                 <constraints>
                                     <constraint firstAttribute="bottom" secondItem="Vgo-IE-251" secondAttribute="bottom" id="0Gt-pv-hwu"/>
                                     <constraint firstItem="aQ8-8O-XzH" firstAttribute="top" secondItem="OnM-xG-R6B" secondAttribute="top" id="44c-EH-VqW"/>
+                                    <constraint firstItem="ywF-CX-sqH" firstAttribute="width" secondItem="ywF-CX-sqH" secondAttribute="height" id="9x5-d3-9if"/>
                                     <constraint firstAttribute="bottom" secondItem="GPj-lx-B2V" secondAttribute="bottom" id="Atp-2U-TGq"/>
                                     <constraint firstAttribute="bottom" secondItem="dU4-nw-hZq" secondAttribute="bottom" id="Efv-4d-zmj"/>
                                     <constraint firstAttribute="bottom" secondItem="dhn-uJ-MEI" secondAttribute="bottom" id="GeV-Vr-r2s"/>
@@ -389,6 +401,7 @@
         <image name="Reminders" width="37" height="37"/>
         <image name="battery" width="25" height="25"/>
         <image name="cellular" width="32" height="32"/>
+        <image name="duet" width="37" height="37"/>
         <image name="hotspot" width="25" height="25"/>
         <image name="mac_id" width="32" height="32"/>
         <image name="notes" width="37" height="37"/>

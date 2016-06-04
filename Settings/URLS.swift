@@ -36,6 +36,7 @@ enum AppsURL: String {
     case SurgeAutoClose  = "surge:///toggle?autoclose=true"
     case OnePassword     = "onepassword://launch"
     case OTPAuth         = "otpauth://"
+    case Duet            = "duetdisplay://"
     case Notes           = "mobilenotes://"
     case Reminders       = "x-apple-reminder://"
     case Tumblr          = "tumblr://"

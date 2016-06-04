@@ -91,6 +91,10 @@ extension TodayViewController {
         openSettingWithURL(AppsURL.OTPAuth.scheme)
     }
     
+    @IBAction func openDuetDisplay(sender: AnyObject) {
+        openSettingWithURL(AppsURL.Duet.scheme)
+    }
+    
     @IBAction func openReminders(sender: AnyObject) {
         openSettingWithURL(AppsURL.Reminders.scheme)
     }
