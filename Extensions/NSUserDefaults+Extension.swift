@@ -8,46 +8,46 @@
 import Foundation
 
 
-extension NSUserDefaults {
+extension UserDefaults {
     
-    func getBool(key: String, defaultKeyValue: Bool) -> Bool {
-        if valueForKey(key) == nil {
-            setBool(defaultKeyValue, forKey: key)
+    func getBool(_ key: String, defaultKeyValue: Bool) -> Bool {
+        if value(forKey: key) == nil {
+            set(defaultKeyValue, forKey: key)
             synchronize()
         }
-        return boolForKey(key)
+        return bool(forKey: key)
     }
 }
 
-extension NSUserDefaults {
+extension UserDefaults {
     
-    func getInteger(key: String, defaultKeyValue: Int) -> Int {
-        if valueForKey(key) == nil {
-            setInteger(defaultKeyValue, forKey: key)
+    func getInteger(_ key: String, defaultKeyValue: Int) -> Int {
+        if value(forKey: key) == nil {
+            set(defaultKeyValue, forKey: key)
             synchronize()
         }
-        return integerForKey(key)
+        return integer(forKey: key)
     }
 }
 
-extension NSUserDefaults {
+extension UserDefaults {
     
-    func getDouble(key: String, defaultKeyValue: Double) -> Double {
-        if valueForKey(key) == nil {
-            setDouble(defaultKeyValue, forKey: key)
+    func getDouble(_ key: String, defaultKeyValue: Double) -> Double {
+        if value(forKey: key) == nil {
+            set(defaultKeyValue, forKey: key)
             synchronize()
         }
-        return doubleForKey(key)
+        return double(forKey: key)
     }
 }
 
-extension NSUserDefaults {
+extension UserDefaults {
     
-    func getObject(key: String, defaultkeyValue: AnyObject) -> AnyObject? {
-        if objectForKey(key) == nil {
-            setObject(defaultkeyValue, forKey: key)
+    func getObject(_ key: String, defaultkeyValue: AnyObject) -> AnyObject? {
+        if object(forKey: key) == nil {
+            set(defaultkeyValue, forKey: key)
             synchronize()
         }
-        return objectForKey(key)
+        return object(forKey: key)
     }
 }

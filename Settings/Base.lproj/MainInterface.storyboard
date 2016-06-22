@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="M4Y-Lb-cyx">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11129.15" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="M4Y-Lb-cyx">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11103.10"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
         <!--Today View Controller-->
@@ -18,10 +19,8 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="ymU-pq-2pX" userLabel="Settings">
-                                <rect key="frame" x="16" y="0.0" width="288" height="40"/>
                                 <subviews>
                                     <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1Ep-kd-sQh" userLabel="Wifi">
-                                        <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="1Ep-kd-sQh" secondAttribute="height" id="KSg-yS-1gy"/>
                                         </constraints>
@@ -32,7 +31,6 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="98v-uA-ihn" userLabel="Cellular">
-                                        <rect key="frame" x="50" y="0.0" width="40" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="98v-uA-ihn" secondAttribute="height" id="l9D-dQ-Yqo"/>
                                         </constraints>
@@ -43,7 +41,6 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="q7i-eY-9Rz" userLabel="Battery">
-                                        <rect key="frame" x="99" y="0.0" width="40" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="q7i-eY-9Rz" secondAttribute="height" id="dna-hd-Cby"/>
                                         </constraints>
@@ -54,7 +51,6 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="o1s-kx-222" userLabel="Personal Hotspot">
-                                        <rect key="frame" x="149" y="0.0" width="40" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="o1s-kx-222" secondAttribute="height" id="9vU-OB-sA6"/>
                                         </constraints>
@@ -65,7 +61,6 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6Na-YW-Fsd" userLabel="Siri">
-                                        <rect key="frame" x="199" y="0.0" width="40" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="6Na-YW-Fsd" secondAttribute="height" id="70g-Jm-nse"/>
                                         </constraints>
@@ -76,7 +71,6 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xV4-HT-m8X" userLabel="Settings">
-                                        <rect key="frame" x="248" y="0.0" width="40" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="xV4-HT-m8X" secondAttribute="height" id="vdc-hv-75K"/>
                                         </constraints>
@@ -87,7 +81,7 @@
                                         </connections>
                                     </button>
                                 </subviews>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="bottom" secondItem="q7i-eY-9Rz" secondAttribute="bottom" id="0kX-WI-pa9"/>
                                     <constraint firstAttribute="bottom" secondItem="98v-uA-ihn" secondAttribute="bottom" id="HXZ-4a-dnp"/>
@@ -105,15 +99,15 @@
                                 </constraints>
                             </stackView>
                             <visualEffectView opaque="NO" userInteractionEnabled="NO" alpha="0.10000000000000001" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="a8G-2i-n9x" userLabel="Separator">
-                                <rect key="frame" x="24" y="41" width="272" height="1"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" id="Xn6-bi-yro">
-                                    <rect key="frame" x="0.0" y="0.0" width="272" height="1"/>
+                                    <frame key="frameInset"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <visualEffectView opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="IVT-FD-JrC">
-                                            <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                                            <frame key="frameInset" width="240" height="128"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" id="efR-bT-NJr">
-                                                <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                                                <frame key="frameInset"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             </view>
                                             <vibrancyEffect>
@@ -122,7 +116,7 @@
                                         </visualEffectView>
                                     </subviews>
                                 </view>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="1" id="NE2-6A-hrF"/>
                                 </constraints>
@@ -131,28 +125,23 @@
                                 </vibrancyEffect>
                             </visualEffectView>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="equalCentering" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="V2f-i3-Ibq" userLabel="Apps">
-                                <rect key="frame" x="16" y="44" width="288" height="40"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iRU-ZC-xTm" userLabel="Surge">
-                                        <rect key="frame" x="0.0" y="0.0" width="90" height="40"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="kxR-sC-avi">
-                                                <rect key="frame" x="0.0" y="0.0" width="50" height="40"/>
                                                 <subviews>
                                                     <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" verticalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BHY-gh-e2q">
-                                                        <rect key="frame" x="1" y="0.0" width="51" height="31"/>
-                                                        <color key="onTintColor" red="0.74007147550582886" green="0.50519394874572754" blue="0.90242213010787964" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <color key="onTintColor" red="0.67941552400588989" green="0.40149885416030884" blue="0.87776660919189453" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <connections>
                                                             <action selector="surgeAutoCloseSwitchDidTap:" destination="M4Y-Lb-cyx" eventType="valueChanged" id="X8b-Pr-SLo"/>
                                                         </connections>
                                                     </switch>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Auto Close" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rLM-0m-afp">
-                                                        <rect key="frame" x="0.0" y="31" width="50" height="9"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="9" id="HXc-Ph-kAG"/>
                                                         </constraints>
                                                         <fontDescription key="fontDescription" type="system" pointSize="7"/>
-                                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                 </subviews>
@@ -162,7 +151,6 @@
                                                 </constraints>
                                             </stackView>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KGy-Rl-wLF" userLabel="Surge">
-                                                <rect key="frame" x="50" y="0.0" width="40" height="40"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" secondItem="KGy-Rl-wLF" secondAttribute="height" id="4d7-mJ-I2h"/>
                                                     <constraint firstAttribute="height" constant="40" id="OMb-vp-JzP"/>
@@ -179,7 +167,6 @@
                                         </constraints>
                                     </stackView>
                                     <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Bjp-fH-lQ9" userLabel="Tumblr">
-                                        <rect key="frame" x="104" y="0.0" width="40" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="Bjp-fH-lQ9" secondAttribute="height" id="P8l-Si-4zw"/>
                                         </constraints>
@@ -191,7 +178,6 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qQI-bB-T5Q" userLabel="MacID">
-                                        <rect key="frame" x="152" y="0.0" width="40" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="qQI-bB-T5Q" secondAttribute="height" id="J3m-vL-lGY"/>
                                         </constraints>
@@ -202,7 +188,6 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WcG-2c-zbh" userLabel="MacID">
-                                        <rect key="frame" x="200" y="0.0" width="40" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="WcG-2c-zbh" secondAttribute="height" id="AoG-xb-NlU"/>
                                         </constraints>
@@ -213,7 +198,6 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KCO-oa-wuk" userLabel="MacIDClipboard">
-                                        <rect key="frame" x="248" y="0.0" width="40" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="KCO-oa-wuk" secondAttribute="height" id="It2-zF-3Qv"/>
                                         </constraints>
@@ -224,7 +208,7 @@
                                         </connections>
                                     </button>
                                 </subviews>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="3FG-BE-0FJ"/>
                                     <constraint firstItem="qQI-bB-T5Q" firstAttribute="leading" secondItem="Bjp-fH-lQ9" secondAttribute="trailing" constant="8" id="DYr-lx-3e7"/>
@@ -241,15 +225,15 @@
                                 </constraints>
                             </stackView>
                             <visualEffectView opaque="NO" userInteractionEnabled="NO" alpha="0.10000000149011612" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fPU-9W-n7e" userLabel="Separator">
-                                <rect key="frame" x="24" y="85" width="272" height="1"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" id="QRX-t1-CnX">
-                                    <rect key="frame" x="0.0" y="0.0" width="272" height="1"/>
+                                    <frame key="frameInset"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <visualEffectView opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="olX-mm-QhK">
-                                            <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                                            <frame key="frameInset" width="240" height="128"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" id="zsg-DG-Sba">
-                                                <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                                                <frame key="frameInset"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             </view>
                                             <vibrancyEffect>
@@ -258,7 +242,7 @@
                                         </visualEffectView>
                                     </subviews>
                                 </view>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="1" id="3Ew-UW-ZCg"/>
                                 </constraints>
@@ -267,24 +251,20 @@
                                 </vibrancyEffect>
                             </visualEffectView>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="OnM-xG-R6B" userLabel="Settings">
-                                <rect key="frame" x="16" y="88" width="288" height="40"/>
                                 <subviews>
                                     <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aQ8-8O-XzH" userLabel="Wifi">
-                                        <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="aQ8-8O-XzH" secondAttribute="height" id="m1S-ec-fzM"/>
                                         </constraints>
                                         <inset key="imageEdgeInsets" minX="8" minY="8" maxX="8" maxY="8"/>
                                     </button>
                                     <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vgo-IE-251" userLabel="Cellular">
-                                        <rect key="frame" x="42" y="0.0" width="40" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="Vgo-IE-251" secondAttribute="height" id="1FR-vg-n7a"/>
                                         </constraints>
                                         <inset key="imageEdgeInsets" minX="8" minY="8" maxX="8" maxY="8"/>
                                     </button>
                                     <button opaque="NO" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dhn-uJ-MEI" userLabel="Battery">
-                                        <rect key="frame" x="84" y="0.0" width="40" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="dhn-uJ-MEI" secondAttribute="height" id="Aoz-Mw-qWy"/>
                                         </constraints>
@@ -295,7 +275,6 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0g8-jb-If5" userLabel="Personal Hotspot">
-                                        <rect key="frame" x="126" y="0.0" width="40" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="0g8-jb-If5" secondAttribute="height" id="4ii-PU-6FU"/>
                                         </constraints>
@@ -306,7 +285,6 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ywF-CX-sqH" userLabel="Siri">
-                                        <rect key="frame" x="168" y="2" width="37" height="37"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="ywF-CX-sqH" secondAttribute="height" id="gLg-WG-erQ"/>
                                         </constraints>
@@ -317,7 +295,6 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GPj-lx-B2V" userLabel="Siri">
-                                        <rect key="frame" x="206" y="0.0" width="40" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="GPj-lx-B2V" secondAttribute="height" id="YHh-gZ-K2T"/>
                                         </constraints>
@@ -328,7 +305,6 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dU4-nw-hZq" userLabel="Settings">
-                                        <rect key="frame" x="248" y="0.0" width="40" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="dU4-nw-hZq" secondAttribute="height" id="WrX-k8-xB3"/>
                                         </constraints>
@@ -339,7 +315,7 @@
                                         </connections>
                                     </button>
                                 </subviews>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="bottom" secondItem="Vgo-IE-251" secondAttribute="bottom" id="0Gt-pv-hwu"/>
                                     <constraint firstItem="aQ8-8O-XzH" firstAttribute="top" secondItem="OnM-xG-R6B" secondAttribute="top" id="44c-EH-VqW"/>
@@ -411,4 +387,9 @@
         <image name="surge_logo" width="32" height="32"/>
         <image name="wifi" width="24" height="24"/>
     </resources>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination" type="retina4_7.fullscreen"/>
+    </simulatedMetricsContainer>
 </document>

@@ -27,7 +27,7 @@ struct EnterPasscodeState: PasscodeLockStateType {
         description = localizedStringFor("PasscodeLockEnterDescription", comment: "Enter passcode description")
     }
     
-    mutating func acceptPasscode(passcode: [String], fromLock lock: PasscodeLockType) {
+    mutating func acceptPasscode(_ passcode: [String], fromLock lock: PasscodeLockType) {
         
         guard let currentPasscode = lock.repository.passcode else {
             return
@@ -54,9 +54,9 @@ struct EnterPasscodeState: PasscodeLockStateType {
         
         guard !isNotificationSent else { return }
             
-        let center = NSNotificationCenter.defaultCenter()
+        let center = NotificationCenter.default()
         
-        center.postNotificationName(PasscodeLockIncorrectPasscodeNotification, object: nil)
+        center.post(name: Notification.Name(rawValue: PasscodeLockIncorrectPasscodeNotification), object: nil)
         
         isNotificationSent = true
     }

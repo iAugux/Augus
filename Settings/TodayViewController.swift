@@ -27,15 +27,15 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        preferredContentSize = CGSizeMake(0, 130.0)
+        preferredContentSize = CGSize(width: 0, height: 130.0)
         configureSurgePanel()
         configureMacIDPanel()
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
             let hideTumblr = GroupUserDefaults?.getBool(kHideTumblrKey, defaultKeyValue: false) ?? false
-            tumblrButton.hidden = hideTumblr
+            tumblrButton.isHidden = hideTumblr
     }
 
     override func didReceiveMemoryWarning() {
@@ -43,18 +43,18 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         // Dispose of any resources that can be recreated.
     }
     
-    func widgetPerformUpdateWithCompletionHandler(completionHandler: ((NCUpdateResult) -> Void)) {
+    func widgetPerformUpdate(completionHandler: ((NCUpdateResult) -> Void)) {
         // Perform any setup necessary in order to update the view.
 
         // If an error is encountered, use NCUpdateResult.Failed
         // If there's no update required, use NCUpdateResult.NoData
         // If there's an update, use NCUpdateResult.NewData
 
-        completionHandler(NCUpdateResult.NewData)
+        completionHandler(NCUpdateResult.newData)
     }
     
     // MARK: - NCWidgetProviding
-    func widgetMarginInsetsForProposedMarginInsets(defaultMarginInsets: UIEdgeInsets) -> UIEdgeInsets {
+    func widgetMarginInsets(forProposedMarginInsets defaultMarginInsets: UIEdgeInsets) -> UIEdgeInsets {
         return UIEdgeInsetsZero
     }
 
@@ -62,9 +62,9 @@ class TodayViewController: UIViewController, NCWidgetProviding {
 
 extension TodayViewController {
     
-    func openSettingWithURL(url: String) {
-        if let url = NSURL(string: url) {
-            extensionContext?.openURL(url, completionHandler: nil)
+    func openSettingWithURL(_ url: String) {
+        if let url = URL(string: url) {
+            extensionContext?.open(url, completionHandler: nil)
         }
     }
 }

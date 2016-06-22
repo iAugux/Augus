@@ -10,5 +10,5 @@
 import Foundation
 
 
-let GroupUserDefaults = NSUserDefaults(suiteName: "group.com.iAugus.iAugus")
+let GroupUserDefaults = UserDefaults(suiteName: "group.com.iAugus.iAugus")
 let kHideTumblrKey = "kHideTumblrKey"

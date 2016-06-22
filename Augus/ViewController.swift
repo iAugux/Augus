@@ -43,7 +43,7 @@ class ViewController: UIViewController {
         configureTumblrImageView()
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updatePasscodeView()
     }
@@ -54,8 +54,8 @@ class ViewController: UIViewController {
     }
 
     private func configurePasscodeIndicator() {
-        passcodeIndicator.image = UIImage(named: "touch")?.imageWithRenderingMode(.AlwaysTemplate)
-        passcodeIndicator.userInteractionEnabled = true
+        passcodeIndicator.image = UIImage(named: "touch")?.withRenderingMode(.alwaysTemplate)
+        passcodeIndicator.isUserInteractionEnabled = true
         
         let singleTap = UITapGestureRecognizer(target: self, action: #selector(passcodeIndicatorDidSingleTap))
         passcodeIndicator.addGestureRecognizer(singleTap)
@@ -63,7 +63,7 @@ class ViewController: UIViewController {
         let longPress = UILongPressGestureRecognizer(target: self, action: #selector(passcodeIndicatorDidLongPress(_:)))
         passcodeIndicator.addGestureRecognizer(longPress)
         
-        longPress.requireGestureRecognizerToFail(singleTap)
+        longPress.require(toFail: singleTap)
     }
 }
 
@@ -75,13 +75,13 @@ extension ViewController {
     private func configureTumblrImageView() {
         let recognizer = UITapGestureRecognizer(target: self, action: #selector(hideTumblrOrNot))
         tumblrImageView.addGestureRecognizer(recognizer)
-        tumblrImageView.userInteractionEnabled = true
+        tumblrImageView.isUserInteractionEnabled = true
     }
     
     @objc private func hideTumblrOrNot() {
         let hidden = GroupUserDefaults?.getBool(kHideTumblrKey, defaultKeyValue: false) ?? false
         tumblrImageView.alpha = !hidden ? 0.3 : 1
-        GroupUserDefaults?.setBool(!hidden, forKey: kHideTumblrKey)
+        GroupUserDefaults?.set(!hidden, forKey: kHideTumblrKey)
         GroupUserDefaults?.synchronize()
     }
 
@@ -98,11 +98,11 @@ extension ViewController {
         
         if !configuration.repository.hasPasscode {
             
-            passcodeVC = PasscodeLockViewController(state: .SetPasscode, configuration: configuration)
+            passcodeVC = PasscodeLockViewController(state: .setPasscode, configuration: configuration)
             
         } else {
             
-            passcodeVC = PasscodeLockViewController(state: .RemovePasscode, configuration: configuration)
+            passcodeVC = PasscodeLockViewController(state: .removePasscode, configuration: configuration)
             
             passcodeVC.successCallback = { lock in
                 
@@ -111,12 +111,12 @@ extension ViewController {
             }
         }
         
-        presentViewController(passcodeVC, animated: true, completion: nil)
+        present(passcodeVC, animated: true, completion: nil)
     }
     
-    @objc private func passcodeIndicatorDidLongPress(sender: UILongPressGestureRecognizer) {
+    @objc private func passcodeIndicatorDidLongPress(_ sender: UILongPressGestureRecognizer) {
         switch sender.state {
-        case .Began:
+        case .began:
             
             if configuration.repository.hasPasscode {
                 // change passcode
@@ -124,9 +124,9 @@ extension ViewController {
                 let repo = UserDefaultsPasscodeRepository()
                 let config = PasscodeLockConfiguration(repository: repo)
                 
-                let passcodeLock = PasscodeLockViewController(state: .ChangePasscode, configuration: config)
+                let passcodeLock = PasscodeLockViewController(state: .changePasscode, configuration: config)
                 
-                presentViewController(passcodeLock, animated: true, completion: nil)
+                present(passcodeLock, animated: true, completion: nil)
                 
             } else {
                 // add passcode
@@ -140,7 +140,7 @@ extension ViewController {
     private func updatePasscodeView() {
 
         let hasPasscode = configuration.repository.hasPasscode
-        passcodeIndicator.tintColor = hasPasscode ? UIColor(red: 0.0, green: 1.0, blue: 1.0, alpha: 1.0) : UIColor.grayColor()
+        passcodeIndicator.tintColor = hasPasscode ? UIColor(red: 0.0, green: 1.0, blue: 1.0, alpha: 1.0) : UIColor.gray()
     }
     
     

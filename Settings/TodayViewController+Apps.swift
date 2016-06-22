@@ -13,23 +13,23 @@ import UIKit
 extension TodayViewController {
     
     internal func configureMacIDPanel() {
-        macIDClipboardButton.setImageForMacIDButton(UIColor.yellowColor())
-        macIDWakeButton.setImageForMacIDButton(UIColor.greenColor())
+        macIDClipboardButton.setImageForMacIDButton(UIColor.yellow())
+        macIDWakeButton.setImageForMacIDButton(UIColor.green())
         
         macIDClipboardButton.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(TodayViewController.openMacID)))
         macIDWakeButton.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(TodayViewController.openMacID)))
         macIDLockButton.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(TodayViewController.openMacID)))
     }
     
-    @IBAction func macIDSendClipboard(sender: AnyObject) {
+    @IBAction func macIDSendClipboard(_ sender: AnyObject) {
         openSettingWithURL(AppsURL.MacIDClipboard.scheme)
     }
     
-    @IBAction func macIDLock(sender: AnyObject) {
+    @IBAction func macIDLock(_ sender: AnyObject) {
         openSettingWithURL(AppsURL.MacIDLock.scheme)
     }
     
-    @IBAction func macIDWake(sender: AnyObject) {
+    @IBAction func macIDWake(_ sender: AnyObject) {
         openSettingWithURL(AppsURL.MacIDWake.scheme)
     }
     
@@ -37,8 +37,8 @@ extension TodayViewController {
         openSettingWithURL(AppsURL.MacID.scheme)
     }
     
-    private func image(named: String) -> UIImage? {
-        return UIImage(named: "mac_id")?.imageWithRenderingMode(.AlwaysTemplate)
+    private func image(_ named: String) -> UIImage? {
+        return UIImage(named: "mac_id")?.withRenderingMode(.alwaysTemplate)
     }
     
 }
@@ -53,26 +53,26 @@ extension TodayViewController {
     
     internal func configureSurgePanel() {
         
-        surgeAutoCloseSwitch.transform = CGAffineTransformMakeScale(0.55, 0.55)
+        surgeAutoCloseSwitch.transform = CGAffineTransform(scaleX: 0.55, y: 0.55)
         
         let recognizer = UILongPressGestureRecognizer(target: self, action: #selector(surgeToggleDidLongPress(_:)))
         surgeButton?.addGestureRecognizer(recognizer)
     }
     
-    internal func surgeToggleDidLongPress(sender: UILongPressGestureRecognizer) {
+    internal func surgeToggleDidLongPress(_ sender: UILongPressGestureRecognizer) {
         
-        guard sender.state == .Began else { return }
+        guard sender.state == .began else { return }
         
-        let url = surgeAutoCloseSwitch.on ? AppsURL.SurgeAutoClose.scheme : AppsURL.SurgeToggle.scheme
+        let url = surgeAutoCloseSwitch.isOn ? AppsURL.SurgeAutoClose.scheme : AppsURL.SurgeToggle.scheme
         openSettingWithURL(url)
     }
     
-    @IBAction func surgeAutoCloseSwitchDidTap(sender: UISwitch) {
-        NSUserDefaults.standardUserDefaults().setBool(sender.on, forKey: kSurgeAutoClose)
-        NSUserDefaults.standardUserDefaults().synchronize()
+    @IBAction func surgeAutoCloseSwitchDidTap(_ sender: UISwitch) {
+        UserDefaults.standard().set(sender.isOn, forKey: kSurgeAutoClose)
+        UserDefaults.standard().synchronize()
     }
     
-    @IBAction func surgeToggleDidTap(sender: AnyObject) {
+    @IBAction func surgeToggleDidTap(_ sender: AnyObject) {
         let url = AppsURL.Surge.scheme
         openSettingWithURL(url)
     }
@@ -83,23 +83,23 @@ extension TodayViewController {
 
 extension TodayViewController {
     
-    @IBAction func open1Password(sender: AnyObject) {
+    @IBAction func open1Password(_ sender: AnyObject) {
         openSettingWithURL(AppsURL.OnePassword.scheme)
     }
     
-    @IBAction func openOTPAuth(sender: AnyObject) {
+    @IBAction func openOTPAuth(_ sender: AnyObject) {
         openSettingWithURL(AppsURL.OTPAuth.scheme)
     }
     
-    @IBAction func openDuetDisplay(sender: AnyObject) {
+    @IBAction func openDuetDisplay(_ sender: AnyObject) {
         openSettingWithURL(AppsURL.Duet.scheme)
     }
     
-    @IBAction func openReminders(sender: AnyObject) {
+    @IBAction func openReminders(_ sender: AnyObject) {
         openSettingWithURL(AppsURL.Reminders.scheme)
     }
     
-    @IBAction func openNotes(sender: AnyObject) {
+    @IBAction func openNotes(_ sender: AnyObject) {
         openSettingWithURL(AppsURL.Notes.scheme)
     }
     
@@ -107,23 +107,23 @@ extension TodayViewController {
 
 extension TodayViewController {
     
-    @IBAction func openTumblr(sender: AnyObject) {
+    @IBAction func openTumblr(_ sender: AnyObject) {
         openSettingWithURL(AppsURL.Tumblr.scheme)
     }
 }
 
 extension UIButton {
     
-    private func setImageForMacIDButton(tintColor: UIColor) {
+    private func setImageForMacIDButton(_ tintColor: UIColor) {
         setImage("mac_id", tintColor: tintColor)
     }
 
-    private func setImage(named: String, tintColor: UIColor) {
+    private func setImage(_ named: String, tintColor: UIColor) {
         imageView?.tintColor = tintColor
         imageView?.layer.cornerRadius = imageView!.bounds.width / 2
         imageView?.layer.borderWidth  = 1.5
-        imageView?.layer.borderColor  = UIColor.whiteColor().CGColor
-        setImage(UIImage(named: named)?.imageWithRenderingMode(.AlwaysTemplate), forState: .Normal)
+        imageView?.layer.borderColor  = UIColor.white().cgColor
+        setImage(UIImage(named: named)?.withRenderingMode(.alwaysTemplate), for: UIControlState())
     }
     
    }

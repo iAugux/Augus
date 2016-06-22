@@ -15,7 +15,7 @@ public class PasscodeSignButton: UIButton {
     public var passcodeSign: String = "1"
     
     @IBInspectable
-    public var borderColor: UIColor = UIColor.whiteColor() {
+    public var borderColor: UIColor = UIColor.white() {
         didSet {
             setupView()
         }
@@ -29,7 +29,7 @@ public class PasscodeSignButton: UIButton {
     }
     
     @IBInspectable
-    public var highlightBackgroundColor: UIColor = UIColor.clearColor() {
+    public var highlightBackgroundColor: UIColor = UIColor.clear() {
         didSet {
             setupView()
         }
@@ -52,16 +52,16 @@ public class PasscodeSignButton: UIButton {
     
     public override func intrinsicContentSize() -> CGSize {
         
-        return CGSizeMake(60, 60)
+        return CGSize(width: 60, height: 60)
     }
     
-    private var defaultBackgroundColor = UIColor.clearColor()
+    private var defaultBackgroundColor = UIColor.clear()
     
     private func setupView() {
         
         layer.borderWidth = 1
         layer.cornerRadius = borderRadius
-        layer.borderColor = borderColor.CGColor
+        layer.borderColor = borderColor.cgColor
         
         if let backgroundColor = backgroundColor {
             
@@ -71,8 +71,8 @@ public class PasscodeSignButton: UIButton {
     
     private func setupActions() {
         
-        addTarget(self, action: #selector(PasscodeSignButton.handleTouchDown), forControlEvents: .TouchDown)
-        addTarget(self, action: #selector(PasscodeSignButton.handleTouchUp), forControlEvents: [.TouchUpInside, .TouchDragOutside, .TouchCancel])
+        addTarget(self, action: #selector(PasscodeSignButton.handleTouchDown), for: .touchDown)
+        addTarget(self, action: #selector(PasscodeSignButton.handleTouchUp), for: [.touchUpInside, .touchDragOutside, .touchCancel])
     }
     
     func handleTouchDown() {
@@ -85,14 +85,14 @@ public class PasscodeSignButton: UIButton {
         animateBackgroundColor(defaultBackgroundColor)
     }
     
-    private func animateBackgroundColor(color: UIColor) {
+    private func animateBackgroundColor(_ color: UIColor) {
         
-        UIView.animateWithDuration(
-            0.3,
+        UIView.animate(
+            withDuration: 0.3,
             delay: 0.0,
             usingSpringWithDamping: 1,
             initialSpringVelocity: 0.0,
-            options: [.AllowUserInteraction, .BeginFromCurrentState],
+            options: [.allowUserInteraction, .beginFromCurrentState],
             animations: {
                 
                 self.backgroundColor = color

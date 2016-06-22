@@ -14,7 +14,7 @@ public class PasscodeLockPresenter {
     
     private(set) lazy var passcodeLockWindow: UIWindow = {
         
-        let window = UIWindow(frame: UIScreen.mainScreen().bounds)
+        let window = UIWindow(frame: UIScreen.main().bounds)
         
         window.windowLevel = 0
         window.makeKeyAndVisible()
@@ -37,7 +37,7 @@ public class PasscodeLockPresenter {
 
     public convenience init(mainWindow window: UIWindow?, configuration: PasscodeLockConfigurationType) {
         
-        let passcodeLockVC = PasscodeLockViewController(state: .EnterPasscode, configuration: configuration)
+        let passcodeLockVC = PasscodeLockViewController(state: .enterPasscode, configuration: configuration)
         
         self.init(mainWindow: window, configuration: configuration, viewController: passcodeLockVC)
     }
@@ -50,12 +50,12 @@ public class PasscodeLockPresenter {
         isPasscodePresented = true
         
         passcodeLockWindow.windowLevel = 2
-        passcodeLockWindow.hidden = false
+        passcodeLockWindow.isHidden = false
         
         mainWindow?.windowLevel = 1
         mainWindow?.endEditing(true)
         
-        let passcodeLockVC = PasscodeLockViewController(state: .EnterPasscode, configuration: passcodeConfiguration)
+        let passcodeLockVC = PasscodeLockViewController(state: .enterPasscode, configuration: passcodeConfiguration)
         let userDismissCompletionCallback = passcodeLockVC.dismissCompletionCallback
         
         passcodeLockVC.dismissCompletionCallback = { [weak self] in
@@ -68,7 +68,7 @@ public class PasscodeLockPresenter {
         passcodeLockWindow.rootViewController = passcodeLockVC
     }
     
-    public func dismissPasscodeLock(animated animated: Bool = true) {
+    public func dismissPasscodeLock(animated: Bool = true) {
         
         isPasscodePresented = false
         mainWindow?.windowLevel = 1
@@ -87,12 +87,12 @@ public class PasscodeLockPresenter {
     
     internal func animatePasscodeLockDismissal() {
         
-        UIView.animateWithDuration(
-            0.5,
+        UIView.animate(
+            withDuration: 0.5,
             delay: 0,
             usingSpringWithDamping: 1,
             initialSpringVelocity: 0,
-            options: [.CurveEaseInOut],
+            options: UIViewAnimationOptions(),
             animations: { [weak self] in
                 
                 self?.passcodeLockWindow.alpha = 0
