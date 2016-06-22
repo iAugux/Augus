@@ -18,7 +18,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="130"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="ymU-pq-2pX" userLabel="Settings">
+                            <stackView opaque="NO" alpha="0.0" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="ymU-pq-2pX" userLabel="Settings">
                                 <subviews>
                                     <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1Ep-kd-sQh" userLabel="Wifi">
                                         <constraints>
@@ -343,7 +343,7 @@
                             <constraint firstItem="fPU-9W-n7e" firstAttribute="top" secondItem="V2f-i3-Ibq" secondAttribute="bottom" constant="1" id="NQV-b4-HCS"/>
                             <constraint firstItem="OnM-xG-R6B" firstAttribute="top" secondItem="V2f-i3-Ibq" secondAttribute="bottom" constant="4" id="YIy-aF-jvS"/>
                             <constraint firstItem="OnM-xG-R6B" firstAttribute="leading" secondItem="S3S-Oj-5AN" secondAttribute="leading" constant="16" id="fCj-J8-oL3"/>
-                            <constraint firstItem="ymU-pq-2pX" firstAttribute="top" secondItem="Ft6-oW-KC0" secondAttribute="bottom" constant="-40" id="ivC-N0-TC5"/>
+                            <constraint firstItem="ymU-pq-2pX" firstAttribute="top" secondItem="Ft6-oW-KC0" secondAttribute="bottom" constant="-30" id="ivC-N0-TC5"/>
                             <constraint firstItem="V2f-i3-Ibq" firstAttribute="top" secondItem="ymU-pq-2pX" secondAttribute="bottom" constant="4" id="lYW-58-Ul6"/>
                             <constraint firstItem="a8G-2i-n9x" firstAttribute="trailing" secondItem="xV4-HT-m8X" secondAttribute="trailing" constant="-8" id="luV-l8-P9y"/>
                             <constraint firstItem="a8G-2i-n9x" firstAttribute="top" secondItem="ymU-pq-2pX" secondAttribute="bottom" constant="1" id="nDb-FN-MY3"/>
