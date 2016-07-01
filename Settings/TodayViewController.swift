@@ -27,15 +27,20 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        preferredContentSize = CGSize(width: 0, height: 130.0)
         configureSurgePanel()
         configureMacIDPanel()
+        
+        if #available(iOSApplicationExtension 10.0, *) {
+            extensionContext?.widgetLargestAvailableDisplayMode = .expanded
+        }
+
+        preferredContentSize = CGSize(width: 0, height: 130.0)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-            let hideTumblr = GroupUserDefaults?.getBool(kHideTumblrKey, defaultKeyValue: false) ?? false
-            tumblrButton.isHidden = hideTumblr
+        let hideTumblr = GroupUserDefaults?.getBool(kHideTumblrKey, defaultKeyValue: false) ?? false
+        tumblrButton.isHidden = hideTumblr
     }
 
     override func didReceiveMemoryWarning() {
@@ -56,6 +61,16 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     // MARK: - NCWidgetProviding
     func widgetMarginInsets(forProposedMarginInsets defaultMarginInsets: UIEdgeInsets) -> UIEdgeInsets {
         return UIEdgeInsetsZero
+    }
+
+    @available(iOSApplicationExtension 10.0, *)
+    func widgetActiveDisplayModeDidChange(_ activeDisplayMode: NCWidgetDisplayMode, withMaximumSize maxSize: CGSize) {
+        
+        // here may be a bug
+        // set maxSize to preferredContentSize, or these actions of `Show More/Less` may be ineffective.
+        preferredContentSize = maxSize
+        
+        preferredContentSize = CGSize(width: 0, height: 130.0)
     }
 
 }
