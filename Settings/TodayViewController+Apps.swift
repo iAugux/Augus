@@ -13,8 +13,8 @@ import UIKit
 extension TodayViewController {
     
     internal func configureMacIDPanel() {
-        macIDClipboardButton.setImageForMacIDButton(UIColor.yellow())
-        macIDWakeButton.setImageForMacIDButton(UIColor.green())
+        macIDClipboardButton.setImageForMacIDButton(UIColor.yellow)
+        macIDWakeButton.setImageForMacIDButton(UIColor.green)
         
         macIDClipboardButton.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(TodayViewController.openMacID)))
         macIDWakeButton.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(TodayViewController.openMacID)))
@@ -63,17 +63,17 @@ extension TodayViewController {
         
         guard sender.state == .began else { return }
         
-        let url = surgeAutoCloseSwitch.isOn ? AppsURL.SurgeAutoClose.scheme : AppsURL.SurgeToggle.scheme
+        let url = AppsURL.Surge.scheme
         openSettingWithURL(url)
     }
     
     @IBAction func surgeAutoCloseSwitchDidTap(_ sender: UISwitch) {
-        UserDefaults.standard().set(sender.isOn, forKey: kSurgeAutoClose)
-        UserDefaults.standard().synchronize()
+        UserDefaults.standard.set(sender.isOn, forKey: kSurgeAutoClose)
+        UserDefaults.standard.synchronize()
     }
     
     @IBAction func surgeToggleDidTap(_ sender: AnyObject) {
-        let url = AppsURL.Surge.scheme
+        let url = surgeAutoCloseSwitch.isOn ? AppsURL.SurgeAutoClose.scheme : AppsURL.SurgeToggle.scheme
         openSettingWithURL(url)
     }
 }
@@ -108,6 +108,7 @@ extension TodayViewController {
 extension TodayViewController {
     
     @IBAction func openTumblr(_ sender: AnyObject) {
+        guard !sender.isHidden else { return }
         openSettingWithURL(AppsURL.Tumblr.scheme)
     }
 }
@@ -122,7 +123,7 @@ extension UIButton {
         imageView?.tintColor = tintColor
         imageView?.layer.cornerRadius = imageView!.bounds.width / 2
         imageView?.layer.borderWidth  = 1.5
-        imageView?.layer.borderColor  = UIColor.white().cgColor
+        imageView?.layer.borderColor  = UIColor.white.cgColor
         setImage(UIImage(named: named)?.withRenderingMode(.alwaysTemplate), for: UIControlState())
     }
     

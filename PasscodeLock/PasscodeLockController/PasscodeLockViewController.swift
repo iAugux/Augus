@@ -62,7 +62,7 @@ public class PasscodeLockViewController: UIViewController, PasscodeLockTypeDeleg
         super.init(nibName: nibName, bundle: bundle)
         
         passcodeLock.delegate = self
-        notificationCenter = NotificationCenter.default()
+        notificationCenter = NotificationCenter.default
     }
     
     public convenience init(state: LockState, configuration: PasscodeLockConfigurationType, animateOnDismiss: Bool = true) {

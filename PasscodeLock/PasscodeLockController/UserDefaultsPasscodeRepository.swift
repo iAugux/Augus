@@ -14,7 +14,7 @@ class UserDefaultsPasscodeRepository: PasscodeRepositoryType {
     
     private lazy var defaults: UserDefaults = {
         
-        return UserDefaults.standard()
+        return UserDefaults.standard
     }()
     
     var hasPasscode: Bool {

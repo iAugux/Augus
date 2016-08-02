@@ -12,10 +12,10 @@ extension UISwitch {
     
     func shouldSwitch(_ userDefaultsKey: String, defaultBool: Bool) {
         var isOn: Bool
-        if UserDefaults.standard().value(forKey: userDefaultsKey) == nil {
+        if UserDefaults.standard.value(forKey: userDefaultsKey) == nil {
             isOn = defaultBool
         } else {
-            isOn = UserDefaults.standard().bool(forKey: userDefaultsKey)
+            isOn = UserDefaults.standard.bool(forKey: userDefaultsKey)
         }
         self.isOn = isOn
     }

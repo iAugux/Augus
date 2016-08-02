@@ -54,7 +54,7 @@ struct EnterPasscodeState: PasscodeLockStateType {
         
         guard !isNotificationSent else { return }
             
-        let center = NotificationCenter.default()
+        let center = NotificationCenter.default
         
         center.post(name: Notification.Name(rawValue: PasscodeLockIncorrectPasscodeNotification), object: nil)
         

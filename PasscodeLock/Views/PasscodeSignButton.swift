@@ -15,7 +15,7 @@ public class PasscodeSignButton: UIButton {
     public var passcodeSign: String = "1"
     
     @IBInspectable
-    public var borderColor: UIColor = UIColor.white() {
+    public var borderColor: UIColor = UIColor.white {
         didSet {
             setupView()
         }
@@ -29,7 +29,7 @@ public class PasscodeSignButton: UIButton {
     }
     
     @IBInspectable
-    public var highlightBackgroundColor: UIColor = UIColor.clear() {
+    public var highlightBackgroundColor: UIColor = UIColor.clear {
         didSet {
             setupView()
         }
@@ -50,12 +50,11 @@ public class PasscodeSignButton: UIButton {
         setupActions()
     }
     
-    public override func intrinsicContentSize() -> CGSize {
-        
+    public override var intrinsicContentSize: CGSize {
         return CGSize(width: 60, height: 60)
     }
     
-    private var defaultBackgroundColor = UIColor.clear()
+    private var defaultBackgroundColor = UIColor.clear
     
     private func setupView() {
         

@@ -140,7 +140,7 @@ extension ViewController {
     private func updatePasscodeView() {
 
         let hasPasscode = configuration.repository.hasPasscode
-        passcodeIndicator.tintColor = hasPasscode ? UIColor(red: 0.0, green: 1.0, blue: 1.0, alpha: 1.0) : UIColor.gray()
+        passcodeIndicator.tintColor = hasPasscode ? UIColor(red: 0.0, green: 1.0, blue: 1.0, alpha: 1.0) : UIColor.gray
     }
     
     

@@ -30,11 +30,11 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         configureSurgePanel()
         configureMacIDPanel()
         
-        if #available(iOSApplicationExtension 10.0, *) {
-            extensionContext?.widgetLargestAvailableDisplayMode = .expanded
-        }
+//        if #available(iOSApplicationExtension 10.0, *) {
+//            extensionContext?.widgetLargestAvailableDisplayMode = .expanded
+//        }
 
-        preferredContentSize = CGSize(width: 0, height: 130.0)
+        preferredContentSize = CGSize(width: 0, height: 40.0)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -48,7 +48,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         // Dispose of any resources that can be recreated.
     }
     
-    func widgetPerformUpdate(completionHandler: ((NCUpdateResult) -> Void)) {
+    func widgetPerformUpdate(_ completionHandler: ((NCUpdateResult) -> Void)) {
         // Perform any setup necessary in order to update the view.
 
         // If an error is encountered, use NCUpdateResult.Failed
@@ -60,18 +60,18 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     
     // MARK: - NCWidgetProviding
     func widgetMarginInsets(forProposedMarginInsets defaultMarginInsets: UIEdgeInsets) -> UIEdgeInsets {
-        return UIEdgeInsetsZero
+        return .zero
     }
 
-    @available(iOSApplicationExtension 10.0, *)
-    func widgetActiveDisplayModeDidChange(_ activeDisplayMode: NCWidgetDisplayMode, withMaximumSize maxSize: CGSize) {
-        
-        // here may be a bug
-        // set maxSize to preferredContentSize, or these actions of `Show More/Less` may be ineffective.
-        preferredContentSize = maxSize
-        
-        preferredContentSize = CGSize(width: 0, height: 130.0)
-    }
+//    @available(iOSApplicationExtension 10.0, *)
+//    func widgetActiveDisplayModeDidChange(_ activeDisplayMode: NCWidgetDisplayMode, withMaximumSize maxSize: CGSize) {
+//        
+//        // here may be a bug
+//        // set maxSize to preferredContentSize, or these actions of `Show More/Less` may be ineffective.
+//        preferredContentSize = maxSize
+//        
+//        preferredContentSize = CGSize(width: 0, height: 130.0)
+//    }
 
 }
 
