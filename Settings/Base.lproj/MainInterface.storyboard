@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11163.2" systemVersion="16A239j" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="M4Y-Lb-cyx">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11191" systemVersion="16A270f" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="M4Y-Lb-cyx">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11133"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11156"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -15,7 +15,7 @@
                         <viewControllerLayoutGuide type="bottom" id="FKl-LY-JtV"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" simulatedAppContext="notificationCenter" id="S3S-Oj-5AN">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="130"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="100"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="ymU-pq-2pX" userLabel="Settings">
@@ -124,132 +124,6 @@
                                     <blurEffect style="dark"/>
                                 </vibrancyEffect>
                             </visualEffectView>
-                            <stackView opaque="NO" contentMode="scaleToFill" distribution="equalCentering" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="V2f-i3-Ibq" userLabel="Apps">
-                                <subviews>
-                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iRU-ZC-xTm" userLabel="Surge">
-                                        <subviews>
-                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="kxR-sC-avi">
-                                                <subviews>
-                                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" verticalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BHY-gh-e2q">
-                                                        <color key="onTintColor" red="0.67941552400588989" green="0.40149885416030884" blue="0.87776660919189453" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                        <connections>
-                                                            <action selector="surgeAutoCloseSwitchDidTap:" destination="M4Y-Lb-cyx" eventType="valueChanged" id="X8b-Pr-SLo"/>
-                                                        </connections>
-                                                    </switch>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Auto Close" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rLM-0m-afp">
-                                                        <constraints>
-                                                            <constraint firstAttribute="height" constant="9" id="HXc-Ph-kAG"/>
-                                                        </constraints>
-                                                        <fontDescription key="fontDescription" type="system" pointSize="7"/>
-                                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                        <nil key="highlightedColor"/>
-                                                    </label>
-                                                </subviews>
-                                                <constraints>
-                                                    <constraint firstItem="rLM-0m-afp" firstAttribute="leading" secondItem="kxR-sC-avi" secondAttribute="leading" id="LRY-dk-LNJ"/>
-                                                    <constraint firstAttribute="trailing" secondItem="rLM-0m-afp" secondAttribute="trailing" id="UVb-7k-9Mn"/>
-                                                </constraints>
-                                            </stackView>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KGy-Rl-wLF" userLabel="Surge">
-                                                <constraints>
-                                                    <constraint firstAttribute="width" secondItem="KGy-Rl-wLF" secondAttribute="height" id="4d7-mJ-I2h"/>
-                                                    <constraint firstAttribute="height" constant="40" id="OMb-vp-JzP"/>
-                                                </constraints>
-                                                <inset key="imageEdgeInsets" minX="8" minY="8" maxX="8" maxY="8"/>
-                                                <state key="normal" image="surge_logo"/>
-                                                <connections>
-                                                    <action selector="surgeToggleDidTap:" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="sG7-vl-dgf"/>
-                                                </connections>
-                                            </button>
-                                        </subviews>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="90" id="uxg-kc-6R0"/>
-                                        </constraints>
-                                    </stackView>
-                                    <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Bjp-fH-lQ9" userLabel="Tumblr">
-                                        <constraints>
-                                            <constraint firstAttribute="width" secondItem="Bjp-fH-lQ9" secondAttribute="height" id="P8l-Si-4zw"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" name="SnellRoundhand" family="Snell Roundhand" pointSize="22"/>
-                                        <inset key="imageEdgeInsets" minX="8" minY="8" maxX="8" maxY="8"/>
-                                        <state key="normal" title="T"/>
-                                        <connections>
-                                            <action selector="openTumblr:" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="vQE-9s-N8k"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qQI-bB-T5Q" userLabel="MacID">
-                                        <constraints>
-                                            <constraint firstAttribute="width" secondItem="qQI-bB-T5Q" secondAttribute="height" id="J3m-vL-lGY"/>
-                                        </constraints>
-                                        <inset key="imageEdgeInsets" minX="8" minY="8" maxX="8" maxY="8"/>
-                                        <state key="normal" image="mac_id"/>
-                                        <connections>
-                                            <action selector="macIDLock:" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="yEi-bL-bhG"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WcG-2c-zbh" userLabel="MacID">
-                                        <constraints>
-                                            <constraint firstAttribute="width" secondItem="WcG-2c-zbh" secondAttribute="height" id="AoG-xb-NlU"/>
-                                        </constraints>
-                                        <inset key="imageEdgeInsets" minX="8" minY="8" maxX="8" maxY="8"/>
-                                        <state key="normal" image="mac_id"/>
-                                        <connections>
-                                            <action selector="macIDWake:" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="0UY-Gc-t04"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KCO-oa-wuk" userLabel="MacIDClipboard">
-                                        <constraints>
-                                            <constraint firstAttribute="width" secondItem="KCO-oa-wuk" secondAttribute="height" id="It2-zF-3Qv"/>
-                                        </constraints>
-                                        <inset key="imageEdgeInsets" minX="8" minY="8" maxX="8" maxY="8"/>
-                                        <state key="normal" image="mac_id"/>
-                                        <connections>
-                                            <action selector="macIDSendClipboard:" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="ckw-l2-wC9"/>
-                                        </connections>
-                                    </button>
-                                </subviews>
-                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="40" id="3FG-BE-0FJ"/>
-                                    <constraint firstItem="qQI-bB-T5Q" firstAttribute="leading" secondItem="Bjp-fH-lQ9" secondAttribute="trailing" constant="8" id="DYr-lx-3e7"/>
-                                    <constraint firstItem="qQI-bB-T5Q" firstAttribute="top" secondItem="V2f-i3-Ibq" secondAttribute="top" id="HAG-ev-Amb"/>
-                                    <constraint firstItem="KCO-oa-wuk" firstAttribute="top" secondItem="V2f-i3-Ibq" secondAttribute="top" id="W1L-Bh-2Qk"/>
-                                    <constraint firstAttribute="bottom" secondItem="KCO-oa-wuk" secondAttribute="bottom" id="XCx-qj-AUc"/>
-                                    <constraint firstItem="Bjp-fH-lQ9" firstAttribute="top" secondItem="V2f-i3-Ibq" secondAttribute="top" id="dJd-6W-3rd"/>
-                                    <constraint firstAttribute="bottom" secondItem="Bjp-fH-lQ9" secondAttribute="bottom" id="kgd-Vc-Pb0"/>
-                                    <constraint firstAttribute="bottom" secondItem="qQI-bB-T5Q" secondAttribute="bottom" id="nU6-bE-2hi"/>
-                                    <constraint firstItem="KCO-oa-wuk" firstAttribute="leading" secondItem="WcG-2c-zbh" secondAttribute="trailing" constant="8" id="uxd-Pk-MKu"/>
-                                    <constraint firstItem="WcG-2c-zbh" firstAttribute="top" secondItem="V2f-i3-Ibq" secondAttribute="top" id="vP1-07-80D"/>
-                                    <constraint firstAttribute="bottom" secondItem="WcG-2c-zbh" secondAttribute="bottom" id="vgO-FE-Zet"/>
-                                    <constraint firstItem="WcG-2c-zbh" firstAttribute="leading" secondItem="qQI-bB-T5Q" secondAttribute="trailing" constant="8" id="xrb-Ur-fKT"/>
-                                </constraints>
-                            </stackView>
-                            <visualEffectView opaque="NO" userInteractionEnabled="NO" alpha="0.10000000149011612" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fPU-9W-n7e" userLabel="Separator">
-                                <view key="contentView" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" id="QRX-t1-CnX">
-                                    <frame key="frameInset"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                    <subviews>
-                                        <visualEffectView opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="olX-mm-QhK">
-                                            <frame key="frameInset" width="240" height="128"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" id="zsg-DG-Sba">
-                                                <frame key="frameInset"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                            </view>
-                                            <vibrancyEffect>
-                                                <blurEffect style="dark"/>
-                                            </vibrancyEffect>
-                                        </visualEffectView>
-                                    </subviews>
-                                </view>
-                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="1" id="3Ew-UW-ZCg"/>
-                                </constraints>
-                                <vibrancyEffect>
-                                    <blurEffect style="dark"/>
-                                </vibrancyEffect>
-                            </visualEffectView>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="OnM-xG-R6B" userLabel="Settings">
                                 <subviews>
                                     <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aQ8-8O-XzH" userLabel="Wifi">
@@ -338,18 +212,12 @@
                             <constraint firstAttribute="trailing" secondItem="ymU-pq-2pX" secondAttribute="trailing" constant="16" id="26i-ZL-wj3"/>
                             <constraint firstItem="a8G-2i-n9x" firstAttribute="leading" secondItem="1Ep-kd-sQh" secondAttribute="leading" constant="8" id="50u-l4-ayf"/>
                             <constraint firstAttribute="trailing" secondItem="OnM-xG-R6B" secondAttribute="trailing" constant="16" id="BPF-Ea-jkb"/>
-                            <constraint firstItem="fPU-9W-n7e" firstAttribute="trailing" secondItem="a8G-2i-n9x" secondAttribute="trailing" id="Gh2-tS-pl7"/>
-                            <constraint firstAttribute="trailing" secondItem="V2f-i3-Ibq" secondAttribute="trailing" constant="16" id="JIv-Jv-v8d"/>
-                            <constraint firstItem="fPU-9W-n7e" firstAttribute="top" secondItem="V2f-i3-Ibq" secondAttribute="bottom" constant="1" id="NQV-b4-HCS"/>
-                            <constraint firstItem="OnM-xG-R6B" firstAttribute="top" secondItem="V2f-i3-Ibq" secondAttribute="bottom" constant="4" id="YIy-aF-jvS"/>
+                            <constraint firstItem="OnM-xG-R6B" firstAttribute="top" secondItem="a8G-2i-n9x" secondAttribute="bottom" constant="1" id="BfT-un-8pA"/>
                             <constraint firstItem="OnM-xG-R6B" firstAttribute="leading" secondItem="S3S-Oj-5AN" secondAttribute="leading" constant="16" id="fCj-J8-oL3"/>
-                            <constraint firstItem="ymU-pq-2pX" firstAttribute="top" secondItem="Ft6-oW-KC0" secondAttribute="bottom" constant="-38" id="ivC-N0-TC5"/>
-                            <constraint firstItem="V2f-i3-Ibq" firstAttribute="top" secondItem="ymU-pq-2pX" secondAttribute="bottom" constant="4" id="lYW-58-Ul6"/>
+                            <constraint firstItem="ymU-pq-2pX" firstAttribute="top" secondItem="Ft6-oW-KC0" secondAttribute="bottom" constant="6" id="ivC-N0-TC5"/>
                             <constraint firstItem="a8G-2i-n9x" firstAttribute="trailing" secondItem="xV4-HT-m8X" secondAttribute="trailing" constant="-8" id="luV-l8-P9y"/>
                             <constraint firstItem="a8G-2i-n9x" firstAttribute="top" secondItem="ymU-pq-2pX" secondAttribute="bottom" constant="1" id="nDb-FN-MY3"/>
-                            <constraint firstItem="V2f-i3-Ibq" firstAttribute="leading" secondItem="S3S-Oj-5AN" secondAttribute="leading" constant="16" id="psd-0A-sma"/>
                             <constraint firstItem="ymU-pq-2pX" firstAttribute="leading" secondItem="S3S-Oj-5AN" secondAttribute="leading" constant="16" id="v7D-2K-jfE"/>
-                            <constraint firstItem="fPU-9W-n7e" firstAttribute="leading" secondItem="a8G-2i-n9x" secondAttribute="leading" id="xuz-8s-f0o"/>
                         </constraints>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout"/>
@@ -357,15 +225,7 @@
                     <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-                    <size key="freeformSize" width="320" height="130"/>
-                    <connections>
-                        <outlet property="macIDClipboardButton" destination="KCO-oa-wuk" id="6fb-wg-ArM"/>
-                        <outlet property="macIDLockButton" destination="qQI-bB-T5Q" id="a2l-hZ-mqk"/>
-                        <outlet property="macIDWakeButton" destination="WcG-2c-zbh" id="lcO-SF-e4v"/>
-                        <outlet property="surgeAutoCloseSwitch" destination="BHY-gh-e2q" id="lD5-ku-VrT"/>
-                        <outlet property="surgeButton" destination="KGy-Rl-wLF" id="KiI-iE-EP3"/>
-                        <outlet property="tumblrButton" destination="Bjp-fH-lQ9" id="OKg-cT-OZs"/>
-                    </connections>
+                    <size key="freeformSize" width="320" height="100"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vXp-U4-Rya" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -379,12 +239,10 @@
         <image name="cellular" width="32" height="32"/>
         <image name="duet" width="37" height="37"/>
         <image name="hotspot" width="25" height="25"/>
-        <image name="mac_id" width="32" height="32"/>
         <image name="notes" width="37" height="37"/>
         <image name="otp_auth" width="37" height="37"/>
         <image name="settings" width="25" height="25"/>
         <image name="siri" width="25" height="25"/>
-        <image name="surge_logo" width="32" height="32"/>
         <image name="wifi" width="24" height="24"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

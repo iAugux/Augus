@@ -10,13 +10,13 @@
 import Foundation
 
 enum SettingsURL: String {
-    case Settings        = "prefs:"
-    case Wifi            = "prefs:root=WIFI"
-    case Battery         = "prefs:root=BATTERY_USAGE"
-    case Cellular        = "prefs:root=MOBILE_DATA_SETTINGS_ID"
-    case PersonalHotspot = "prefs:root=INTERNET_TETHERING"
-    case Siri            = "prefs:root=General&path=SIRI"
-    case Developer       = "prefs:root=DEVELOPER"
+    case Settings        = "Prefs:"
+    case Wifi            = "Prefs:root=WIFI"
+    case Battery         = "Prefs:root=BATTERY_USAGE"
+    case Cellular        = "Prefs:root=MOBILE_DATA_SETTINGS_ID"
+    case PersonalHotspot = "Prefs:root=INTERNET_TETHERING"
+    case Siri            = "Prefs:root=General&path=SIRI"
+    case Developer       = "Prefs:root=DEVELOPER"
     
     var scheme: String {
         return rawValue

@@ -10,7 +10,7 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    private let configuration: PasscodeLockConfigurationType!
+    fileprivate let configuration: PasscodeLockConfigurationType!
     
     @IBOutlet weak var passcodeIndicator: UIImageView!
     
@@ -72,13 +72,13 @@ class ViewController: UIViewController {
 
 extension ViewController {
     
-    private func configureTumblrImageView() {
+    fileprivate func configureTumblrImageView() {
         let recognizer = UITapGestureRecognizer(target: self, action: #selector(hideTumblrOrNot))
         tumblrImageView.addGestureRecognizer(recognizer)
         tumblrImageView.isUserInteractionEnabled = true
     }
     
-    @objc private func hideTumblrOrNot() {
+    @objc fileprivate func hideTumblrOrNot() {
         let hidden = GroupUserDefaults?.getBool(kHideTumblrKey, defaultKeyValue: false) ?? false
         tumblrImageView.alpha = !hidden ? 0.3 : 1
         GroupUserDefaults?.set(!hidden, forKey: kHideTumblrKey)
@@ -92,7 +92,7 @@ extension ViewController {
 
 extension ViewController {
     
-    @objc private func passcodeIndicatorDidSingleTap() {
+    @objc fileprivate func passcodeIndicatorDidSingleTap() {
         
         let passcodeVC: PasscodeLockViewController
         
@@ -114,7 +114,7 @@ extension ViewController {
         present(passcodeVC, animated: true, completion: nil)
     }
     
-    @objc private func passcodeIndicatorDidLongPress(_ sender: UILongPressGestureRecognizer) {
+    @objc fileprivate func passcodeIndicatorDidLongPress(_ sender: UILongPressGestureRecognizer) {
         switch sender.state {
         case .began:
             
@@ -137,7 +137,7 @@ extension ViewController {
         }
     }
     
-    private func updatePasscodeView() {
+    fileprivate func updatePasscodeView() {
 
         let hasPasscode = configuration.repository.hasPasscode
         passcodeIndicator.tintColor = hasPasscode ? UIColor(red: 0.0, green: 1.0, blue: 1.0, alpha: 1.0) : UIColor.gray

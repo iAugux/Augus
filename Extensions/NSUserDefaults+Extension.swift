@@ -43,7 +43,7 @@ extension UserDefaults {
 
 extension UserDefaults {
     
-    func getObject(_ key: String, defaultkeyValue: AnyObject) -> AnyObject? {
+    func getObject(_ key: String, defaultkeyValue: AnyObject) -> Any? {
         if object(forKey: key) == nil {
             set(defaultkeyValue, forKey: key)
             synchronize()

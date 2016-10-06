@@ -11,36 +11,15 @@ import NotificationCenter
 
 
 class TodayViewController: UIViewController, NCWidgetProviding {
-        
-    @IBOutlet weak var surgeButton: UIButton!
-    @IBOutlet weak var macIDLockButton: UIButton!
-    @IBOutlet weak var macIDWakeButton: UIButton!
-    @IBOutlet weak var macIDClipboardButton: UIButton!
-    
-    @IBOutlet weak var tumblrButton: UIButton!
-    
-    @IBOutlet weak var surgeAutoCloseSwitch: UISwitch! {
-        didSet {
-            surgeAutoCloseSwitch.shouldSwitch(kSurgeAutoClose, defaultBool: kSurgeAutoCloseDefaultBool)
-        }
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureSurgePanel()
-        configureMacIDPanel()
         
 //        if #available(iOSApplicationExtension 10.0, *) {
 //            extensionContext?.widgetLargestAvailableDisplayMode = .expanded
 //        }
 
         preferredContentSize = CGSize(width: 0, height: 40.0)
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        let hideTumblr = GroupUserDefaults?.getBool(kHideTumblrKey, defaultKeyValue: false) ?? false
-        tumblrButton.isHidden = hideTumblr
     }
 
     override func didReceiveMemoryWarning() {
