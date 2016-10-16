@@ -6,12 +6,11 @@
     },
     {
       "idiom" : "universal",
-      "filename" : "lock-icon-1.png",
+      "filename" : "otp_auth@3x.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "lock-icon.png",
       "scale" : "3x"
     }
   ],

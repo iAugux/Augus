@@ -46,6 +46,7 @@
 		B17717E91CF41C67005B88F3 /* PasscodeSignButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B17717D41CF41C67005B88F3 /* PasscodeSignButton.swift */; };
 		B17717EA1CF41C67005B88F3 /* PasscodeSignPlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B17717D51CF41C67005B88F3 /* PasscodeSignPlaceholderView.swift */; };
 		B17717EB1CF41C67005B88F3 /* TouchID.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B17717D61CF41C67005B88F3 /* TouchID.xcassets */; };
+		B1E1F6F91DB3E7C800E1E869 /* TintedButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1E1F6F71DB3E56300E1E869 /* TintedButton.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -124,6 +125,7 @@
 		B17717D41CF41C67005B88F3 /* PasscodeSignButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasscodeSignButton.swift; sourceTree = "<group>"; };
 		B17717D51CF41C67005B88F3 /* PasscodeSignPlaceholderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasscodeSignPlaceholderView.swift; sourceTree = "<group>"; };
 		B17717D61CF41C67005B88F3 /* TouchID.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = TouchID.xcassets; sourceTree = "<group>"; };
+		B1E1F6F71DB3E56300E1E869 /* TintedButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TintedButton.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -230,6 +232,7 @@
 				B16FEB9F1C78E11200FEB550 /* TodayViewController.swift */,
 				B121B1B51C7D80FE00DC0C05 /* TodayViewController+Settings.swift */,
 				B121B1B71C7D810B00DC0C05 /* TodayViewController+Apps.swift */,
+				B1E1F6F71DB3E56300E1E869 /* TintedButton.swift */,
 				B121B1B21C7D6DCB00DC0C05 /* URLS.swift */,
 				B16FEBA11C78E11200FEB550 /* MainInterface.storyboard */,
 				B16FEBA41C78E11200FEB550 /* Info.plist */,
@@ -496,6 +499,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B10024A01CD8BC5000CE11BE /* Common.swift in Sources */,
+				B1E1F6F91DB3E7C800E1E869 /* TintedButton.swift in Sources */,
 				B16FEBA01C78E11200FEB550 /* TodayViewController.swift in Sources */,
 				B121B1B81C7D810B00DC0C05 /* TodayViewController+Apps.swift in Sources */,
 				B121B1B61C7D80FE00DC0C05 /* TodayViewController+Settings.swift in Sources */,

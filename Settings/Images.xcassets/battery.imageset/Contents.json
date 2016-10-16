@@ -6,12 +6,11 @@
     },
     {
       "idiom" : "universal",
-      "filename" : "battery@2x.png",
+      "filename" : "battery@3x.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "battery@3x.png",
       "scale" : "3x"
     }
   ],
