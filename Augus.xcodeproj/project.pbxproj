@@ -51,6 +51,13 @@
 			);
 			target = B188B4562FCB257D00DE99A6 /* BlackSSLExtension */;
 		};
+		B188B4772FCB34BB00DE99A6 /* Exceptions for "Shared" folder in "BlackSSLExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				SharedData.swift,
+			);
+			target = B188B4562FCB257D00DE99A6 /* BlackSSLExtension */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -65,6 +72,14 @@
 				B188B4682FCB257E00DE99A6 /* Exceptions for "BlackSSL" folder in "BlackSSLExtension" target */,
 			);
 			path = BlackSSL;
+			sourceTree = "<group>";
+		};
+		B188B4752FCB34A900DE99A6 /* Shared */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				B188B4772FCB34BB00DE99A6 /* Exceptions for "Shared" folder in "BlackSSLExtension" target */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -92,6 +107,7 @@
 		B188B43C2FCB231D00DE99A6 = {
 			isa = PBXGroup;
 			children = (
+				B188B4752FCB34A900DE99A6 /* Shared */,
 				B188B4472FCB231D00DE99A6 /* Augus */,
 				B188B45D2FCB257D00DE99A6 /* BlackSSL */,
 				B188B4582FCB257D00DE99A6 /* Frameworks */,
@@ -136,6 +152,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				B188B4472FCB231D00DE99A6 /* Augus */,
+				B188B4752FCB34A900DE99A6 /* Shared */,
 			);
 			name = Augus;
 			packageProductDependencies = (
