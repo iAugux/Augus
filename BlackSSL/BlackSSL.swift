@@ -123,14 +123,13 @@ struct BlackSSLEntryView : View {
                 .font(.system(size: 10, weight: .semibold, design: .rounded))
                 .foregroundColor(.primary)
         }
-        .padding(12)
     }
     
     // MARK: - Medium Widget View
     private func mediumWidgetView(_ usage: UsageData) -> some View {
         HStack(spacing: 16) {
             // Left Progress Block
-            VStack(spacing: 6) {
+            VStack(spacing: 16) {
                 ZStack {
                     Circle()
                         .stroke(Color.primary.opacity(0.05), lineWidth: 10)
@@ -187,12 +186,14 @@ struct BlackSSLEntryView : View {
                 Spacer(minLength: 0)
                 
                 // Last updated
-                Text("Updated: \(formatTime(entry.date))")
-                    .font(.system(size: 8))
-                    .foregroundColor(.secondary)
+                HStack {
+                    Spacer()
+                    Text("Updated: \(formatTime(entry.date))")
+                        .font(.system(size: 8))
+                        .foregroundColor(.secondary)
+                }
             }
         }
-        .padding(14)
     }
     
     // MARK: - Not Connected View
