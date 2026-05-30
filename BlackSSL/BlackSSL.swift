@@ -6,52 +6,259 @@ import SwiftUI
 
 struct Provider: TimelineProvider {
     func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), emoji: "😀")
+        SimpleEntry(date: Date(), usage: mockUsage, error: nil)
     }
 
     func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let entry = SimpleEntry(date: Date(), emoji: "😀")
+        let entry = SimpleEntry(date: Date(), usage: SharedStore.loadUsageData() ?? mockUsage, error: nil)
         completion(entry)
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
-        var entries: [SimpleEntry] = []
-
-        // Generate a timeline consisting of five entries an hour apart, starting from the current date.
-        let currentDate = Date()
-        for hourOffset in 0 ..< 5 {
-            let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-            let entry = SimpleEntry(date: entryDate, emoji: "😀")
-            entries.append(entry)
+        // Fetch new usage details in the background when requested
+        NetworkManager.shared.fetchUsage { result in
+            let latestData = SharedStore.loadUsageData()
+            let entry: SimpleEntry
+            
+            switch result {
+            case .success(let data):
+                entry = SimpleEntry(date: Date(), usage: data, error: nil)
+            case .failure(let error):
+                // If it fails, reuse last successful data, but flag the error if wanted
+                entry = SimpleEntry(date: Date(), usage: latestData, error: error.localizedDescription)
+            }
+            
+            // Re-fetch every 15 minutes
+            let nextUpdate = Calendar.current.date(byAdding: .minute, value: 15, to: Date())!
+            let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
+            completion(timeline)
         }
-
-        let timeline = Timeline(entries: entries, policy: .atEnd)
-        completion(timeline)
     }
-
-//    func relevances() async -> WidgetRelevances<Void> {
-//        // Generate a list containing the contexts this widget is relevant in.
-//    }
+    
+    private var mockUsage: UsageData {
+        UsageData(
+            upload: 12_400_000_000,
+            download: 38_600_000_000,
+            total: 100_000_000_000,
+            expiredAt: Int64(Date().addingTimeInterval(3600 * 24 * 12).timeIntervalSince1970),
+            email: "user@blackssl.com",
+            lastUpdated: Date(),
+            isLoggedIn: true,
+            todayUsed: 653_850_000
+        )
+    }
 }
 
 struct SimpleEntry: TimelineEntry {
     let date: Date
-    let emoji: String
+    let usage: UsageData?
+    let error: String?
 }
 
 struct BlackSSLEntryView : View {
     var entry: Provider.Entry
+    @Environment(\.widgetFamily) var family
 
     var body: some View {
-        VStack {
-            HStack {
-                Text("Time:")
-                Text(entry.date, style: .time)
+        ZStack {
+            if let usage = entry.usage {
+                switch family {
+                case .systemSmall:
+                    smallWidgetView(usage)
+                case .systemMedium:
+                    mediumWidgetView(usage)
+                default:
+                    smallWidgetView(usage)
+                }
+            } else {
+                notConnectedView
             }
-
-            Text("Emoji:")
-            Text(entry.emoji)
         }
+    }
+    
+    // MARK: - Small Widget View
+    private func smallWidgetView(_ usage: UsageData) -> some View {
+        VStack(spacing: 8) {
+            HStack {
+                Text("BlackSSL")
+                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                    .foregroundColor(.purple)
+                Spacer()
+                
+                // Expiration short warning
+                Text(daysRemainingShortText(usage.expiredAt))
+                    .font(.system(size: 9, weight: .medium))
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer(minLength: 0)
+            
+            // Progress Ring
+            ZStack {
+                Circle()
+                    .stroke(Color.primary.opacity(0.05), lineWidth: 8)
+                Circle()
+                    .trim(from: 0.0, to: CGFloat(usage.usagePercentage))
+                    .stroke(
+                        LinearGradient(colors: [.blue, .purple], startPoint: .top, endPoint: .bottom),
+                        style: StrokeStyle(lineWidth: 8, lineCap: .round)
+                    )
+                    .rotationEffect(.degrees(-90))
+                
+                VStack(spacing: 0) {
+                    Text(String(format: "%.0f%%", usage.usagePercentage * 100))
+                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                        .foregroundColor(.primary)
+                    Text("Used")
+                        .font(.system(size: 8))
+                        .foregroundColor(.secondary)
+                }
+            }
+            .frame(width: 65, height: 65)
+            
+            Spacer(minLength: 0)
+            
+            // Remaining Traffic text
+            Text("Rem: \(NetworkManager.formatBytes(usage.remaining))")
+                .font(.system(size: 10, weight: .semibold, design: .rounded))
+                .foregroundColor(.primary)
+        }
+        .padding(12)
+    }
+    
+    // MARK: - Medium Widget View
+    private func mediumWidgetView(_ usage: UsageData) -> some View {
+        HStack(spacing: 16) {
+            // Left Progress Block
+            VStack(spacing: 6) {
+                ZStack {
+                    Circle()
+                        .stroke(Color.primary.opacity(0.05), lineWidth: 10)
+                        .frame(width: 80, height: 80)
+                    Circle()
+                        .trim(from: 0.0, to: CGFloat(usage.usagePercentage))
+                        .stroke(
+                            LinearGradient(colors: [.blue, .purple], startPoint: .top, endPoint: .bottom),
+                            style: StrokeStyle(lineWidth: 10, lineCap: .round)
+                        )
+                        .frame(width: 80, height: 80)
+                        .rotationEffect(.degrees(-90))
+                    
+                    VStack(spacing: 2) {
+                        Text(String(format: "%.0f%%", usage.usagePercentage * 100))
+                            .font(.system(size: 18, weight: .bold, design: .rounded))
+                            .foregroundColor(.primary)
+                        Text("Used")
+                            .font(.system(size: 8))
+                            .foregroundColor(.secondary)
+                    }
+                }
+                
+                Text("\(NetworkManager.formatBytes(usage.remaining)) left")
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundColor(.green)
+            }
+            
+            // Right Information Block
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text("BlackSSL")
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .foregroundColor(.primary)
+                    Spacer()
+                    Text("Live")
+                        .font(.system(size: 8, weight: .semibold))
+                        .foregroundColor(.green)
+                        .padding(.horizontal, 4)
+                        .padding(.vertical, 1)
+                        .background(Color.green.opacity(0.15))
+                        .cornerRadius(3)
+                }
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    if let today = usage.todayUsed {
+                        metricRow(icon: "bolt.fill", iconColor: .orange, label: "Today", value: NetworkManager.formatBytes(today))
+                    }
+                    metricRow(icon: "arrow.down.circle.fill", iconColor: .purple, label: "Used", value: NetworkManager.formatBytes(usage.used))
+                    metricRow(icon: "bolt.circle.fill", iconColor: .green, label: "Total", value: NetworkManager.formatBytes(usage.total))
+                    metricRow(icon: "calendar", iconColor: .blue, label: "Expires", value: formatExpirationDate(usage.expiredAt))
+                }
+                
+                Spacer(minLength: 0)
+                
+                // Last updated
+                Text("Updated: \(formatTime(entry.date))")
+                    .font(.system(size: 8))
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding(14)
+    }
+    
+    // MARK: - Not Connected View
+    private var notConnectedView: some View {
+        VStack(spacing: 8) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.title2)
+                .foregroundColor(.orange)
+            Text("BlackSSL")
+                .font(.system(size: 12, weight: .bold))
+                .foregroundColor(.primary)
+            Text("Open App to Connect")
+                .font(.system(size: 9))
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .padding(12)
+    }
+    
+    // MARK: - Row Helper
+    private func metricRow(icon: String, iconColor: Color, label: String, value: String) -> some View {
+        HStack(spacing: 6) {
+            Image(systemName: icon)
+                .font(.system(size: 10))
+                .foregroundColor(iconColor)
+                .frame(width: 12, alignment: .center)
+            
+            Text(label)
+                .font(.system(size: 11))
+                .foregroundColor(.secondary)
+            
+            Spacer()
+            
+            Text(value)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundColor(.primary)
+        }
+    }
+    
+    // MARK: - Formatter Helpers
+    private func formatTime(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm"
+        return formatter.string(from: date)
+    }
+    
+    private func formatExpirationDate(_ timestamp: Int64?) -> String {
+        guard let ts = timestamp, ts > 0 else { return "Unlimited" }
+        let date = Date(timeIntervalSince1970: TimeInterval(ts))
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: date)
+    }
+    
+    private func daysRemainingShortText(_ timestamp: Int64?) -> String {
+        guard let ts = timestamp, ts > 0 else { return "Life" }
+        let expirationDate = Date(timeIntervalSince1970: TimeInterval(ts))
+        let diff = Calendar.current.dateComponents([.day], from: Date(), to: expirationDate)
+        if let day = diff.day {
+            if day < 0 {
+                return "Exp"
+            } else {
+                return "\(day)d"
+            }
+        }
+        return "Life"
     }
 }
 
@@ -62,21 +269,47 @@ struct BlackSSL: Widget {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
             if #available(macOS 14.0, iOS 17.0, *) {
                 BlackSSLEntryView(entry: entry)
-                    .containerBackground(.fill.tertiary, for: .widget)
+                    .containerBackground(for: .widget) {
+                        WidgetBackgroundView()
+                    }
             } else {
                 BlackSSLEntryView(entry: entry)
                     .padding()
-                    .background()
+                    .background(WidgetBackgroundView())
             }
         }
-        .configurationDisplayName("My Widget")
-        .description("This is an example widget.")
+        .configurationDisplayName("BlackSSL Status")
+        .description("Shows traffic usage and subscription expiration of your BlackSSL account.")
+        .supportedFamilies([.systemSmall, .systemMedium])
+    }
+}
+
+struct WidgetBackgroundView: View {
+    @Environment(\.colorScheme) var colorScheme
+    
+    var body: some View {
+        LinearGradient(
+            colors: colorScheme == .dark
+                ? [Color(red: 0.08, green: 0.08, blue: 0.15), Color(red: 0.03, green: 0.03, blue: 0.06)]
+                : [Color(red: 0.94, green: 0.94, blue: 0.98), Color(red: 0.88, green: 0.89, blue: 0.95)],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
     }
 }
 
 #Preview(as: .systemSmall) {
     BlackSSL()
 } timeline: {
-    SimpleEntry(date: .now, emoji: "😀")
-    SimpleEntry(date: .now, emoji: "🤩")
+    SimpleEntry(date: .now, usage: nil, error: nil)
+    SimpleEntry(date: .now, usage: UsageData(
+        upload: 15_000_000_000,
+        download: 35_000_000_000,
+        total: 100_000_000_000,
+        expiredAt: Int64(Date().addingTimeInterval(3600 * 24 * 10).timeIntervalSince1970),
+        email: "demo@blackssl.com",
+        lastUpdated: Date(),
+        isLoggedIn: true,
+        todayUsed: 824_100_000
+    ), error: nil)
 }
