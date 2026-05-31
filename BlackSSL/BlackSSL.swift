@@ -183,7 +183,7 @@ struct BlackSSLEntryView : View {
                         .cornerRadius(3)
                 }
                 
-                VStack(alignment: .leading, spacing: 3) {
+                VStack(alignment: .leading, spacing: 2) {
                     if let today = usage.todayUsed {
                         metricRow(icon: "bolt.circle.fill", iconColor: .orange, label: "Today", value: NetworkManager.formatBytes(today))
                     }
@@ -193,6 +193,7 @@ struct BlackSSLEntryView : View {
                     metricRow(icon: "arrow.down.circle.fill", iconColor: .blue, label: "Used", value: NetworkManager.formatBytes(usage.used))
                     metricRow(icon: "globe.fill", iconColor: .green, label: "Total", value: NetworkManager.formatBytes(usage.total))
                     metricRow(icon: "calendar.circle.fill", iconColor: .secondary, label: "Expires", value: formatExpirationDate(usage.expiredAt))
+                    metricRow(icon: "info.circle.fill", iconColor: .secondary, label: "Status", value: expirationDaysLeftText(usage.expiredAt))
                 }
             }
         }
@@ -263,6 +264,22 @@ struct BlackSSLEntryView : View {
             }
         }
         return "Life"
+    }
+    
+    private func expirationDaysLeftText(_ timestamp: Int64?) -> String {
+        guard let ts = timestamp, ts > 0 else { return "Lifetime" }
+        let expirationDate = Date(timeIntervalSince1970: TimeInterval(ts))
+        let diff = Calendar.current.dateComponents([.day], from: Date(), to: expirationDate)
+        if let day = diff.day {
+            if day < 0 {
+                return "Expired \(abs(day))d ago"
+            } else if day == 0 {
+                return "Expires today"
+            } else {
+                return "\(day) days left"
+            }
+        }
+        return "Unknown"
     }
 }
 

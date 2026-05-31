@@ -187,8 +187,8 @@ struct ContentView: View {
                 ZStack {
                     // Outer Ring Track
                     Circle()
-                        .stroke(Color.white.opacity(0.05), lineWidth: 20)
-                        .frame(width: 180, height: 180)
+                        .stroke(Color.white.opacity(0.05), lineWidth: 14)
+                        .frame(width: 130, height: 130)
                     
                     // Usage Progress Ring
                     Circle()
@@ -199,25 +199,25 @@ struct ContentView: View {
                                 startPoint: .top,
                                 endPoint: .bottom
                             ),
-                            style: StrokeStyle(lineWidth: 20, lineCap: .round)
+                            style: StrokeStyle(lineWidth: 14, lineCap: .round)
                         )
-                        .frame(width: 180, height: 180)
+                        .frame(width: 130, height: 130)
                         .rotationEffect(.degrees(-90))
                         .animation(.easeOut(duration: 0.8), value: data.usagePercentage)
                         .shadow(color: .purple.opacity(0.3), radius: 10, x: 0, y: 5)
                     
                     // Inside Circle Texts
-                    VStack(spacing: 4) {
+                    VStack(spacing: 2) {
                         Text(String(format: "%.1f%%", data.usagePercentage * 100))
-                            .font(.system(size: 32, weight: .bold, design: .rounded))
+                            .font(.system(size: 24, weight: .bold, design: .rounded))
                             .foregroundColor(.primary)
                         
                         Text("Used")
-                            .font(.caption)
+                            .font(.system(size: 10))
                             .foregroundColor(.secondary)
                     }
                 }
-                .padding(.vertical, 20)
+                .padding(.vertical, 14)
                 
                 // Texts Below Progress Ring
                 HStack(spacing: 40) {
