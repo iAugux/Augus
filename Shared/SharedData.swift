@@ -572,7 +572,7 @@ public final class NetworkManager: Sendable {
         
         // 2. Parse Expiration Date: "到期时间" ... "2026-12-04"
         let datePattern = "到期时间.*?([0-9]{4}-[0-9]{2}-[0-9]{2})"
-        if let regex = try? NSRegularExpression(pattern: datePattern, options: []),
+        if let regex = try? NSRegularExpression(pattern: datePattern, options: [.dotMatchesLineSeparators]),
            let match = regex.firstMatch(in: html, options: [], range: NSRange(location: 0, length: html.utf16.count)) {
             let nsString = html as NSString
             let dateString = nsString.substring(with: match.range(at: 1))
@@ -605,7 +605,7 @@ public final class NetworkManager: Sendable {
         var todayUsedBytes: Int64? = nil
         var nextResetText: String? = nil
         let todayPattern = "今日流量.*?已用\\s*([0-9.]+)\\s*(KB|MB|GB|TB)(?:\\s*[(（]([^)）]+)[)）])?"
-        if let regex = try? NSRegularExpression(pattern: todayPattern, options: [.caseInsensitive]),
+        if let regex = try? NSRegularExpression(pattern: todayPattern, options: [.caseInsensitive, .dotMatchesLineSeparators]),
            let match = regex.firstMatch(in: html, options: [], range: NSRange(location: 0, length: html.utf16.count)) {
             let nsString = html as NSString
             let val = Double(nsString.substring(with: match.range(at: 1))) ?? 0.0
