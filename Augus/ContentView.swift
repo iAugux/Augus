@@ -187,24 +187,20 @@ struct ContentView: View {
                 ZStack {
                     // Outer Ring Track
                     Circle()
-                        .stroke(Color.white.opacity(0.05), lineWidth: 14)
+                        .stroke(Color.primary.opacity(0.06), lineWidth: 14)
                         .frame(width: 130, height: 130)
                     
                     // Usage Progress Ring
                     Circle()
                         .trim(from: 0.0, to: CGFloat(data.usagePercentage))
                         .stroke(
-                            LinearGradient(
-                                colors: [.blue, .purple],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            ),
+                            progressGradient(for: data.usagePercentage),
                             style: StrokeStyle(lineWidth: 14, lineCap: .round)
                         )
                         .frame(width: 130, height: 130)
                         .rotationEffect(.degrees(-90))
                         .animation(.easeOut(duration: 0.8), value: data.usagePercentage)
-                        .shadow(color: .purple.opacity(0.3), radius: 10, x: 0, y: 5)
+                        .shadow(color: progressShadowColor(for: data.usagePercentage).opacity(0.25), radius: 8, x: 0, y: 4)
                     
                     // Inside Circle Texts
                     VStack(spacing: 2) {
@@ -457,6 +453,35 @@ struct ContentView: View {
             }
         }
         return "Unknown"
+    }
+    
+    private func progressGradient(for percentage: Double) -> LinearGradient {
+        let colors: [Color]
+        if percentage < 0.6 {
+            // Cool Blue to Teal (Safe)
+            colors = [Color(red: 0.18, green: 0.49, blue: 0.96), Color(red: 0.17, green: 0.79, blue: 0.88)]
+        } else if percentage < 0.85 {
+            // Indigo to Pink (Warning)
+            colors = [Color(red: 0.44, green: 0.32, blue: 0.94), Color(red: 0.84, green: 0.35, blue: 0.62)]
+        } else {
+            // Crimson to Orange (Critical)
+            colors = [Color(red: 0.88, green: 0.12, blue: 0.35), Color(red: 0.98, green: 0.36, blue: 0.23)]
+        }
+        return LinearGradient(
+            colors: colors,
+            startPoint: .top,
+            endPoint: .bottom
+        )
+    }
+    
+    private func progressShadowColor(for percentage: Double) -> Color {
+        if percentage < 0.6 {
+            return Color(red: 0.18, green: 0.49, blue: 0.96)
+        } else if percentage < 0.85 {
+            return Color(red: 0.44, green: 0.32, blue: 0.94)
+        } else {
+            return Color(red: 0.88, green: 0.12, blue: 0.35)
+        }
     }
 }
 

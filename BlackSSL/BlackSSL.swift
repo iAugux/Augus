@@ -93,15 +93,14 @@ struct BlackSSLEntryView : View {
             
             Spacer(minLength: 0)
             
-            // Progress Ring
             ZStack {
                 Circle()
-                    .stroke(Color.primary.opacity(0.05), lineWidth: 8)
+                    .stroke(Color.primary.opacity(0.05), lineWidth: 5)
                 Circle()
                     .trim(from: 0.0, to: CGFloat(usage.usagePercentage))
                     .stroke(
-                        LinearGradient(colors: [.blue, .purple], startPoint: .top, endPoint: .bottom),
-                        style: StrokeStyle(lineWidth: 8, lineCap: .round)
+                        progressGradient(for: usage.usagePercentage),
+                        style: StrokeStyle(lineWidth: 5, lineCap: .round)
                     )
                     .rotationEffect(.degrees(-90))
                 
@@ -138,13 +137,13 @@ struct BlackSSLEntryView : View {
 
                 ZStack {
                     Circle()
-                        .stroke(Color.primary.opacity(0.05), lineWidth: 10)
+                        .stroke(Color.primary.opacity(0.05), lineWidth: 7)
                         .frame(width: 70, height: 70)
                     Circle()
                         .trim(from: 0.0, to: CGFloat(usage.usagePercentage))
                         .stroke(
-                            LinearGradient(colors: [.blue, .purple], startPoint: .top, endPoint: .bottom),
-                            style: StrokeStyle(lineWidth: 10, lineCap: .round)
+                            progressGradient(for: usage.usagePercentage),
+                            style: StrokeStyle(lineWidth: 7, lineCap: .round)
                         )
                         .frame(width: 70, height: 70)
                         .rotationEffect(.degrees(-90))
@@ -280,6 +279,25 @@ struct BlackSSLEntryView : View {
             }
         }
         return "Unknown"
+    }
+    
+    private func progressGradient(for percentage: Double) -> LinearGradient {
+        let colors: [Color]
+        if percentage < 0.6 {
+            // Cool Blue to Teal (Safe)
+            colors = [Color(red: 0.18, green: 0.49, blue: 0.96), Color(red: 0.17, green: 0.79, blue: 0.88)]
+        } else if percentage < 0.85 {
+            // Indigo to Pink (Warning)
+            colors = [Color(red: 0.44, green: 0.32, blue: 0.94), Color(red: 0.84, green: 0.35, blue: 0.62)]
+        } else {
+            // Crimson to Orange (Critical)
+            colors = [Color(red: 0.88, green: 0.12, blue: 0.35), Color(red: 0.98, green: 0.36, blue: 0.23)]
+        }
+        return LinearGradient(
+            colors: colors,
+            startPoint: .top,
+            endPoint: .bottom
+        )
     }
 }
 
