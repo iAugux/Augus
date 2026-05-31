@@ -4,7 +4,7 @@
 import Foundation
 import WidgetKit
 
-public struct UsageData: Codable {
+public struct UsageData: Codable, Sendable {
     public let upload: Int64
     public let download: Int64
     public let total: Int64
@@ -41,7 +41,7 @@ public struct UsageData: Codable {
     }
 }
 
-public struct SerializableCookie: Codable {
+public struct SerializableCookie: Codable, Sendable {
     public let name: String
     public let value: String
     public let domain: String
@@ -231,19 +231,31 @@ public class NetworkManager {
                     return
                 }
                 
-                guard let data = data, let html = String(data: data, encoding: .utf8),
-                      let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                    print("NetworkManager: Dashboard scrape response invalid or expired. Falling back to subscription URL.")
+                guard let data = data, let html = String(data: data, encoding: .utf8) else {
+                    print("NetworkManager: Failed to convert scrape data to UTF8 string. Falling back to subscription URL.")
                     self.fetchViaSubscriptionURL(completion: completion)
                     return
                 }
                 
-                if html.contains("首页") || html.contains("退出") || html.contains("dashboard") {
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    print("NetworkManager: Response is not HTTPURLResponse. Falling back to subscription URL.")
+                    self.fetchViaSubscriptionURL(completion: completion)
+                    return
+                }
+                
+                print("NetworkManager: Scrape Response Code: \(httpResponse.statusCode), HTML Length: \(html.count)")
+                if httpResponse.statusCode != 200 {
+                    print("NetworkManager: Non-200 status code. Falling back to subscription URL.")
+                    self.fetchViaSubscriptionURL(completion: completion)
+                    return
+                }
+                
+                let hasKeywords = html.contains("首页") || html.contains("退出") || html.contains("dashboard") || html.contains("Dashboard")
+                if hasKeywords {
                     if let usage = self.parseDashboardHTML(html) {
                         print("NetworkManager: Successfully scraped dashboard! Today's usage: \(String(describing: usage.todayUsed))")
                         SharedStore.saveUsageData(usage)
                         
-                        // In the background, if we don't have the subscription URL yet, bootstrap it
                         if SharedStore.loadSubscriptionURL() == nil {
                             self.bootstrapSubscriptionURL()
                         }
@@ -251,10 +263,13 @@ public class NetworkManager {
                         WidgetCenter.shared.reloadAllTimelines()
                         completion(.success(usage))
                         return
+                    } else {
+                        print("NetworkManager: Dashboard keywords found but parsing failed. HTML Sample: \(String(html.prefix(300)))")
                     }
+                } else {
+                    print("NetworkManager: Dashboard keywords not found (session expired or SPA app). HTML Sample: \(String(html.prefix(300)))")
                 }
                 
-                print("NetworkManager: Dashboard HTML parse failed or session expired. Falling back to subscription URL.")
                 self.fetchViaSubscriptionURL(completion: completion)
             }
             task.resume()

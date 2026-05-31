@@ -23,7 +23,7 @@ public struct WebView: PlatformViewRepresentable {
     
     public class Coordinator: NSObject, WKNavigationDelegate {
         var parent: WebView
-        var timer: Timer?
+        nonisolated(unsafe) var timer: Timer?
         weak var webView: WKWebView?
         
         init(_ parent: WebView) {
@@ -31,7 +31,10 @@ public struct WebView: PlatformViewRepresentable {
         }
         
         deinit {
-            stopTracking()
+            let t = timer
+            DispatchQueue.main.async {
+                t?.invalidate()
+            }
         }
         
         func startTracking(webView: WKWebView) {
@@ -45,7 +48,10 @@ public struct WebView: PlatformViewRepresentable {
         }
         
         func stopTracking() {
-            timer?.invalidate()
+            let t = timer
+            DispatchQueue.main.async {
+                t?.invalidate()
+            }
             timer = nil
         }
         
