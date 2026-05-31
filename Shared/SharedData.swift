@@ -181,6 +181,15 @@ public class SharedStore {
         return defaults.string(forKey: "email") ?? "user@blackssl.com"
     }
     
+    public static func saveLastScrapeResult(_ result: String) {
+        defaults.set(result, forKey: "last_scrape_result")
+        defaults.synchronize()
+    }
+    
+    public static func loadLastScrapeResult() -> String {
+        return defaults.string(forKey: "last_scrape_result") ?? "No scrape attempt recorded yet."
+    }
+    
     public static func clear() {
         defaults.removeObject(forKey: "usage_data")
         defaults.removeObject(forKey: "cookies")
@@ -190,18 +199,19 @@ public class SharedStore {
         defaults.removeObject(forKey: "subscription_url")
         defaults.removeObject(forKey: "is_v2board")
         defaults.removeObject(forKey: "email")
+        defaults.removeObject(forKey: "last_scrape_result")
         defaults.synchronize()
         print("SharedStore: Cleared all stored data.")
         WidgetCenter.shared.reloadAllTimelines()
     }
 }
 
-public class NetworkManager {
+public final class NetworkManager: Sendable {
     public static let shared = NetworkManager()
     
     private init() {}
     
-    public func fetchUsage(completion: @escaping (Result<UsageData, Error>) -> Void) {
+    public func fetchUsage(completion: @escaping @Sendable (Result<UsageData, Error>) -> Void) {
         let baseHost = SharedStore.loadBaseHost()
         let cookies = SharedStore.loadCookies()
         
@@ -210,7 +220,9 @@ public class NetworkManager {
             print("NetworkManager: Cookies found. Attempting dashboard scrape first.")
             let dashboardURL = "https://\(baseHost)/dashboard"
             guard let url = URL(string: dashboardURL) else {
-                completion(.failure(NSError(domain: "NetworkManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid Dashboard URL"])))
+                let errorMsg = "Invalid Dashboard URL"
+                SharedStore.saveLastScrapeResult("Error: \(errorMsg)")
+                completion(.failure(NSError(domain: "NetworkManager", code: -1, userInfo: [NSLocalizedDescriptionKey: errorMsg])))
                 return
             }
             
@@ -226,26 +238,34 @@ public class NetworkManager {
             
             let task = URLSession.shared.dataTask(with: request) { data, response, error in
                 if let error = error {
-                    print("NetworkManager: Dashboard scrape error: \(error.localizedDescription). Falling back to subscription URL.")
+                    let logMsg = "Dashboard scrape error: \(error.localizedDescription)"
+                    print("NetworkManager: \(logMsg). Falling back to subscription URL.")
+                    SharedStore.saveLastScrapeResult(logMsg)
                     self.fetchViaSubscriptionURL(completion: completion)
                     return
                 }
                 
                 guard let data = data, let html = String(data: data, encoding: .utf8) else {
-                    print("NetworkManager: Failed to convert scrape data to UTF8 string. Falling back to subscription URL.")
+                    let logMsg = "Failed to convert scrape data to UTF8 string"
+                    print("NetworkManager: \(logMsg). Falling back to subscription URL.")
+                    SharedStore.saveLastScrapeResult(logMsg)
                     self.fetchViaSubscriptionURL(completion: completion)
                     return
                 }
                 
                 guard let httpResponse = response as? HTTPURLResponse else {
-                    print("NetworkManager: Response is not HTTPURLResponse. Falling back to subscription URL.")
+                    let logMsg = "Response is not HTTPURLResponse"
+                    print("NetworkManager: \(logMsg). Falling back to subscription URL.")
+                    SharedStore.saveLastScrapeResult(logMsg)
                     self.fetchViaSubscriptionURL(completion: completion)
                     return
                 }
                 
                 print("NetworkManager: Scrape Response Code: \(httpResponse.statusCode), HTML Length: \(html.count)")
                 if httpResponse.statusCode != 200 {
-                    print("NetworkManager: Non-200 status code. Falling back to subscription URL.")
+                    let logMsg = "Scrape non-200 (Code: \(httpResponse.statusCode)). HTML: \(String(html.prefix(120)))"
+                    print("NetworkManager: \(logMsg). Falling back to subscription URL.")
+                    SharedStore.saveLastScrapeResult(logMsg)
                     self.fetchViaSubscriptionURL(completion: completion)
                     return
                 }
@@ -253,7 +273,9 @@ public class NetworkManager {
                 let hasKeywords = html.contains("首页") || html.contains("退出") || html.contains("dashboard") || html.contains("Dashboard")
                 if hasKeywords {
                     if let usage = self.parseDashboardHTML(html) {
-                        print("NetworkManager: Successfully scraped dashboard! Today's usage: \(String(describing: usage.todayUsed))")
+                        let logMsg = "Success! Today: \(usage.todayUsed != nil ? NetworkManager.formatBytes(usage.todayUsed!) : "nil"), Reset: \(usage.nextResetText ?? "nil")"
+                        print("NetworkManager: \(logMsg)")
+                        SharedStore.saveLastScrapeResult(logMsg)
                         SharedStore.saveUsageData(usage)
                         
                         if SharedStore.loadSubscriptionURL() == nil {
@@ -264,10 +286,14 @@ public class NetworkManager {
                         completion(.success(usage))
                         return
                     } else {
-                        print("NetworkManager: Dashboard keywords found but parsing failed. HTML Sample: \(String(html.prefix(300)))")
+                        let logMsg = "Keywords found but parsing failed. HTML: \(String(html.prefix(150)))"
+                        print("NetworkManager: \(logMsg)")
+                        SharedStore.saveLastScrapeResult(logMsg)
                     }
                 } else {
-                    print("NetworkManager: Dashboard keywords not found (session expired or SPA app). HTML Sample: \(String(html.prefix(300)))")
+                    let logMsg = "Keywords not found (unauthorized/SPA). HTML: \(String(html.prefix(150)))"
+                    print("NetworkManager: \(logMsg)")
+                    SharedStore.saveLastScrapeResult(logMsg)
                 }
                 
                 self.fetchViaSubscriptionURL(completion: completion)
@@ -275,6 +301,7 @@ public class NetworkManager {
             task.resume()
         } else {
             // No cookies, go straight to subscription URL
+            SharedStore.saveLastScrapeResult("No cookies found. Directly fetching via subscription URL.")
             self.fetchViaSubscriptionURL(completion: completion)
         }
     }

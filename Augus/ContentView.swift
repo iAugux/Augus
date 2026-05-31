@@ -9,6 +9,8 @@ struct ContentView: View {
     @State private var isShowingLogin = false
     @State private var isRefreshing = false
     @State private var errorMessage: String? = nil
+    @State private var isShowingDebugAlert = false
+    @State private var debugText = ""
     
     var body: some View {
         ZStack {
@@ -42,6 +44,14 @@ struct ContentView: View {
         }
         .sheet(isPresented: $isShowingLogin) {
             loginWebViewSheet
+        }
+        .alert("Scrape Diagnostics", isPresented: $isShowingDebugAlert) {
+            Button("Copy Log") {
+                copyToPasteboard(debugText)
+            }
+            Button("Dismiss", role: .cancel) {}
+        } message: {
+            Text(debugText)
         }
         .onAppear {
             // Auto refresh on open
@@ -260,6 +270,10 @@ struct ContentView: View {
                     .font(.headline)
                     .foregroundColor(.primary)
                     .padding(.bottom, 4)
+                    .onTapGesture(count: 2) {
+                        debugText = SharedStore.loadLastScrapeResult()
+                        isShowingDebugAlert = true
+                    }
                 
                 if let today = data.todayUsed {
                     detailRow(title: "Today's Usage", value: NetworkManager.formatBytes(today), icon: "chart.bar.fill", color: .orange)
@@ -415,6 +429,12 @@ struct ContentView: View {
     }
     
     // MARK: - Actions & Helpers
+    private func copyToPasteboard(_ text: String) {
+        #if os(iOS)
+        UIPasteboard.general.string = text
+        #endif
+    }
+    
     private func refreshData() {
         isRefreshing = true
         errorMessage = nil
