@@ -185,14 +185,14 @@ struct BlackSSLEntryView : View {
                 
                 VStack(alignment: .leading, spacing: 2) {
                     if let today = usage.todayUsed {
-                        metricRow(icon: "bolt.circle.fill", iconColor: .orange, label: "Today", value: NetworkManager.formatBytes(today))
+                        metricRow(icon: "chart.bar.fill", iconColor: .orange, label: "Today", value: NetworkManager.formatBytes(today))
                     }
                     if let resetText = usage.nextResetText {
                         metricRow(icon: "arrow.clockwise.circle.fill", iconColor: .purple, label: "Reset In", value: resetText)
                     }
-                    metricRow(icon: "arrow.down.circle.fill", iconColor: .blue, label: "Used", value: NetworkManager.formatBytes(usage.used))
+                    metricRow(icon: "arrow.down.circle.fill", iconColor: .purple, label: "Used", value: NetworkManager.formatBytes(usage.used))
                     metricRow(icon: "globe.fill", iconColor: .green, label: "Total", value: NetworkManager.formatBytes(usage.total))
-                    metricRow(icon: "calendar.circle.fill", iconColor: .secondary, label: "Expires", value: formatExpirationDate(usage.expiredAt))
+                    metricRow(icon: "calendar.badge.clock", iconColor: .orange, label: "Expires", value: formatExpirationDate(usage.expiredAt))
                     metricRow(icon: "info.circle.fill", iconColor: .secondary, label: "Status", value: expirationDaysLeftText(usage.expiredAt))
                 }
             }
