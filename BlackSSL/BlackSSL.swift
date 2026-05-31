@@ -106,9 +106,11 @@ struct BlackSSLEntryView : View {
                     .rotationEffect(.degrees(-90))
                 
                 VStack(spacing: 0) {
-                    Text(String(format: "%.0f%%", usage.usagePercentage * 100))
+                    Text(String(format: "%.1f%%", usage.usagePercentage * 100))
                         .font(.system(size: 16, weight: .bold, design: .rounded))
                         .foregroundColor(.primary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
                     Text("Used")
                         .font(.system(size: 8))
                         .foregroundColor(.secondary)
@@ -127,7 +129,7 @@ struct BlackSSLEntryView : View {
     
     // MARK: - Medium Widget View
     private func mediumWidgetView(_ usage: UsageData) -> some View {
-        HStack(spacing: 16) {
+        HStack(spacing: 32) {
             // Left Progress Block
             VStack(spacing: 12) {
                 Text("Updated: \(formatTime(entry.date))")
@@ -148,9 +150,11 @@ struct BlackSSLEntryView : View {
                         .rotationEffect(.degrees(-90))
                     
                     VStack(spacing: 2) {
-                        Text(String(format: "%.0f%%", usage.usagePercentage * 100))
+                        Text(String(format: "%.1f%%", usage.usagePercentage * 100))
                             .font(.system(size: 18, weight: .bold, design: .rounded))
                             .foregroundColor(.primary)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
                         Text("Used")
                             .font(.system(size: 8))
                             .foregroundColor(.secondary)
