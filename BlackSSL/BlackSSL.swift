@@ -129,18 +129,22 @@ struct BlackSSLEntryView : View {
     private func mediumWidgetView(_ usage: UsageData) -> some View {
         HStack(spacing: 16) {
             // Left Progress Block
-            VStack(spacing: 16) {
+            VStack(spacing: 12) {
+                Text("Updated: \(formatTime(entry.date))")
+                    .font(.system(size: 8))
+                    .foregroundColor(.secondary.opacity(0.4))
+
                 ZStack {
                     Circle()
                         .stroke(Color.primary.opacity(0.05), lineWidth: 10)
-                        .frame(width: 80, height: 80)
+                        .frame(width: 70, height: 70)
                     Circle()
                         .trim(from: 0.0, to: CGFloat(usage.usagePercentage))
                         .stroke(
                             LinearGradient(colors: [.blue, .purple], startPoint: .top, endPoint: .bottom),
                             style: StrokeStyle(lineWidth: 10, lineCap: .round)
                         )
-                        .frame(width: 80, height: 80)
+                        .frame(width: 70, height: 70)
                         .rotationEffect(.degrees(-90))
                     
                     VStack(spacing: 2) {
@@ -164,6 +168,7 @@ struct BlackSSLEntryView : View {
                     Text("BlackSSL")
                         .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundColor(.primary)
+                    
                     Spacer()
                     Text("Live")
                         .font(.system(size: 8, weight: .semibold))
@@ -174,23 +179,16 @@ struct BlackSSLEntryView : View {
                         .cornerRadius(3)
                 }
                 
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: 3) {
                     if let today = usage.todayUsed {
-                        metricRow(icon: "bolt.fill", iconColor: .orange, label: "Today", value: NetworkManager.formatBytes(today))
+                        metricRow(icon: "bolt.circle.fill", iconColor: .orange, label: "Today", value: NetworkManager.formatBytes(today))
                     }
-                    metricRow(icon: "arrow.down.circle.fill", iconColor: .purple, label: "Used", value: NetworkManager.formatBytes(usage.used))
-                    metricRow(icon: "bolt.circle.fill", iconColor: .green, label: "Total", value: NetworkManager.formatBytes(usage.total))
-                    metricRow(icon: "calendar", iconColor: .blue, label: "Expires", value: formatExpirationDate(usage.expiredAt))
-                }
-                
-                Spacer(minLength: 0)
-                
-                // Last updated
-                HStack {
-                    Spacer()
-                    Text("Updated: \(formatTime(entry.date))")
-                        .font(.system(size: 8))
-                        .foregroundColor(.secondary)
+                    if let resetText = usage.nextResetText {
+                        metricRow(icon: "arrow.clockwise.circle.fill", iconColor: .purple, label: "Reset In", value: resetText)
+                    }
+                    metricRow(icon: "arrow.down.circle.fill", iconColor: .blue, label: "Used", value: NetworkManager.formatBytes(usage.used))
+                    metricRow(icon: "globe.fill", iconColor: .green, label: "Total", value: NetworkManager.formatBytes(usage.total))
+                    metricRow(icon: "calendar.circle.fill", iconColor: .secondary, label: "Expires", value: formatExpirationDate(usage.expiredAt))
                 }
             }
         }
@@ -210,16 +208,15 @@ struct BlackSSLEntryView : View {
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
         }
-        .padding(12)
     }
     
     // MARK: - Row Helper
     private func metricRow(icon: String, iconColor: Color, label: String, value: String) -> some View {
         HStack(spacing: 6) {
             Image(systemName: icon)
-                .font(.system(size: 10))
+                .font(.system(size: 11))
                 .foregroundColor(iconColor)
-                .frame(width: 12, alignment: .center)
+                .frame(width: 14, alignment: .center)
             
             Text(label)
                 .font(.system(size: 11))
@@ -230,6 +227,8 @@ struct BlackSSLEntryView : View {
             Text(value)
                 .font(.system(size: 11, weight: .medium))
                 .foregroundColor(.primary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
         }
     }
     

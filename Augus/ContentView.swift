@@ -265,12 +265,16 @@ struct ContentView: View {
                     .foregroundColor(.primary)
                     .padding(.bottom, 4)
                 
-                detailRow(title: "Upload Data", value: NetworkManager.formatBytes(data.upload), icon: "arrow.up.circle.fill", color: .blue)
-                detailRow(title: "Download Data", value: NetworkManager.formatBytes(data.download), icon: "arrow.down.circle.fill", color: .purple)
-                detailRow(title: "Remaining Quota", value: NetworkManager.formatBytes(data.remaining), icon: "bolt.circle.fill", color: .green)
                 if let today = data.todayUsed {
                     detailRow(title: "Today's Usage", value: NetworkManager.formatBytes(today), icon: "chart.bar.fill", color: .orange)
                 }
+                if let resetText = data.nextResetText {
+                    detailRow(title: "Next Reset", value: resetText, icon: "arrow.clockwise.circle.fill", color: .purple)
+                }
+                
+                detailRow(title: "Upload Data", value: NetworkManager.formatBytes(data.upload), icon: "arrow.up.circle.fill", color: .blue)
+                detailRow(title: "Download Data", value: NetworkManager.formatBytes(data.download), icon: "arrow.down.circle.fill", color: .purple)
+                detailRow(title: "Remaining Quota", value: NetworkManager.formatBytes(data.remaining), icon: "bolt.circle.fill", color: .green)
                 
                 Divider()
                     .background(Color.primary.opacity(0.08))

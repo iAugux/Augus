@@ -13,8 +13,9 @@ public struct UsageData: Codable {
     public let lastUpdated: Date
     public let isLoggedIn: Bool
     public let todayUsed: Int64?
+    public let nextResetText: String?
     
-    public init(upload: Int64, download: Int64, total: Int64, expiredAt: Int64?, email: String, lastUpdated: Date, isLoggedIn: Bool, todayUsed: Int64? = nil) {
+    public init(upload: Int64, download: Int64, total: Int64, expiredAt: Int64?, email: String, lastUpdated: Date, isLoggedIn: Bool, todayUsed: Int64? = nil, nextResetText: String? = nil) {
         self.upload = upload
         self.download = download
         self.total = total
@@ -23,6 +24,7 @@ public struct UsageData: Codable {
         self.lastUpdated = lastUpdated
         self.isLoggedIn = isLoggedIn
         self.todayUsed = todayUsed
+        self.nextResetText = nextResetText
     }
     
     public var used: Int64 {
@@ -344,7 +346,8 @@ public class NetworkManager {
                     email: SharedStore.loadEmail(),
                     lastUpdated: Date(),
                     isLoggedIn: true,
-                    todayUsed: SharedStore.loadUsageData()?.todayUsed
+                    todayUsed: SharedStore.loadUsageData()?.todayUsed,
+                    nextResetText: SharedStore.loadUsageData()?.nextResetText
                 )
                 
                 SharedStore.saveUsageData(usage)
@@ -556,15 +559,23 @@ public class NetworkManager {
             return nil
         }
         
-        // 4. Parse Today's Traffic: 今日流量 ... 已用 653.85 MB
+        // 4. Parse Today's Traffic: 今日流量 ... 已用 653.85 MB (1 天后重置)
         var todayUsedBytes: Int64? = nil
-        let todayPattern = "今日流量.*?已用\\s*([0-9.]+)\\s*(KB|MB|GB|TB)"
+        var nextResetText: String? = nil
+        let todayPattern = "今日流量.*?已用\\s*([0-9.]+)\\s*(KB|MB|GB|TB)(?:\\s*[(（]([^)）]+)[)）])?"
         if let regex = try? NSRegularExpression(pattern: todayPattern, options: [.caseInsensitive]),
            let match = regex.firstMatch(in: html, options: [], range: NSRange(location: 0, length: html.utf16.count)) {
             let nsString = html as NSString
             let val = Double(nsString.substring(with: match.range(at: 1))) ?? 0.0
             let unit = nsString.substring(with: match.range(at: 2)).uppercased()
             todayUsedBytes = convertToBytes(value: val, unit: unit)
+            
+            if match.numberOfRanges > 3 {
+                let range = match.range(at: 3)
+                if range.location != NSNotFound {
+                    nextResetText = nsString.substring(with: range)
+                }
+            }
         }
         
         return UsageData(
@@ -575,7 +586,8 @@ public class NetworkManager {
             email: email,
             lastUpdated: Date(),
             isLoggedIn: true,
-            todayUsed: todayUsedBytes
+            todayUsed: todayUsedBytes,
+            nextResetText: nextResetText
         )
     }
     
