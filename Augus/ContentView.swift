@@ -8,6 +8,7 @@ struct ContentView: View {
     @Environment(\.colorScheme) var colorScheme
     @State private var usageData: BlackSSLUsageData? = BlackSSLStore.loadUsageData()
     @State private var codexData: CodexUsageData? = CodexStore.loadUsageData()
+    @State private var geminiData: GeminiUsageData? = GeminiStore.loadUsageData()
     @State private var selectedTab: ServiceTab = .blackssl
     @State private var isShowingBlackSSLLogin = false
     @State private var isShowingCodexLogin = false
@@ -16,13 +17,27 @@ struct ContentView: View {
     @State private var isShowingDebugAlert = false
     @State private var debugText = ""
     @State private var manualCookieInput = ""
+    @State private var manualPortInput = ""
+    @State private var manualTokenInput = ""
     @State private var notificationDelegate = NotificationDelegate()
     
     enum ServiceTab: String, CaseIterable, Identifiable {
         case blackssl = "BlackSSL"
         case codex = "Codex"
+        case gemini = "Gemini"
         
         var id: String { rawValue }
+        
+        var tintColor: Color {
+            switch self {
+            case .blackssl:
+                return .blue
+            case .codex:
+                return Color(red: 0x8C / 255.0, green: 0xA0 / 255.0, blue: 1.0)
+            case .gemini:
+                return Color(red: 0x3D / 255.0, green: 0x8D / 255.0, blue: 0xF6 / 255.0)
+            }
+        }
     }
     
     var body: some View {
@@ -35,11 +50,25 @@ struct ContentView: View {
             
             codexTabContent
                 .tabItem {
-                    Label("Codex", systemImage: "cpu.fill")
+                    Label {
+                        Text("Codex")
+                    } icon: {
+                        Image(.codex)
+                    }
                 }
                 .tag(ServiceTab.codex)
+            
+            geminiTabContent
+                .tabItem {
+                    Label {
+                        Text("Gemini")
+                    } icon: {
+                        Image(.gemini)
+                    }
+                }
+                .tag(ServiceTab.gemini)
         }
-        .tint(selectedTab == .blackssl ? .purple : .green)
+        .tint(selectedTab.tintColor)
         .onChange(of: selectedTab) {
             errorMessage = nil
         }
@@ -66,6 +95,9 @@ struct ContentView: View {
             }
             if codexData != nil {
                 refreshCodexData()
+            }
+            if geminiData != nil {
+                refreshGeminiData()
             }
             
             // Request local notification permissions
@@ -157,11 +189,12 @@ struct ContentView: View {
     private var headerView: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
-                Text(selectedTab == .blackssl ? "BlackSSL" : "Codex")
+                Text(selectedTab == .blackssl ? "BlackSSL" : (selectedTab == .codex ? "Codex" : "Gemini"))
                     .font(.system(size: 28, weight: .bold, design: .rounded))
                     .foregroundStyle(.primary)
                 
-                if selectedTab == .blackssl {
+                switch selectedTab {
+                case .blackssl:
                     if let data = usageData {
                         Text(data.email)
                             .font(.subheadline)
@@ -171,7 +204,7 @@ struct ContentView: View {
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
-                } else {
+                case .codex:
                     if let data = codexData {
                         Text(data.email)
                             .font(.subheadline)
@@ -181,13 +214,30 @@ struct ContentView: View {
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
+                case .gemini:
+                    if let data = geminiData {
+                        Text(data.email)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Text("Google Gemini Quota Monitor")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
             
             Spacer()
             
             // Status Dot Indicator
-            let isConnected = (selectedTab == .blackssl ? usageData != nil : codexData != nil)
+            let isConnected: Bool = {
+                switch selectedTab {
+                case .blackssl: return usageData != nil
+                case .codex: return codexData != nil
+                case .gemini: return geminiData != nil
+                }
+            }()
+            
             HStack(spacing: 6) {
                 Circle()
                     .fill(isConnected ? Color.green : Color.orange)
@@ -978,6 +1028,326 @@ struct ContentView: View {
             return Color(red: 0.95, green: 0.61, blue: 0.07)
         } else {
             return Color(red: 0.90, green: 0.30, blue: 0.26)
+        }
+    }
+    
+    // MARK: - Gemini Views & Helpers
+    private var geminiTabContent: some View {
+        ZStack {
+            if colorScheme == .dark {
+                Color(red: 0.05, green: 0.05, blue: 0.08)
+                    .ignoresSafeArea()
+            } else {
+                Color(red: 0.94, green: 0.94, blue: 0.98)
+                    .ignoresSafeArea()
+            }
+            
+            glowingBlobs
+            
+            ScrollView {
+                VStack(spacing: 24) {
+                    headerView
+                    
+                    if let data = geminiData {
+                        geminiDashboardView(data: data)
+                    } else {
+                        geminiWelcomeView
+                    }
+                }
+                .padding()
+            }
+        }
+    }
+    
+    private var geminiWelcomeView: some View {
+        VStack(spacing: 24) {
+            Image(systemName: "sparkles")
+                .font(.system(size: 80))
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [.blue, .cyan],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .shadow(color: .blue.opacity(0.5), radius: 15, x: 0, y: 5)
+                .padding(.top, 40)
+                .onTapGesture(count: 2) {
+                    debugText = GeminiStore.loadLastLog()
+                    isShowingDebugAlert = true
+                }
+            
+            VStack(spacing: 8) {
+                Text("Monitor Gemini Quota")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .foregroundStyle(.primary)
+                
+                Text("Copy the raw JSON contents of ~/.gemini/oauth_creds.json on your Mac and paste it below.")
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 20)
+            }
+            
+            VStack(alignment: .leading, spacing: 12) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Token JSON Credentials")
+                        .font(.caption)
+                        .fontWeight(.bold)
+                        .foregroundColor(.secondary)
+                    
+                    ZStack(alignment: .topLeading) {
+                        if manualTokenInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                            Text("Paste raw oauth_creds.json here...")
+                                .foregroundColor(.secondary.opacity(0.4))
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 12)
+                                .font(.system(size: 11, design: .monospaced))
+                                .allowsHitTesting(false)
+                        }
+                        
+                        TextEditor(text: $manualTokenInput)
+                            .frame(height: 120)
+                            .font(.system(size: 11, design: .monospaced))
+                            .disableAutocorrection(true)
+                            .autocapitalization(.none)
+                            .padding(6)
+                            .background(Color.clear)
+                    }
+                    .background(colorScheme == .dark ? Color(white: 0.15) : Color(white: 0.95))
+                    .cornerRadius(10)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color.primary.opacity(0.08), lineWidth: 1)
+                    )
+                }
+                
+                Button {
+                    guard !manualTokenInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                        errorMessage = "Please paste your JSON credentials first."
+                        return
+                    }
+                    
+                    if let rawData = manualTokenInput.data(using: .utf8) {
+                        do {
+                            let creds = try JSONDecoder().decode(GeminiOAuthCreds.self, from: rawData)
+                            GeminiStore.saveOAuthCreds(creds)
+                            errorMessage = nil
+                            manualTokenInput = ""
+                            refreshGeminiData()
+                        } catch {
+                            errorMessage = "Invalid JSON schema. Make sure you copy/paste the entire oauth_creds.json file."
+                        }
+                    }
+                } label: {
+                    Text("Save & Connect")
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(
+                            LinearGradient(
+                                colors: [.blue, .cyan],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .cornerRadius(14)
+                        .shadow(color: .blue.opacity(0.3), radius: 10, x: 0, y: 4)
+                }
+                .padding(.top, 8)
+            }
+            .padding(.horizontal, 16)
+            .padding(.bottom, errorMessage == nil ? 20 : 0)
+            
+            if let error = errorMessage {
+                Text(error)
+                    .font(.caption)
+                    .foregroundColor(.red)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 20)
+            }
+        }
+        .padding()
+        .background(
+            VisualEffectView()
+                .clipShape(RoundedRectangle(cornerRadius: 24))
+        )
+        .background(
+            RoundedRectangle(cornerRadius: 24)
+                .fill(colorScheme == .dark ? Color(white: 0.1).opacity(0.4) : Color(white: 0.9).opacity(0.4))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 24)
+                .stroke(Color.primary.opacity(0.08), lineWidth: 1)
+        )
+        .padding(.top, 10)
+    }
+    
+    private func geminiDashboardView(data: GeminiUsageData) -> some View {
+        VStack(spacing: 24) {
+            VStack(alignment: .leading, spacing: 16) {
+                Text("Model Quota Limits")
+                    .font(.headline)
+                    .foregroundColor(.primary)
+                    .padding(.bottom, 4)
+                    .onTapGesture(count: 2) {
+                        debugText = GeminiStore.loadLastLog()
+                        isShowingDebugAlert = true
+                    }
+                
+                if data.models.isEmpty {
+                    Text("No registered active model quotas found.")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .padding(.vertical, 8)
+                } else {
+                    ForEach(data.models) { mdl in
+                        VStack(alignment: .leading, spacing: 6) {
+                            HStack {
+                                Text(mdl.name)
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.primary)
+                                    .lineLimit(1)
+                                
+                                Spacer()
+                                
+                                Text(String(format: "%.0f%% remaining", mdl.remainingFraction * 100))
+                                    .font(.caption)
+                                    .foregroundColor(mdl.remainingFraction < 0.25 ? .red : (mdl.remainingFraction < 0.6 ? .orange : .blue))
+                            }
+                            
+                            GeometryReader { geo in
+                                ZStack(alignment: .leading) {
+                                    RoundedRectangle(cornerRadius: 3)
+                                        .fill(Color.primary.opacity(0.06))
+                                        .frame(height: 6)
+                                    
+                                    RoundedRectangle(cornerRadius: 3)
+                                        .fill(
+                                            LinearGradient(
+                                                colors: mdl.remainingFraction < 0.25 ? [.red, .orange] : (mdl.remainingFraction < 0.6 ? [.orange, .yellow] : [.blue, .cyan]),
+                                                startPoint: .leading,
+                                                endPoint: .trailing
+                                            )
+                                        )
+                                        .frame(width: geo.size.width * CGFloat(mdl.remainingFraction), height: 6)
+                                }
+                            }
+                            .frame(height: 6)
+                            
+                            if let reset = mdl.resetTime {
+                                Text("Resets: \(formatResetDate(reset)) (\(formatCountdown(reset)))")
+                                    .font(.system(size: 9))
+                                    .foregroundColor(.secondary)
+                                    .padding(.top, 2)
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    }
+                }
+                
+                Divider()
+                    .background(Color.primary.opacity(0.08))
+                
+                detailRow(title: "Google Account", value: data.email, icon: "person.crop.circle.fill", color: .blue)
+                detailRow(title: "Last Synced", value: formatLastScrapedDate(data.lastUpdated), icon: "arrow.clockwise.circle.fill", color: .orange)
+            }
+            .padding()
+            .background(
+                VisualEffectView()
+                    .clipShape(RoundedRectangle(cornerRadius: 24))
+            )
+            .background(
+                RoundedRectangle(cornerRadius: 24)
+                    .fill(colorScheme == .dark ? Color(white: 0.1).opacity(0.4) : Color(white: 0.9).opacity(0.4))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 24)
+                    .stroke(Color.primary.opacity(0.08), lineWidth: 1)
+            )
+            
+            HStack(spacing: 16) {
+                Button {
+                    refreshGeminiData()
+                } label: {
+                    HStack {
+                        if isRefreshing {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                .scaleEffect(0.8)
+                        } else {
+                            Image(systemName: "arrow.clockwise")
+                        }
+                        Text("Refresh")
+                    }
+                    .foregroundColor(.primary)
+                    .fontWeight(.semibold)
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.primary.opacity(0.08))
+                    .cornerRadius(14)
+                }
+                .disabled(isRefreshing)
+                
+                Button {
+                    GeminiStore.clear()
+                    geminiData = nil
+                } label: {
+                    Text("Disconnect")
+                        .foregroundColor(.red)
+                        .fontWeight(.semibold)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.red.opacity(0.1))
+                        .cornerRadius(14)
+                }
+            }
+            
+            if let error = errorMessage {
+                Text(error)
+                    .font(.caption)
+                    .foregroundColor(.red)
+                    .multilineTextAlignment(.center)
+                    .padding(.top, 5)
+            }
+        }
+    }
+    
+    private func refreshGeminiData() {
+        isRefreshing = true
+        errorMessage = nil
+        GeminiNetworkManager.shared.fetchUsage { result in
+            DispatchQueue.main.async {
+                self.isRefreshing = false
+                switch result {
+                case .success(let data):
+                    self.geminiData = data
+                case .failure(let error):
+                    self.errorMessage = "Failed to update Gemini: \(error.localizedDescription)"
+                }
+            }
+        }
+    }
+    
+    private func formatResetDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd HH:mm"
+        return formatter.string(from: date)
+    }
+    
+    private func formatCountdown(_ date: Date) -> String {
+        let diff = date.timeIntervalSince(Date())
+        guard diff > 0 else { return "Resetting..." }
+        let hours = Int(diff) / 3600
+        let minutes = (Int(diff) % 3600) / 60
+        if hours > 0 {
+            return "\(hours)h \(minutes)m left"
+        } else {
+            return "\(minutes)m left"
         }
     }
 }

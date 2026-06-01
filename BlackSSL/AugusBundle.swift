@@ -5,9 +5,10 @@ import WidgetKit
 import SwiftUI
 
 @main
-struct BlackSSLBundle: WidgetBundle {
+struct AugusBundle: WidgetBundle {
     var body: some Widget {
         BlackSSL()
         CodexWidget()
+        GeminiWidget()
     }
 }
