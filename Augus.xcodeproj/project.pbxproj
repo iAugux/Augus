@@ -10,6 +10,7 @@
 		B188B45A2FCB257D00DE99A6 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B188B4592FCB257D00DE99A6 /* WidgetKit.framework */; };
 		B188B45C2FCB257D00DE99A6 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B188B45B2FCB257D00DE99A6 /* SwiftUI.framework */; };
 		B188B4672FCB257E00DE99A6 /* BlackSSLExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B188B4572FCB257D00DE99A6 /* BlackSSLExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		B188BB602FCD22E200DE99A6 /* Icon.icon in Resources */ = {isa = PBXBuildFile; fileRef = B188BB5F2FCD22E200DE99A6 /* Icon.icon */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,6 +42,7 @@
 		B188B4572FCB257D00DE99A6 /* BlackSSLExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = BlackSSLExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		B188B4592FCB257D00DE99A6 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = /System/Library/Frameworks/WidgetKit.framework; sourceTree = "<absolute>"; };
 		B188B45B2FCB257D00DE99A6 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = /System/Library/Frameworks/SwiftUI.framework; sourceTree = "<absolute>"; };
+		B188BB5F2FCD22E200DE99A6 /* Icon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = Icon.icon; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -112,6 +114,7 @@
 				B188B45D2FCB257D00DE99A6 /* BlackSSL */,
 				B188B4582FCB257D00DE99A6 /* Frameworks */,
 				B188B4462FCB231D00DE99A6 /* Products */,
+				B188BB5F2FCD22E200DE99A6 /* Icon.icon */,
 			);
 			sourceTree = "<group>";
 		};
@@ -226,6 +229,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B188BB602FCD22E200DE99A6 /* Icon.icon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -387,7 +391,7 @@
 		B188B4512FCB231E00DE99A6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = Icon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Augus/Augus.entitlements;
 				CODE_SIGN_STYLE = Automatic;
@@ -397,6 +401,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -427,7 +432,7 @@
 		B188B4522FCB231E00DE99A6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = Icon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Augus/Augus.entitlements;
 				CODE_SIGN_STYLE = Automatic;
@@ -437,6 +442,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
