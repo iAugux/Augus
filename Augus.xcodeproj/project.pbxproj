@@ -56,7 +56,8 @@
 		B188B4772FCB34BB00DE99A6 /* Exceptions for "Shared" folder in "BlackSSLExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				SharedData.swift,
+				BlackSSLData.swift,
+				CodexData.swift,
 			);
 			target = B188B4562FCB257D00DE99A6 /* BlackSSLExtension */;
 		};

@@ -5,7 +5,7 @@ import Foundation
 import WidgetKit
 import UserNotifications
 
-public struct UsageData: Codable, Sendable {
+public struct BlackSSLUsageData: Codable, Sendable {
     public let upload: Int64
     public let download: Int64
     public let total: Int64
@@ -42,40 +42,8 @@ public struct UsageData: Codable, Sendable {
     }
 }
 
-public struct SerializableCookie: Codable, Sendable {
-    public let name: String
-    public let value: String
-    public let domain: String
-    public let path: String
-    public let isSecure: Bool
-    public let isHTTPOnly: Bool
-    public let expiresDate: Date?
-    
-    public init(from cookie: HTTPCookie) {
-        self.name = cookie.name
-        self.value = cookie.value
-        self.domain = cookie.domain
-        self.path = cookie.path
-        self.isSecure = cookie.isSecure
-        self.isHTTPOnly = cookie.isHTTPOnly
-        self.expiresDate = cookie.expiresDate
-    }
-    
-    public func toHTTPCookie() -> HTTPCookie? {
-        var properties: [HTTPCookiePropertyKey: Any] = [
-            .name: name,
-            .value: value,
-            .domain: domain,
-            .path: path
-        ]
-        if isSecure { properties[.secure] = "TRUE" }
-        if isHTTPOnly { properties[HTTPCookiePropertyKey("HttpOnly")] = "TRUE" }
-        if let expiresDate = expiresDate { properties[.expires] = expiresDate }
-        return HTTPCookie(properties: properties)
-    }
-}
 
-public class SharedStore {
+public class BlackSSLStore {
     private static let appGroupIdentifier = "group.com.iAugus.Augus"
     
     public static var defaults: UserDefaults {
@@ -89,11 +57,11 @@ public class SharedStore {
         return UserDefaults.standard
     }
     
-    public static func saveUsageData(_ data: UsageData) {
+    public static func saveUsageData(_ data: BlackSSLUsageData) {
         if let encoded = try? JSONEncoder().encode(data) {
             defaults.set(encoded, forKey: "usage_data")
             defaults.synchronize()
-            print("SharedStore: Saved usage data successfully. Total: \(data.total)")
+            print("BlackSSLStore: Saved usage data successfully. Total: \(data.total)")
             
             if let todayUsed = data.todayUsed {
                 checkAndSendTodayUsageNotification(todayUsed: todayUsed)
@@ -101,9 +69,9 @@ public class SharedStore {
         }
     }
     
-    public static func loadUsageData() -> UsageData? {
+    public static func loadUsageData() -> BlackSSLUsageData? {
         guard let data = defaults.data(forKey: "usage_data") else { return nil }
-        return try? JSONDecoder().decode(UsageData.self, from: data)
+        return try? JSONDecoder().decode(BlackSSLUsageData.self, from: data)
     }
     
     public static func saveCookies(_ cookies: [HTTPCookie]) {
@@ -111,21 +79,21 @@ public class SharedStore {
         if let encoded = try? JSONEncoder().encode(serializable) {
             defaults.set(encoded, forKey: "cookies")
             defaults.synchronize()
-            print("SharedStore: Saved \(cookies.count) cookies to defaults: \(cookies.map { "\($0.name)=\($0.value)" })")
+            print("BlackSSLStore: Saved \(cookies.count) cookies to defaults: \(cookies.map { "\($0.name)=\($0.value)" })")
         }
     }
     
     public static func loadCookies() -> [HTTPCookie]? {
         guard let data = defaults.data(forKey: "cookies") else {
-            print("SharedStore: No cookies found in defaults.")
+            print("BlackSSLStore: No cookies found in defaults.")
             return nil
         }
         guard let serializable = try? JSONDecoder().decode([SerializableCookie].self, from: data) else {
-            print("SharedStore: Failed to decode cookies.")
+            print("BlackSSLStore: Failed to decode cookies.")
             return nil
         }
         let cookies = serializable.compactMap { $0.toHTTPCookie() }
-        print("SharedStore: Loaded \(cookies.count) cookies from defaults: \(cookies.map { "\($0.name)=\($0.value)" })")
+        print("BlackSSLStore: Loaded \(cookies.count) cookies from defaults: \(cookies.map { "\($0.name)=\($0.value)" })")
         return cookies
     }
     
@@ -150,7 +118,7 @@ public class SharedStore {
     public static func saveSubscriptionToken(_ token: String) {
         defaults.set(token, forKey: "subscription_token")
         defaults.synchronize()
-        print("SharedStore: Saved subscription token: \(token)")
+        print("BlackSSLStore: Saved subscription token: \(token)")
     }
     
     public static func loadSubscriptionToken() -> String? {
@@ -160,7 +128,7 @@ public class SharedStore {
     public static func saveSubscriptionURL(_ url: String) {
         defaults.set(url, forKey: "subscription_url")
         defaults.synchronize()
-        print("SharedStore: Saved subscription URL: \(url)")
+        print("BlackSSLStore: Saved subscription URL: \(url)")
     }
     
     public static func loadSubscriptionURL() -> String? {
@@ -179,7 +147,7 @@ public class SharedStore {
     public static func saveEmail(_ email: String) {
         defaults.set(email, forKey: "email")
         defaults.synchronize()
-        print("SharedStore: Saved email: \(email)")
+        print("BlackSSLStore: Saved email: \(email)")
     }
     
     public static func loadEmail() -> String {
@@ -216,14 +184,14 @@ public class SharedStore {
         defaults.removeObject(forKey: "last_scrape_result")
         defaults.removeObject(forKey: "last_1g_notification_date")
         defaults.synchronize()
-        print("SharedStore: Cleared all stored data.")
+        print("BlackSSLStore: Cleared all stored data.")
         WidgetCenter.shared.reloadAllTimelines()
     }
     
     public static func checkAndSendTodayUsageNotification(todayUsed: Int64) {
         let limit: Int64 = 1 * 1024 * 1024 * 1024 // 1 GB in bytes (1024^3)
         guard todayUsed >= limit else {
-            print("SharedStore: todayUsed (\(todayUsed)) is below limit (\(limit))")
+            print("BlackSSLStore: todayUsed (\(todayUsed)) is below limit (\(limit))")
             return
         }
         
@@ -233,7 +201,7 @@ public class SharedStore {
         
         if let lastAlertDate = loadLast1GNotificationDate(), lastAlertDate == todayStr {
             let logMsg = "Notification skipped: already sent today (\(todayStr))"
-            print("SharedStore: \(logMsg)")
+            print("BlackSSLStore: \(logMsg)")
             saveLastScrapeResult(logMsg)
             return
         }
@@ -246,15 +214,15 @@ public class SharedStore {
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
         let request = UNNotificationRequest(identifier: "TodayUsageLimitAlert", content: content, trigger: trigger)
         
-        print("SharedStore: Attempting to send 1G alert notification...")
+        print("BlackSSLStore: Attempting to send 1G alert notification...")
         UNUserNotificationCenter.current().add(request) { error in
             if let error = error {
                 let logMsg = "Failed to send 1G alert notification: \(error.localizedDescription)"
-                print("SharedStore: \(logMsg)")
+                print("BlackSSLStore: \(logMsg)")
                 saveLastScrapeResult(logMsg)
             } else {
                 let logMsg = "Sent 1G alert notification successfully on \(todayStr)"
-                print("SharedStore: \(logMsg)")
+                print("BlackSSLStore: \(logMsg)")
                 saveLastScrapeResult(logMsg)
                 saveLast1GNotificationDate(todayStr)
             }
@@ -262,23 +230,23 @@ public class SharedStore {
     }
 }
 
-public final class NetworkManager: Sendable {
-    public static let shared = NetworkManager()
+public final class BlackSSLNetworkManager: Sendable {
+    public static let shared = BlackSSLNetworkManager()
     
     private init() {}
     
-    public func fetchUsage(completion: @escaping @Sendable (Result<UsageData, Error>) -> Void) {
-        let baseHost = SharedStore.loadBaseHost()
-        let cookies = SharedStore.loadCookies()
+    public func fetchUsage(completion: @escaping @Sendable (Result<BlackSSLUsageData, Error>) -> Void) {
+        let baseHost = BlackSSLStore.loadBaseHost()
+        let cookies = BlackSSLStore.loadCookies()
         
         // If we have cookies, try to scrape the dashboard first to get the most detailed info (including today's traffic)
         if let cookies = cookies, !cookies.isEmpty {
-            print("NetworkManager: Cookies found. Attempting dashboard scrape first.")
+            print("BlackSSLNetworkManager: Cookies found. Attempting dashboard scrape first.")
             let dashboardURL = "https://\(baseHost)/dashboard"
             guard let url = URL(string: dashboardURL) else {
                 let errorMsg = "Invalid Dashboard URL"
-                SharedStore.saveLastScrapeResult("Error: \(errorMsg)")
-                completion(.failure(NSError(domain: "NetworkManager", code: -1, userInfo: [NSLocalizedDescriptionKey: errorMsg])))
+                BlackSSLStore.saveLastScrapeResult("Error: \(errorMsg)")
+                completion(.failure(NSError(domain: "BlackSSLNetworkManager", code: -1, userInfo: [NSLocalizedDescriptionKey: errorMsg])))
                 return
             }
             
@@ -295,33 +263,33 @@ public final class NetworkManager: Sendable {
             let task = URLSession.shared.dataTask(with: request) { data, response, error in
                 if let error = error {
                     let logMsg = "Dashboard scrape error: \(error.localizedDescription)"
-                    print("NetworkManager: \(logMsg). Falling back to subscription URL.")
-                    SharedStore.saveLastScrapeResult(logMsg)
+                    print("BlackSSLNetworkManager: \(logMsg). Falling back to subscription URL.")
+                    BlackSSLStore.saveLastScrapeResult(logMsg)
                     self.fetchViaSubscriptionURL(completion: completion)
                     return
                 }
                 
                 guard let data = data, let html = String(data: data, encoding: .utf8) else {
                     let logMsg = "Failed to convert scrape data to UTF8 string"
-                    print("NetworkManager: \(logMsg). Falling back to subscription URL.")
-                    SharedStore.saveLastScrapeResult(logMsg)
+                    print("BlackSSLNetworkManager: \(logMsg). Falling back to subscription URL.")
+                    BlackSSLStore.saveLastScrapeResult(logMsg)
                     self.fetchViaSubscriptionURL(completion: completion)
                     return
                 }
                 
                 guard let httpResponse = response as? HTTPURLResponse else {
                     let logMsg = "Response is not HTTPURLResponse"
-                    print("NetworkManager: \(logMsg). Falling back to subscription URL.")
-                    SharedStore.saveLastScrapeResult(logMsg)
+                    print("BlackSSLNetworkManager: \(logMsg). Falling back to subscription URL.")
+                    BlackSSLStore.saveLastScrapeResult(logMsg)
                     self.fetchViaSubscriptionURL(completion: completion)
                     return
                 }
                 
-                print("NetworkManager: Scrape Response Code: \(httpResponse.statusCode), HTML Length: \(html.count)")
+                print("BlackSSLNetworkManager: Scrape Response Code: \(httpResponse.statusCode), HTML Length: \(html.count)")
                 if httpResponse.statusCode != 200 {
                     let logMsg = "Scrape non-200 (Code: \(httpResponse.statusCode)). HTML: \(String(html.prefix(120)))"
-                    print("NetworkManager: \(logMsg). Falling back to subscription URL.")
-                    SharedStore.saveLastScrapeResult(logMsg)
+                    print("BlackSSLNetworkManager: \(logMsg). Falling back to subscription URL.")
+                    BlackSSLStore.saveLastScrapeResult(logMsg)
                     self.fetchViaSubscriptionURL(completion: completion)
                     return
                 }
@@ -329,12 +297,12 @@ public final class NetworkManager: Sendable {
                 let hasKeywords = html.contains("首页") || html.contains("退出") || html.contains("dashboard") || html.contains("Dashboard")
                 if hasKeywords {
                     if let usage = self.parseDashboardHTML(html) {
-                        let logMsg = "Success! Today: \(usage.todayUsed != nil ? NetworkManager.formatBytes(usage.todayUsed!) : "nil"), Reset: \(usage.nextResetText ?? "nil")"
-                        print("NetworkManager: \(logMsg)")
-                        SharedStore.saveLastScrapeResult(logMsg)
-                        SharedStore.saveUsageData(usage)
+                        let logMsg = "Success! Today: \(usage.todayUsed != nil ? BlackSSLNetworkManager.formatBytes(usage.todayUsed!) : "nil"), Reset: \(usage.nextResetText ?? "nil")"
+                        print("BlackSSLNetworkManager: \(logMsg)")
+                        BlackSSLStore.saveLastScrapeResult(logMsg)
+                        BlackSSLStore.saveUsageData(usage)
                         
-                        if SharedStore.loadSubscriptionURL() == nil {
+                        if BlackSSLStore.loadSubscriptionURL() == nil {
                             self.bootstrapSubscriptionURL()
                         }
                         
@@ -343,13 +311,13 @@ public final class NetworkManager: Sendable {
                         return
                     } else {
                         let logMsg = "Keywords found but parsing failed. HTML: \(String(html.prefix(150)))"
-                        print("NetworkManager: \(logMsg)")
-                        SharedStore.saveLastScrapeResult(logMsg)
+                        print("BlackSSLNetworkManager: \(logMsg)")
+                        BlackSSLStore.saveLastScrapeResult(logMsg)
                     }
                 } else {
                     let logMsg = "Keywords not found (unauthorized/SPA). HTML: \(String(html.prefix(150)))"
-                    print("NetworkManager: \(logMsg)")
-                    SharedStore.saveLastScrapeResult(logMsg)
+                    print("BlackSSLNetworkManager: \(logMsg)")
+                    BlackSSLStore.saveLastScrapeResult(logMsg)
                 }
                 
                 self.fetchViaSubscriptionURL(completion: completion)
@@ -357,13 +325,13 @@ public final class NetworkManager: Sendable {
             task.resume()
         } else {
             // No cookies, go straight to subscription URL
-            SharedStore.saveLastScrapeResult("No cookies found. Directly fetching via subscription URL.")
+            BlackSSLStore.saveLastScrapeResult("No cookies found. Directly fetching via subscription URL.")
             self.fetchViaSubscriptionURL(completion: completion)
         }
     }
     
     private func bootstrapSubscriptionURL() {
-        let baseHost = SharedStore.loadBaseHost()
+        let baseHost = BlackSSLStore.loadBaseHost()
         let manualsURL = "https://\(baseHost)/manuals/ssl/shadowrocket"
         guard let url = URL(string: manualsURL) else { return }
         
@@ -372,7 +340,7 @@ public final class NetworkManager: Sendable {
         request.timeoutInterval = 15.0
         request.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15", forHTTPHeaderField: "User-Agent")
         
-        if let cookies = SharedStore.loadCookies() {
+        if let cookies = BlackSSLStore.loadCookies() {
             let headerFields = HTTPCookie.requestHeaderFields(with: cookies)
             for (key, value) in headerFields {
                 request.setValue(value, forHTTPHeaderField: key)
@@ -382,22 +350,22 @@ public final class NetworkManager: Sendable {
         let task = URLSession.shared.dataTask(with: request) { data, _, _ in
             guard let data = data, let html = String(data: data, encoding: .utf8) else { return }
             if let subURL = self.extractSubscriptionURLFromManuals(html) {
-                print("NetworkManager: Background bootstrap: Subscription URL successfully extracted: \(subURL)")
-                SharedStore.saveSubscriptionURL(subURL)
+                print("BlackSSLNetworkManager: Background bootstrap: Subscription URL successfully extracted: \(subURL)")
+                BlackSSLStore.saveSubscriptionURL(subURL)
                 if let email = self.extractEmail(from: html) {
-                    SharedStore.saveEmail(email)
+                    BlackSSLStore.saveEmail(email)
                 }
             }
         }
         task.resume()
     }
     
-    private func fetchViaSubscriptionURL(completion: @escaping (Result<UsageData, Error>) -> Void) {
-        let baseHost = SharedStore.loadBaseHost()
-        if let subscriptionURL = SharedStore.loadSubscriptionURL() {
-            print("NetworkManager: Fetching via subscription traffic URL: \(subscriptionURL)")
+    private func fetchViaSubscriptionURL(completion: @escaping (Result<BlackSSLUsageData, Error>) -> Void) {
+        let baseHost = BlackSSLStore.loadBaseHost()
+        if let subscriptionURL = BlackSSLStore.loadSubscriptionURL() {
+            print("BlackSSLNetworkManager: Fetching via subscription traffic URL: \(subscriptionURL)")
             guard let url = URL(string: subscriptionURL) else {
-                completion(.failure(NSError(domain: "NetworkManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid Subscription URL"])))
+                completion(.failure(NSError(domain: "BlackSSLNetworkManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid Subscription URL"])))
                 return
             }
             
@@ -408,17 +376,17 @@ public final class NetworkManager: Sendable {
             
             let task = URLSession.shared.dataTask(with: request) { _, response, error in
                 if let error = error {
-                    print("NetworkManager: Subscription fetch network error: \(error.localizedDescription)")
+                    print("BlackSSLNetworkManager: Subscription fetch network error: \(error.localizedDescription)")
                     completion(.failure(error))
                     return
                 }
                 
                 guard let httpResponse = response as? HTTPURLResponse else {
-                    completion(.failure(NSError(domain: "NetworkManager", code: -2, userInfo: [NSLocalizedDescriptionKey: "No HTTP Response"])))
+                    completion(.failure(NSError(domain: "BlackSSLNetworkManager", code: -2, userInfo: [NSLocalizedDescriptionKey: "No HTTP Response"])))
                     return
                 }
                 
-                print("NetworkManager: Subscription response status code: \(httpResponse.statusCode)")
+                print("BlackSSLNetworkManager: Subscription response status code: \(httpResponse.statusCode)")
                 
                 var userInfoHeader: String? = nil
                 for (key, value) in httpResponse.allHeaderFields {
@@ -430,25 +398,25 @@ public final class NetworkManager: Sendable {
                 
                 guard let headerValue = userInfoHeader,
                       let parsed = self.parseSubscriptionUserInfo(headerValue) else {
-                    SharedStore.defaults.removeObject(forKey: "subscription_url")
-                    SharedStore.defaults.removeObject(forKey: "subscription_token")
-                    completion(.failure(NSError(domain: "NetworkManager", code: -3, userInfo: [NSLocalizedDescriptionKey: "Subscription header not found or invalid"])))
+                    BlackSSLStore.defaults.removeObject(forKey: "subscription_url")
+                    BlackSSLStore.defaults.removeObject(forKey: "subscription_token")
+                    completion(.failure(NSError(domain: "BlackSSLNetworkManager", code: -3, userInfo: [NSLocalizedDescriptionKey: "Subscription header not found or invalid"])))
                     return
                 }
                 
-                let usage = UsageData(
+                let usage = BlackSSLUsageData(
                     upload: parsed.upload,
                     download: parsed.download,
                     total: parsed.total,
                     expiredAt: parsed.expire,
-                    email: SharedStore.loadEmail(),
+                    email: BlackSSLStore.loadEmail(),
                     lastUpdated: Date(),
                     isLoggedIn: true,
-                    todayUsed: SharedStore.loadUsageData()?.todayUsed,
-                    nextResetText: SharedStore.loadUsageData()?.nextResetText
+                    todayUsed: BlackSSLStore.loadUsageData()?.todayUsed,
+                    nextResetText: BlackSSLStore.loadUsageData()?.nextResetText
                 )
                 
-                SharedStore.saveUsageData(usage)
+                BlackSSLStore.saveUsageData(usage)
                 WidgetCenter.shared.reloadAllTimelines()
                 completion(.success(usage))
             }
@@ -456,9 +424,9 @@ public final class NetworkManager: Sendable {
         } else {
             // If no subscription URL, bootstrapping is needed - we try manuals page using cookies
             let manualsURL = "https://\(baseHost)/manuals/ssl/shadowrocket"
-            print("NetworkManager: No subscription URL saved. Requesting manuals page. URL: \(manualsURL)")
+            print("BlackSSLNetworkManager: No subscription URL saved. Requesting manuals page. URL: \(manualsURL)")
             guard let url = URL(string: manualsURL) else {
-                completion(.failure(NSError(domain: "NetworkManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid Manuals URL"])))
+                completion(.failure(NSError(domain: "BlackSSLNetworkManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid Manuals URL"])))
                 return
             }
             
@@ -467,7 +435,7 @@ public final class NetworkManager: Sendable {
             request.timeoutInterval = 15.0
             request.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15", forHTTPHeaderField: "User-Agent")
             
-            if let cookies = SharedStore.loadCookies() {
+            if let cookies = BlackSSLStore.loadCookies() {
                 let headerFields = HTTPCookie.requestHeaderFields(with: cookies)
                 for (key, value) in headerFields {
                     request.setValue(value, forHTTPHeaderField: key)
@@ -476,7 +444,7 @@ public final class NetworkManager: Sendable {
             
             let task = URLSession.shared.dataTask(with: request) { data, _, error in
                 if let error = error {
-                    print("NetworkManager: Manuals fetch failed: \(error.localizedDescription). Trying dashboard fallback.")
+                    print("BlackSSLNetworkManager: Manuals fetch failed: \(error.localizedDescription). Trying dashboard fallback.")
                     self.fallbackToDashboardScrape(completion: completion)
                     return
                 }
@@ -487,14 +455,14 @@ public final class NetworkManager: Sendable {
                 }
                 
                 if let subURL = self.extractSubscriptionURLFromManuals(html) {
-                    print("NetworkManager: Scraped subscription URL from manuals: \(subURL)")
-                    SharedStore.saveSubscriptionURL(subURL)
+                    print("BlackSSLNetworkManager: Scraped subscription URL from manuals: \(subURL)")
+                    BlackSSLStore.saveSubscriptionURL(subURL)
                     if let email = self.extractEmail(from: html) {
-                        SharedStore.saveEmail(email)
+                        BlackSSLStore.saveEmail(email)
                     }
                     self.fetchViaSubscriptionURL(completion: completion)
                 } else {
-                    print("NetworkManager: No sub URL in manuals. Falling back to dashboard scrape.")
+                    print("BlackSSLNetworkManager: No sub URL in manuals. Falling back to dashboard scrape.")
                     self.fallbackToDashboardScrape(completion: completion)
                 }
             }
@@ -502,12 +470,12 @@ public final class NetworkManager: Sendable {
         }
     }
     
-    private func fallbackToDashboardScrape(completion: @escaping (Result<UsageData, Error>) -> Void) {
-        let baseHost = SharedStore.loadBaseHost()
+    private func fallbackToDashboardScrape(completion: @escaping (Result<BlackSSLUsageData, Error>) -> Void) {
+        let baseHost = BlackSSLStore.loadBaseHost()
         let dashboardURL = "https://\(baseHost)/dashboard"
-        print("NetworkManager: Falling back to scraping dashboard directly. URL: \(dashboardURL)")
+        print("BlackSSLNetworkManager: Falling back to scraping dashboard directly. URL: \(dashboardURL)")
         guard let url = URL(string: dashboardURL) else {
-            completion(.failure(NSError(domain: "NetworkManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid Dashboard URL"])))
+            completion(.failure(NSError(domain: "BlackSSLNetworkManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid Dashboard URL"])))
             return
         }
         
@@ -517,7 +485,7 @@ public final class NetworkManager: Sendable {
         request.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15", forHTTPHeaderField: "User-Agent")
         
         // Inject Cookies
-        if let cookies = SharedStore.loadCookies() {
+        if let cookies = BlackSSLStore.loadCookies() {
             let headerFields = HTTPCookie.requestHeaderFields(with: cookies)
             for (key, value) in headerFields {
                 request.setValue(value, forHTTPHeaderField: key)
@@ -526,24 +494,24 @@ public final class NetworkManager: Sendable {
         
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
-                print("NetworkManager: Dashboard scrape network error: \(error.localizedDescription)")
+                print("BlackSSLNetworkManager: Dashboard scrape network error: \(error.localizedDescription)")
                 completion(.failure(error))
                 return
             }
             
             guard let data = data, let html = String(data: data, encoding: .utf8) else {
-                completion(.failure(NSError(domain: "NetworkManager", code: -2, userInfo: [NSLocalizedDescriptionKey: "Failed to read dashboard HTML"])))
+                completion(.failure(NSError(domain: "BlackSSLNetworkManager", code: -2, userInfo: [NSLocalizedDescriptionKey: "Failed to read dashboard HTML"])))
                 return
             }
             
             if let usage = self.parseDashboardHTML(html) {
-                print("NetworkManager: Successfully scraped usage from dashboard! Total: \(usage.total), Used: \(usage.used)")
-                SharedStore.saveUsageData(usage)
+                print("BlackSSLNetworkManager: Successfully scraped usage from dashboard! Total: \(usage.total), Used: \(usage.used)")
+                BlackSSLStore.saveUsageData(usage)
                 WidgetCenter.shared.reloadAllTimelines()
                 completion(.success(usage))
             } else {
-                print("NetworkManager: Error - Failed to parse dashboard HTML.")
-                completion(.failure(NSError(domain: "NetworkManager", code: -4, userInfo: [NSLocalizedDescriptionKey: "Could not parse traffic data from dashboard"])))
+                print("BlackSSLNetworkManager: Error - Failed to parse dashboard HTML.")
+                completion(.failure(NSError(domain: "BlackSSLNetworkManager", code: -4, userInfo: [NSLocalizedDescriptionKey: "Could not parse traffic data from dashboard"])))
             }
         }
         task.resume()
@@ -611,11 +579,11 @@ public final class NetworkManager: Sendable {
         return nil
     }
     
-    private func parseDashboardHTML(_ html: String) -> UsageData? {
+    private func parseDashboardHTML(_ html: String) -> BlackSSLUsageData? {
         var usedBytes: Int64 = 0
         var totalBytes: Int64 = 0
         var expiredAt: Int64? = nil
-        var email = SharedStore.loadEmail()
+        var email = BlackSSLStore.loadEmail()
         
         // 1. Parse Email: "email": "iAugux@gmail.com"
         let emailPattern = "\"email\"\\s*:\\s*\"([^\"]+)\""
@@ -623,7 +591,7 @@ public final class NetworkManager: Sendable {
            let match = regex.firstMatch(in: html, options: [], range: NSRange(location: 0, length: html.utf16.count)) {
             let nsString = html as NSString
             email = nsString.substring(with: match.range(at: 1))
-            SharedStore.saveEmail(email)
+            BlackSSLStore.saveEmail(email)
         }
         
         // 2. Parse Expiration Date: "到期时间" ... "2026-12-04"
@@ -653,7 +621,7 @@ public final class NetworkManager: Sendable {
             usedBytes = convertToBytes(value: usedVal, unit: usedUnit)
             totalBytes = convertToBytes(value: totalVal, unit: totalUnit)
         } else {
-            print("NetworkManager: Failed to parse traffic quota using standard pattern.")
+            print("BlackSSLNetworkManager: Failed to parse traffic quota using standard pattern.")
             return nil
         }
         
@@ -676,7 +644,7 @@ public final class NetworkManager: Sendable {
             }
         }
         
-        return UsageData(
+        return BlackSSLUsageData(
             upload: 0,
             download: usedBytes,
             total: totalBytes,
@@ -725,3 +693,5 @@ public final class NetworkManager: Sendable {
         return String(format: "%.2f MB", mb)
     }
 }
+
+

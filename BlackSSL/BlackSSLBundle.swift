@@ -8,5 +8,6 @@ import SwiftUI
 struct BlackSSLBundle: WidgetBundle {
     var body: some Widget {
         BlackSSL()
+        CodexWidget()
     }
 }

@@ -99,14 +99,11 @@ public struct WebView: PlatformViewRepresentable {
     #if os(macOS)
     public func makeNSView(context: Context) -> WKWebView {
         let webView = WKWebView()
+        webView.customUserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15"
         webView.navigationDelegate = context.coordinator
         context.coordinator.startTracking(webView: webView)
         
-        // Clear previous website data to force user to login page
-        let dataTypes = WKWebsiteDataStore.allWebsiteDataTypes()
-        WKWebsiteDataStore.default().removeData(ofTypes: dataTypes, modifiedSince: Date.distantPast) {
-            webView.load(URLRequest(url: self.url))
-        }
+        webView.load(URLRequest(url: self.url))
         return webView
     }
     
@@ -114,14 +111,11 @@ public struct WebView: PlatformViewRepresentable {
     #else
     public func makeUIView(context: Context) -> WKWebView {
         let webView = WKWebView()
+        webView.customUserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Mobile/15E148 Safari/604.1"
         webView.navigationDelegate = context.coordinator
         context.coordinator.startTracking(webView: webView)
         
-        // Clear previous website data to force user to login page
-        let dataTypes = WKWebsiteDataStore.allWebsiteDataTypes()
-        WKWebsiteDataStore.default().removeData(ofTypes: dataTypes, modifiedSince: Date.distantPast) {
-            webView.load(URLRequest(url: self.url))
-        }
+        webView.load(URLRequest(url: self.url))
         return webView
     }
     

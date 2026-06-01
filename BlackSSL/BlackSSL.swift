@@ -10,14 +10,14 @@ struct Provider: TimelineProvider {
     }
 
     func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let entry = SimpleEntry(date: Date(), usage: SharedStore.loadUsageData() ?? mockUsage, error: nil)
+        let entry = SimpleEntry(date: Date(), usage: BlackSSLStore.loadUsageData() ?? mockUsage, error: nil)
         completion(entry)
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
         // Fetch new usage details in the background when requested
-        NetworkManager.shared.fetchUsage { result in
-            let latestData = SharedStore.loadUsageData()
+        BlackSSLNetworkManager.shared.fetchUsage { result in
+            let latestData = BlackSSLStore.loadUsageData()
             let entry: SimpleEntry
             
             switch result {
@@ -35,8 +35,8 @@ struct Provider: TimelineProvider {
         }
     }
     
-    private var mockUsage: UsageData {
-        UsageData(
+    private var mockUsage: BlackSSLUsageData {
+        BlackSSLUsageData(
             upload: 12_400_000_000,
             download: 38_600_000_000,
             total: 100_000_000_000,
@@ -51,7 +51,7 @@ struct Provider: TimelineProvider {
 
 struct SimpleEntry: TimelineEntry {
     let date: Date
-    let usage: UsageData?
+    let usage: BlackSSLUsageData?
     let error: String?
 }
 
@@ -77,7 +77,7 @@ struct BlackSSLEntryView : View {
     }
     
     // MARK: - Small Widget View
-    private func smallWidgetView(_ usage: UsageData) -> some View {
+    private func smallWidgetView(_ usage: BlackSSLUsageData) -> some View {
         VStack(spacing: 8) {
             HStack {
                 Text("BlackSSL")
@@ -120,14 +120,14 @@ struct BlackSSLEntryView : View {
             Spacer(minLength: 0)
             
             // Remaining Traffic text
-            Text("Rem: \(NetworkManager.formatBytes(usage.remaining))")
+            Text("Rem: \(BlackSSLNetworkManager.formatBytes(usage.remaining))")
                 .font(.system(size: 10, weight: .semibold, design: .rounded))
                 .foregroundColor(.primary)
         }
     }
     
     // MARK: - Medium Widget View
-    private func mediumWidgetView(_ usage: UsageData) -> some View {
+    private func mediumWidgetView(_ usage: BlackSSLUsageData) -> some View {
         HStack(spacing: 32) {
             // Left Progress Block
             VStack(spacing: 12) {
@@ -160,7 +160,7 @@ struct BlackSSLEntryView : View {
                     }
                 }
                 
-                Text("\(NetworkManager.formatBytes(usage.remaining)) left")
+                Text("\(BlackSSLNetworkManager.formatBytes(usage.remaining)) left")
                     .font(.system(size: 10, weight: .medium))
                     .foregroundColor(.green)
             }
@@ -184,13 +184,13 @@ struct BlackSSLEntryView : View {
                 
                 VStack(alignment: .leading, spacing: 2) {
                     if let today = usage.todayUsed {
-                        metricRow(icon: "chart.bar.fill", iconColor: .orange, label: "Today", value: NetworkManager.formatBytes(today))
+                        metricRow(icon: "chart.bar.fill", iconColor: .orange, label: "Today", value: BlackSSLNetworkManager.formatBytes(today))
                     }
                     if let resetText = usage.nextResetText {
                         metricRow(icon: "arrow.clockwise.circle.fill", iconColor: .purple, label: "Reset In", value: resetText)
                     }
-                    metricRow(icon: "arrow.down.circle.fill", iconColor: .purple, label: "Used", value: NetworkManager.formatBytes(usage.used))
-                    metricRow(icon: "globe.fill", iconColor: .green, label: "Total", value: NetworkManager.formatBytes(usage.total))
+                    metricRow(icon: "arrow.down.circle.fill", iconColor: .purple, label: "Used", value: BlackSSLNetworkManager.formatBytes(usage.used))
+                    metricRow(icon: "globe.fill", iconColor: .green, label: "Total", value: BlackSSLNetworkManager.formatBytes(usage.total))
                     metricRow(icon: "calendar.badge.clock", iconColor: .orange, label: "Expires", value: formatExpirationDate(usage.expiredAt))
                     metricRow(icon: "info.circle.fill", iconColor: .secondary, label: "Status", value: expirationDaysLeftText(usage.expiredAt))
                 }
@@ -341,7 +341,7 @@ struct WidgetBackgroundView: View {
     BlackSSL()
 } timeline: {
     SimpleEntry(date: .now, usage: nil, error: nil)
-    SimpleEntry(date: .now, usage: UsageData(
+    SimpleEntry(date: .now, usage: BlackSSLUsageData(
         upload: 15_000_000_000,
         download: 35_000_000_000,
         total: 100_000_000_000,
@@ -352,3 +352,5 @@ struct WidgetBackgroundView: View {
         todayUsed: 824_100_000
     ), error: nil)
 }
+
+
