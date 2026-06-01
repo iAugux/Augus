@@ -482,24 +482,25 @@ struct ContentView: View {
                         .frame(width: 130, height: 130)
                     
                     // Usage Progress Ring
+                    let primaryRemaining = 1.0 - data.primaryUsedPercent
                     Circle()
-                        .trim(from: 0.0, to: CGFloat(data.primaryUsedPercent))
+                        .trim(from: 0.0, to: CGFloat(primaryRemaining))
                         .stroke(
-                            codexProgressGradient(for: data.primaryUsedPercent),
+                            codexProgressGradient(for: primaryRemaining),
                             style: StrokeStyle(lineWidth: 14, lineCap: .round)
                         )
                         .frame(width: 130, height: 130)
                         .rotationEffect(.degrees(-90))
-                        .animation(.easeOut(duration: 0.8), value: data.primaryUsedPercent)
-                        .shadow(color: codexProgressShadowColor(for: data.primaryUsedPercent).opacity(0.25), radius: 8, x: 0, y: 4)
+                        .animation(.easeOut(duration: 0.8), value: primaryRemaining)
+                        .shadow(color: codexProgressShadowColor(for: primaryRemaining).opacity(0.25), radius: 8, x: 0, y: 4)
                     
                     // Inside Circle Texts
                     VStack(spacing: 2) {
-                        Text(String(format: "%.1f%%", data.primaryUsedPercent * 100))
+                        Text(formatCodexPercent(primaryRemaining))
                             .font(.system(size: 24, weight: .bold, design: .rounded))
                             .foregroundColor(.primary)
                         
-                        Text("5h Limit")
+                        Text("5h Remaining")
                             .font(.system(size: 10))
                             .foregroundColor(.secondary)
                     }
@@ -509,21 +510,23 @@ struct ContentView: View {
                 // Texts Below Progress Ring
                 HStack(spacing: 40) {
                     VStack(alignment: .center) {
-                        Text(String(format: "%.1f%%", data.primaryUsedPercent * 100))
+                        let primaryRemaining = 1.0 - data.primaryUsedPercent
+                        Text(formatCodexPercent(primaryRemaining))
                             .font(.title3)
                             .fontWeight(.bold)
                             .foregroundColor(.primary)
-                        Text("5h Window Used")
+                        Text("5h Remaining")
                             .font(.caption2)
                             .foregroundColor(.secondary)
                     }
                     
                     VStack(alignment: .center) {
-                        Text(String(format: "%.1f%%", data.secondaryUsedPercent * 100))
+                        let secondaryRemaining = 1.0 - data.secondaryUsedPercent
+                        Text(formatCodexPercent(secondaryRemaining))
                             .font(.title3)
                             .fontWeight(.bold)
                             .foregroundColor(.primary)
-                        Text("7d Window Used")
+                        Text("7d Remaining")
                             .font(.caption2)
                             .foregroundColor(.secondary)
                     }
@@ -1002,12 +1005,12 @@ struct ContentView: View {
         }
     }
     
-    private func codexProgressGradient(for percentage: Double) -> LinearGradient {
+    private func codexProgressGradient(for remaining: Double) -> LinearGradient {
         let colors: [Color]
-        if percentage < 0.6 {
+        if remaining > 0.4 {
             // Cool Green to Teal (Safe)
             colors = [Color(red: 0.17, green: 0.78, blue: 0.44), Color(red: 0.18, green: 0.77, blue: 0.71)]
-        } else if percentage < 0.85 {
+        } else if remaining > 0.15 {
             // Yellow to Orange (Warning)
             colors = [Color(red: 0.95, green: 0.61, blue: 0.07), Color(red: 0.90, green: 0.49, blue: 0.13)]
         } else {
@@ -1021,13 +1024,22 @@ struct ContentView: View {
         )
     }
     
-    private func codexProgressShadowColor(for percentage: Double) -> Color {
-        if percentage < 0.6 {
+    private func codexProgressShadowColor(for remaining: Double) -> Color {
+        if remaining > 0.4 {
             return Color(red: 0.17, green: 0.78, blue: 0.44)
-        } else if percentage < 0.85 {
+        } else if remaining > 0.15 {
             return Color(red: 0.95, green: 0.61, blue: 0.07)
         } else {
             return Color(red: 0.90, green: 0.30, blue: 0.26)
+        }
+    }
+    
+    private func formatCodexPercent(_ fraction: Double) -> String {
+        let percentage = fraction * 100
+        if percentage.truncatingRemainder(dividingBy: 1) == 0 {
+            return String(format: "%.0f%%", percentage)
+        } else {
+            return String(format: "%.1f%%", percentage)
         }
     }
     

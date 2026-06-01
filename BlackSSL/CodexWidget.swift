@@ -90,21 +90,22 @@ struct CodexEntryView: View {
             ZStack {
                 Circle()
                     .stroke(Color.primary.opacity(0.05), lineWidth: 5)
+                let remaining = 1.0 - usage.primaryUsedPercent
                 Circle()
-                    .trim(from: 0.0, to: CGFloat(usage.primaryUsedPercent))
+                    .trim(from: 0.0, to: CGFloat(remaining))
                     .stroke(
-                        progressGradient(for: usage.primaryUsedPercent),
+                        progressGradient(for: remaining),
                         style: StrokeStyle(lineWidth: 5, lineCap: .round)
                     )
                     .rotationEffect(.degrees(-90))
                 
                 VStack(spacing: 0) {
-                    Text(String(format: "%.1f%%", usage.primaryUsedPercent * 100))
+                    Text(formatPercent(remaining))
                         .font(.system(size: 16, weight: .bold, design: .rounded))
                         .foregroundColor(.primary)
                         .lineLimit(1)
                         .minimumScaleFactor(0.7)
-                    Text("5h Used")
+                    Text("Remaining")
                         .font(.system(size: 8))
                         .foregroundColor(.secondary)
                 }
@@ -121,7 +122,10 @@ struct CodexEntryView: View {
     
     // MARK: - Medium Widget View
     private func mediumWidgetView(_ usage: CodexUsageData) -> some View {
-        HStack(spacing: 32) {
+        let primaryRemaining = 1.0 - usage.primaryUsedPercent
+        let secondaryRemaining = 1.0 - usage.secondaryUsedPercent
+        
+        return HStack(spacing: 32) {
             // Left Progress Block
             VStack(spacing: 12) {
                 Text("Updated: \(formatTime(entry.date))")
@@ -133,21 +137,21 @@ struct CodexEntryView: View {
                         .stroke(Color.primary.opacity(0.05), lineWidth: 7)
                         .frame(width: 70, height: 70)
                     Circle()
-                        .trim(from: 0.0, to: CGFloat(usage.primaryUsedPercent))
+                        .trim(from: 0.0, to: CGFloat(primaryRemaining))
                         .stroke(
-                            progressGradient(for: usage.primaryUsedPercent),
+                            progressGradient(for: primaryRemaining),
                             style: StrokeStyle(lineWidth: 7, lineCap: .round)
                         )
                         .frame(width: 70, height: 70)
                         .rotationEffect(.degrees(-90))
                     
                     VStack(spacing: 2) {
-                        Text(String(format: "%.1f%%", usage.primaryUsedPercent * 100))
+                        Text(formatPercent(primaryRemaining))
                             .font(.system(size: 18, weight: .bold, design: .rounded))
                             .foregroundColor(.primary)
                             .lineLimit(1)
                             .minimumScaleFactor(0.7)
-                        Text("5h Limit")
+                        Text("5h Left")
                             .font(.system(size: 8))
                             .foregroundColor(.secondary)
                     }
@@ -178,7 +182,7 @@ struct CodexEntryView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     metricRow(icon: "hourglass.badge.plus", iconColor: .green, label: "5h Reset", value: usage.primaryResetCountdownText)
                     metricRow(icon: "calendar.badge.clock", iconColor: .blue, label: "7d Reset", value: usage.secondaryResetCountdownText)
-                    metricRow(icon: "chart.bar.fill", iconColor: .teal, label: "7d Used", value: String(format: "%.1f%%", usage.secondaryUsedPercent * 100.0))
+                    metricRow(icon: "chart.bar.fill", iconColor: .teal, label: "7d Left", value: formatPercent(secondaryRemaining))
                     metricRow(icon: "star.fill", iconColor: .purple, label: "Plan", value: usage.planType.uppercased())
                     metricRow(icon: "envelope.fill", iconColor: .orange, label: "Account", value: usage.email)
                 }
@@ -231,11 +235,20 @@ struct CodexEntryView: View {
         return formatter.string(from: date)
     }
     
-    private func progressGradient(for percentage: Double) -> LinearGradient {
+    private func formatPercent(_ fraction: Double) -> String {
+        let percentage = fraction * 100
+        if percentage.truncatingRemainder(dividingBy: 1) == 0 {
+            return String(format: "%.0f%%", percentage)
+        } else {
+            return String(format: "%.1f%%", percentage)
+        }
+    }
+    
+    private func progressGradient(for remaining: Double) -> LinearGradient {
         let colors: [Color]
-        if percentage < 0.6 {
+        if remaining > 0.4 {
             colors = [Color(red: 0.17, green: 0.78, blue: 0.44), Color(red: 0.18, green: 0.77, blue: 0.71)]
-        } else if percentage < 0.85 {
+        } else if remaining > 0.15 {
             colors = [Color(red: 0.95, green: 0.61, blue: 0.07), Color(red: 0.90, green: 0.49, blue: 0.13)]
         } else {
             colors = [Color(red: 0.90, green: 0.30, blue: 0.26), Color(red: 0.75, green: 0.22, blue: 0.17)]
