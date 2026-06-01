@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		B188B45A2FCB257D00DE99A6 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B188B4592FCB257D00DE99A6 /* WidgetKit.framework */; };
 		B188B45C2FCB257D00DE99A6 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B188B45B2FCB257D00DE99A6 /* SwiftUI.framework */; };
-		B188B4672FCB257E00DE99A6 /* BlackSSLExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B188B4572FCB257D00DE99A6 /* BlackSSLExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		B188B4672FCB257E00DE99A6 /* Widgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B188B4572FCB257D00DE99A6 /* Widgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B188BB602FCD22E200DE99A6 /* Icon.icon in Resources */ = {isa = PBXBuildFile; fileRef = B188BB5F2FCD22E200DE99A6 /* Icon.icon */; };
 /* End PBXBuildFile section */
 
@@ -19,7 +19,7 @@
 			containerPortal = B188B43D2FCB231D00DE99A6 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = B188B4562FCB257D00DE99A6;
-			remoteInfo = BlackSSLExtension;
+			remoteInfo = Widgets;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -30,7 +30,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				B188B4672FCB257E00DE99A6 /* BlackSSLExtension.appex in Embed Foundation Extensions */,
+				B188B4672FCB257E00DE99A6 /* Widgets.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -39,28 +39,28 @@
 
 /* Begin PBXFileReference section */
 		B188B4452FCB231D00DE99A6 /* Augus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Augus.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B188B4572FCB257D00DE99A6 /* BlackSSLExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = BlackSSLExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		B188B4572FCB257D00DE99A6 /* Widgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Widgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		B188B4592FCB257D00DE99A6 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = /System/Library/Frameworks/WidgetKit.framework; sourceTree = "<absolute>"; };
 		B188B45B2FCB257D00DE99A6 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = /System/Library/Frameworks/SwiftUI.framework; sourceTree = "<absolute>"; };
 		B188BB5F2FCD22E200DE99A6 /* Icon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = Icon.icon; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		B188B4682FCB257E00DE99A6 /* Exceptions for "BlackSSL" folder in "BlackSSLExtension" target */ = {
+		B188B4682FCB257E00DE99A6 /* Exceptions for "Widgets" folder in "Widgets" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = B188B4562FCB257D00DE99A6 /* BlackSSLExtension */;
+			target = B188B4562FCB257D00DE99A6 /* Widgets */;
 		};
-		B188B4772FCB34BB00DE99A6 /* Exceptions for "Shared" folder in "BlackSSLExtension" target */ = {
+		B188B4772FCB34BB00DE99A6 /* Exceptions for "Shared" folder in "Widgets" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				BlackSSLData.swift,
 				CodexData.swift,
 				GeminiData.swift,
 			);
-			target = B188B4562FCB257D00DE99A6 /* BlackSSLExtension */;
+			target = B188B4562FCB257D00DE99A6 /* Widgets */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -70,18 +70,18 @@
 			path = Augus;
 			sourceTree = "<group>";
 		};
-		B188B45D2FCB257D00DE99A6 /* BlackSSL */ = {
+		B188B45D2FCB257D00DE99A6 /* Widgets */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				B188B4682FCB257E00DE99A6 /* Exceptions for "BlackSSL" folder in "BlackSSLExtension" target */,
+				B188B4682FCB257E00DE99A6 /* Exceptions for "Widgets" folder in "Widgets" target */,
 			);
-			path = BlackSSL;
+			path = Widgets;
 			sourceTree = "<group>";
 		};
 		B188B4752FCB34A900DE99A6 /* Shared */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				B188B4772FCB34BB00DE99A6 /* Exceptions for "Shared" folder in "BlackSSLExtension" target */,
+				B188B4772FCB34BB00DE99A6 /* Exceptions for "Shared" folder in "Widgets" target */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -113,7 +113,7 @@
 			children = (
 				B188B4752FCB34A900DE99A6 /* Shared */,
 				B188B4472FCB231D00DE99A6 /* Augus */,
-				B188B45D2FCB257D00DE99A6 /* BlackSSL */,
+				B188B45D2FCB257D00DE99A6 /* Widgets */,
 				B188B4582FCB257D00DE99A6 /* Frameworks */,
 				B188B4462FCB231D00DE99A6 /* Products */,
 				B188BB5F2FCD22E200DE99A6 /* Icon.icon */,
@@ -124,7 +124,7 @@
 			isa = PBXGroup;
 			children = (
 				B188B4452FCB231D00DE99A6 /* Augus.app */,
-				B188B4572FCB257D00DE99A6 /* BlackSSLExtension.appex */,
+				B188B4572FCB257D00DE99A6 /* Widgets.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -166,9 +166,9 @@
 			productReference = B188B4452FCB231D00DE99A6 /* Augus.app */;
 			productType = "com.apple.product-type.application";
 		};
-		B188B4562FCB257D00DE99A6 /* BlackSSLExtension */ = {
+		B188B4562FCB257D00DE99A6 /* Widgets */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B188B4692FCB257E00DE99A6 /* Build configuration list for PBXNativeTarget "BlackSSLExtension" */;
+			buildConfigurationList = B188B4692FCB257E00DE99A6 /* Build configuration list for PBXNativeTarget "Widgets" */;
 			buildPhases = (
 				B188B4532FCB257D00DE99A6 /* Sources */,
 				B188B4542FCB257D00DE99A6 /* Frameworks */,
@@ -179,13 +179,13 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				B188B45D2FCB257D00DE99A6 /* BlackSSL */,
+				B188B45D2FCB257D00DE99A6 /* Widgets */,
 			);
-			name = BlackSSLExtension;
+			name = Widgets;
 			packageProductDependencies = (
 			);
-			productName = BlackSSLExtension;
-			productReference = B188B4572FCB257D00DE99A6 /* BlackSSLExtension.appex */;
+			productName = Widgets;
+			productReference = B188B4572FCB257D00DE99A6 /* Widgets.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
@@ -477,14 +477,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CODE_SIGN_ENTITLEMENTS = BlackSSL/BlackSSL.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Widgets/BlackSSL.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = J4Z2NCTR3S;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = BlackSSL/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = BlackSSL;
+				INFOPLIST_FILE = Widgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Widgets;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.5;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -498,7 +498,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 26.5;
-				PRODUCT_BUNDLE_IDENTIFIER = com.iAugus.Augus.BlackSSL;
+				PRODUCT_BUNDLE_IDENTIFIER = com.iAugus.Augus.Widgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
@@ -519,14 +519,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CODE_SIGN_ENTITLEMENTS = BlackSSL/BlackSSL.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Widgets/BlackSSL.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = J4Z2NCTR3S;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = BlackSSL/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = BlackSSL;
+				INFOPLIST_FILE = Widgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Widgets;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.5;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -540,7 +540,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 26.5;
-				PRODUCT_BUNDLE_IDENTIFIER = com.iAugus.Augus.BlackSSL;
+				PRODUCT_BUNDLE_IDENTIFIER = com.iAugus.Augus.Widgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
@@ -577,7 +577,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B188B4692FCB257E00DE99A6 /* Build configuration list for PBXNativeTarget "BlackSSLExtension" */ = {
+		B188B4692FCB257E00DE99A6 /* Build configuration list for PBXNativeTarget "Widgets" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B188B46A2FCB257E00DE99A6 /* Debug */,
