@@ -3,6 +3,7 @@
 
 import Foundation
 import WidgetKit
+import UserNotifications
 
 public struct UsageData: Codable, Sendable {
     public let upload: Int64
@@ -93,6 +94,10 @@ public class SharedStore {
             defaults.set(encoded, forKey: "usage_data")
             defaults.synchronize()
             print("SharedStore: Saved usage data successfully. Total: \(data.total)")
+            
+            if let todayUsed = data.todayUsed {
+                checkAndSendTodayUsageNotification(todayUsed: todayUsed)
+            }
         }
     }
     
@@ -190,6 +195,15 @@ public class SharedStore {
         return defaults.string(forKey: "last_scrape_result") ?? "No scrape attempt recorded yet."
     }
     
+    public static func saveLast1GNotificationDate(_ date: String) {
+        defaults.set(date, forKey: "last_1g_notification_date")
+        defaults.synchronize()
+    }
+    
+    public static func loadLast1GNotificationDate() -> String? {
+        return defaults.string(forKey: "last_1g_notification_date")
+    }
+    
     public static func clear() {
         defaults.removeObject(forKey: "usage_data")
         defaults.removeObject(forKey: "cookies")
@@ -200,9 +214,51 @@ public class SharedStore {
         defaults.removeObject(forKey: "is_v2board")
         defaults.removeObject(forKey: "email")
         defaults.removeObject(forKey: "last_scrape_result")
+        defaults.removeObject(forKey: "last_1g_notification_date")
         defaults.synchronize()
         print("SharedStore: Cleared all stored data.")
         WidgetCenter.shared.reloadAllTimelines()
+    }
+    
+    public static func checkAndSendTodayUsageNotification(todayUsed: Int64) {
+        let limit: Int64 = 1 * 1024 * 1024 * 1024 // 1 GB in bytes (1024^3)
+        guard todayUsed >= limit else {
+            print("SharedStore: todayUsed (\(todayUsed)) is below limit (\(limit))")
+            return
+        }
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        let todayStr = formatter.string(from: Date())
+        
+        if let lastAlertDate = loadLast1GNotificationDate(), lastAlertDate == todayStr {
+            let logMsg = "Notification skipped: already sent today (\(todayStr))"
+            print("SharedStore: \(logMsg)")
+            saveLastScrapeResult(logMsg)
+            return
+        }
+        
+        let content = UNMutableNotificationContent()
+        content.title = "BlackSSL: Traffic Alert"
+        content.body = "Today's usage has exceeded 1G."
+        content.sound = .default
+        
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+        let request = UNNotificationRequest(identifier: "TodayUsageLimitAlert", content: content, trigger: trigger)
+        
+        print("SharedStore: Attempting to send 1G alert notification...")
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                let logMsg = "Failed to send 1G alert notification: \(error.localizedDescription)"
+                print("SharedStore: \(logMsg)")
+                saveLastScrapeResult(logMsg)
+            } else {
+                let logMsg = "Sent 1G alert notification successfully on \(todayStr)"
+                print("SharedStore: \(logMsg)")
+                saveLastScrapeResult(logMsg)
+                saveLast1GNotificationDate(todayStr)
+            }
+        }
     }
 }
 

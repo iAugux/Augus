@@ -2,6 +2,7 @@
 // Copyright © 2026 Augus <iAugux@gmail.com>
 
 import SwiftUI
+import UserNotifications
 
 struct ContentView: View {
     @Environment(\.colorScheme) var colorScheme
@@ -11,6 +12,7 @@ struct ContentView: View {
     @State private var errorMessage: String? = nil
     @State private var isShowingDebugAlert = false
     @State private var debugText = ""
+    @State private var notificationDelegate = NotificationDelegate()
     
     var body: some View {
         ZStack {
@@ -54,9 +56,20 @@ struct ContentView: View {
             Text(debugText)
         }
         .onAppear {
+            UNUserNotificationCenter.current().delegate = notificationDelegate
+            
             // Auto refresh on open
             if usageData != nil {
                 refreshData()
+            }
+            
+            // Request local notification permissions
+            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { granted, error in
+                if let error = error {
+                    print("Notification permission error: \(error.localizedDescription)")
+                } else {
+                    print("Notification permission granted: \(granted)")
+                }
             }
         }
     }
@@ -527,3 +540,10 @@ struct VisualEffectView: UIViewRepresentable {
     func updateUIView(_ uiView: UIVisualEffectView, context: Context) {}
 }
 #endif
+
+// MARK: - Notification Delegate for Foreground Presentation
+class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler([.banner, .sound])
+    }
+}
