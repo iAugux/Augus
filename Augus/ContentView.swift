@@ -40,7 +40,7 @@ struct ContentView: View {
                 .tag(ServiceTab.codex)
         }
         .tint(selectedTab == .blackssl ? .purple : .green)
-        .onChange(of: selectedTab) { _ in
+        .onChange(of: selectedTab) {
             errorMessage = nil
         }
         .sheet(isPresented: $isShowingBlackSSLLogin) {
