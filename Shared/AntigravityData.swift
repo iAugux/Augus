@@ -15,6 +15,7 @@ public struct AntigravityOAuthCreds: Codable, Sendable {
     public let scope: String?
     public let clientId: String?
     public let clientSecret: String?
+    public let email: String?
     
     enum CodingKeys: String, CodingKey {
         case accessToken = "access_token"
@@ -25,6 +26,7 @@ public struct AntigravityOAuthCreds: Codable, Sendable {
         case scope = "scope"
         case clientId = "client_id"
         case clientSecret = "client_secret"
+        case email
     }
 }
 
@@ -146,7 +148,7 @@ public final class AntigravityNetworkManager: Sendable {
                 guard let self = self else { return }
                 switch refreshResult {
                 case .success(let updatedCreds):
-                    self.fetchUsageWithToken(updatedCreds.accessToken, completion: completion)
+                    self.fetchUsageWithToken(updatedCreds.accessToken, credsEmail: updatedCreds.email, completion: completion)
                 case .failure(let error):
                     let log = "Failed to refresh token: \(error.localizedDescription)"
                     AntigravityStore.saveLastLog(log)
@@ -154,7 +156,7 @@ public final class AntigravityNetworkManager: Sendable {
                 }
             }
         } else {
-            fetchUsageWithToken(creds.accessToken, completion: completion)
+            fetchUsageWithToken(creds.accessToken, credsEmail: creds.email, completion: completion)
         }
     }
     
@@ -211,13 +213,14 @@ public final class AntigravityNetworkManager: Sendable {
                 
                 let updated = AntigravityOAuthCreds(
                     accessToken: tokenResponse.access_token,
-                    refreshToken: creds.refreshToken, // Google refresh tokens are long-lived and reused unless revoked
+                    refreshToken: creds.refreshToken,
                     expiryDate: newExpiry,
                     tokenType: tokenResponse.token_type ?? creds.tokenType,
                     idToken: tokenResponse.id_token ?? creds.idToken,
                     scope: tokenResponse.scope ?? creds.scope,
                     clientId: creds.clientId,
-                    clientSecret: creds.clientSecret
+                    clientSecret: creds.clientSecret,
+                    email: creds.email
                 )
                 
                 AntigravityStore.saveOAuthCreds(updated)
@@ -430,24 +433,35 @@ public final class AntigravityNetworkManager: Sendable {
         }
     }
     
-    private func fetchUsageWithToken(_ accessToken: String, completion: @escaping @Sendable (Result<AntigravityUsageData, Error>) -> Void) {
+    private func fetchUsageWithToken(_ accessToken: String, credsEmail: String?, completion: @escaping @Sendable (Result<AntigravityUsageData, Error>) -> Void) {
         loadCodeAssist(accessToken: accessToken) { [weak self] result in
             guard let self = self else { return }
             switch result {
             case .success(let codeAssistData):
-                let email = codeAssistData.email
+                let email = (codeAssistData.email != "user@google.com") ? codeAssistData.email : (credsEmail ?? codeAssistData.email)
                 
-                // retrieveUserQuota works even without a project ID
-                self.retrieveUserQuota(accessToken: accessToken, projectId: codeAssistData.projectId) { quotaResult in
-                    switch quotaResult {
-                    case .success(let models):
+                // fetchAvailableModels returns display names; fall back to retrieveUserQuota
+                self.fetchAvailableModels(accessToken: accessToken, projectId: codeAssistData.projectId) { modelsResult in
+                    switch modelsResult {
+                    case .success(let models) where !models.isEmpty:
                         let usageData = AntigravityUsageData(models: models, lastUpdated: Date(), email: email)
                         AntigravityStore.saveUsageData(usageData)
-                        AntigravityStore.saveLastLog("Successfully updated Antigravity quotas for \(email). Found \(models.count) model buckets.")
+                        AntigravityStore.saveLastLog("Successfully updated Antigravity quotas for \(email). Found \(models.count) models.")
                         WidgetCenter.shared.reloadAllTimelines()
                         completion(.success(usageData))
-                    case .failure(let error):
-                        completion(.failure(error))
+                    default:
+                        self.retrieveUserQuota(accessToken: accessToken, projectId: codeAssistData.projectId) { quotaResult in
+                            switch quotaResult {
+                            case .success(let models):
+                                let usageData = AntigravityUsageData(models: models, lastUpdated: Date(), email: email)
+                                AntigravityStore.saveUsageData(usageData)
+                                AntigravityStore.saveLastLog("Successfully updated Antigravity quotas for \(email). Found \(models.count) model buckets.")
+                                WidgetCenter.shared.reloadAllTimelines()
+                                completion(.success(usageData))
+                            case .failure(let error):
+                                completion(.failure(error))
+                            }
+                        }
                     }
                 }
             case .failure(let error):
@@ -483,27 +497,34 @@ public final class AntigravityNetworkManager: Sendable {
             
             do {
                 guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-                      let models = json["models"] as? [String: [String: Any]] else {
+                      let modelsDict = json["models"] as? [String: Any] else {
                     completion(.success([]))
                     return
                 }
                 
                 let isoFormatter = ISO8601DateFormatter()
+                isoFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
                 var result: [AntigravityModelQuota] = []
                 
-                for (modelId, modelInfo) in models {
+                for (modelId, modelValue) in modelsDict {
+                    guard let modelInfo = modelValue as? [String: Any] else { continue }
                     guard let quotaInfo = modelInfo["quotaInfo"] as? [String: Any],
                           let fraction = quotaInfo["remainingFraction"] as? Double else {
                         continue
                     }
                     let label = (modelInfo["displayName"] as? String) ?? (modelInfo["label"] as? String) ?? modelId
-                    let resetDate = (quotaInfo["resetTime"] as? String).flatMap { isoFormatter.date(from: $0) }
+                    var resetDate = (quotaInfo["resetTime"] as? String).flatMap { isoFormatter.date(from: $0) }
+                    if resetDate == nil, let resetStr = quotaInfo["resetTime"] as? String {
+                        let fallback = ISO8601DateFormatter()
+                        resetDate = fallback.date(from: resetStr)
+                    }
                     result.append(AntigravityModelQuota(name: label, remainingFraction: fraction, resetTime: resetDate))
                 }
                 
                 result.sort(by: { $0.name < $1.name })
                 completion(.success(result))
             } catch {
+                AntigravityStore.saveLastLog("fetchAvailableModels parse error: \(error.localizedDescription)")
                 completion(.success([]))
             }
         }
