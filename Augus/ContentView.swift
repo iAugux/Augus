@@ -72,6 +72,9 @@ struct ContentView: View {
         .onChange(of: selectedTab) {
             errorMessage = nil
         }
+        .onOpenURL { url in
+            handleOpenURL(url)
+        }
         .sheet(isPresented: $isShowingBlackSSLLogin) {
             blacksslWebViewSheet
         }
@@ -421,8 +424,8 @@ struct ContentView: View {
                     .background(colorScheme == .dark ? Color(white: 0.15) : Color(white: 0.95))
                     .cornerRadius(8)
                     .font(.system(size: 11, design: .monospaced))
-                    .disableAutocorrection(true)
-                    .autocapitalization(.none)
+                    .autocorrectionDisabled(true)
+                    .disableAutocapitalizationIfNeeded()
                 
                 Button {
                     if !manualCookieInput.isEmpty {
@@ -911,6 +914,26 @@ struct ContentView: View {
     }
     
     // MARK: - Actions & Helpers
+    private func handleOpenURL(_ url: URL) {
+        guard url.scheme == "augus" else { return }
+        switch url.host {
+        case "blackssl":
+            isShowingBlackSSLLogin = false
+            isShowingCodexLogin = false
+            selectedTab = .blackssl
+        case "codex":
+            isShowingBlackSSLLogin = false
+            isShowingCodexLogin = false
+            selectedTab = .codex
+        case "gemini":
+            isShowingBlackSSLLogin = false
+            isShowingCodexLogin = false
+            selectedTab = .gemini
+        default:
+            break
+        }
+    }
+
     private func copyToPasteboard(_ text: String) {
         #if os(iOS)
         UIPasteboard.general.string = text
@@ -1122,8 +1145,8 @@ struct ContentView: View {
                         TextEditor(text: $manualTokenInput)
                             .frame(height: 120)
                             .font(.system(size: 11, design: .monospaced))
-                            .disableAutocorrection(true)
-                            .autocapitalization(.none)
+                            .autocorrectionDisabled(true)
+                            .disableAutocapitalizationIfNeeded()
                             .padding(6)
                             .background(Color.clear)
                     }

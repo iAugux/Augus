@@ -221,7 +221,7 @@
 			projectRoot = "";
 			targets = (
 				B188B4442FCB231D00DE99A6 /* Augus */,
-				B188B4562FCB257D00DE99A6 /* BlackSSLExtension */,
+				B188B4562FCB257D00DE99A6 /* Widgets */,
 			);
 		};
 /* End PBXProject section */
@@ -264,7 +264,7 @@
 /* Begin PBXTargetDependency section */
 		B188B4662FCB257E00DE99A6 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = B188B4562FCB257D00DE99A6 /* BlackSSLExtension */;
+			target = B188B4562FCB257D00DE99A6 /* Widgets */;
 			targetProxy = B188B4652FCB257E00DE99A6 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -403,6 +403,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleURLTypes = "{\n    CFBundleURLName = \"com.iAugus.Augus\";\n    CFBundleURLSchemes =     (\n        augus\n    );\n}";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -445,6 +446,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleURLTypes = "{\n    CFBundleURLName = \"com.iAugus.Augus\";\n    CFBundleURLSchemes =     (\n        augus\n    );\n}";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;

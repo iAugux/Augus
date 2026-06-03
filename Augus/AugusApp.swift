@@ -8,6 +8,9 @@ struct AugusApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+#if os(macOS)
+                .frame(minWidth: 393, idealWidth: 393, minHeight: 852, idealHeight: 852)
+#endif
         }
     }
 }

@@ -278,10 +278,12 @@ struct GeminiWidget: Widget {
                     .containerBackground(for: .widget) {
                         WidgetBackgroundView()
                     }
+                    .widgetURL(URL(string: "augus://gemini"))
             } else {
                 GeminiEntryView(entry: entry)
                     .padding()
                     .background(WidgetBackgroundView())
+                    .widgetURL(URL(string: "augus://gemini"))
             }
         }
         .configurationDisplayName("Gemini Limits")

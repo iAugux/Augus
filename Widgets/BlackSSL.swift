@@ -311,10 +311,12 @@ struct BlackSSL: Widget {
                     .containerBackground(for: .widget) {
                         WidgetBackgroundView()
                     }
+                    .widgetURL(URL(string: "augus://blackssl"))
             } else {
                 BlackSSLEntryView(entry: entry)
                     .padding()
                     .background(WidgetBackgroundView())
+                    .widgetURL(URL(string: "augus://blackssl"))
             }
         }
         .configurationDisplayName("BlackSSL Status")

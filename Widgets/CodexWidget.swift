@@ -271,10 +271,12 @@ struct CodexWidget: Widget {
                     .containerBackground(for: .widget) {
                         WidgetBackgroundView()
                     }
+                    .widgetURL(URL(string: "augus://codex"))
             } else {
                 CodexEntryView(entry: entry)
                     .padding()
                     .background(WidgetBackgroundView())
+                    .widgetURL(URL(string: "augus://codex"))
             }
         }
         .configurationDisplayName("Codex Limits")
