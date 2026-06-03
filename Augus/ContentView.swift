@@ -1499,13 +1499,13 @@ struct ContentView: View {
                     .foregroundStyle(.primary)
                 
 #if os(macOS)
-                Text("Connect to Antigravity using ~/.antigravity/oauth_creds.json on your Mac.")
+                Text("Connect to Antigravity using ~/.codexbar/antigravity/oauth_creds.json on your Mac.")
                     .font(.body)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 20)
 #else
-                Text("Copy the raw JSON contents of ~/.antigravity/oauth_creds.json on your Mac and paste it below.")
+                Text("Copy the raw JSON contents of ~/.codexbar/antigravity/oauth_creds.json on your Mac and paste it below.")
                     .font(.body)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -1550,7 +1550,7 @@ struct ContentView: View {
                 
                 Button {
 #if os(macOS)
-                    let fileURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".antigravity/oauth_creds.json")
+                    let fileURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".codexbar/antigravity/oauth_creds.json")
                     do {
                         let rawData = try Data(contentsOf: fileURL)
                         let creds = try JSONDecoder().decode(AntigravityOAuthCreds.self, from: rawData)
@@ -1558,7 +1558,7 @@ struct ContentView: View {
                         errorMessage = nil
                         refreshAntigravityData()
                     } catch {
-                        errorMessage = "Error reading ~/.antigravity/oauth_creds.json: \(error.localizedDescription)"
+                        errorMessage = "Error reading ~/.codexbar/antigravity/oauth_creds.json: \(error.localizedDescription)"
                     }
 #else
                     guard !manualTokenInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
