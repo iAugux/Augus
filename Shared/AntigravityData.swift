@@ -148,7 +148,7 @@ public final class AntigravityNetworkManager: Sendable {
                 guard let self = self else { return }
                 switch refreshResult {
                 case .success(let updatedCreds):
-                    self.fetchUsageWithToken(updatedCreds.accessToken, credsEmail: updatedCreds.email, completion: completion)
+                    self.fetchUsageWithToken(updatedCreds.accessToken, idToken: updatedCreds.idToken, credsEmail: updatedCreds.email, completion: completion)
                 case .failure(let error):
                     let log = "Failed to refresh token: \(error.localizedDescription)"
                     AntigravityStore.saveLastLog(log)
@@ -156,8 +156,29 @@ public final class AntigravityNetworkManager: Sendable {
                 }
             }
         } else {
-            fetchUsageWithToken(creds.accessToken, credsEmail: creds.email, completion: completion)
+            fetchUsageWithToken(creds.accessToken, idToken: creds.idToken, credsEmail: creds.email, completion: completion)
         }
+    }
+    
+    private func extractEmailFromToken(_ idToken: String?) -> String? {
+        guard let idToken = idToken else { return nil }
+        let parts = idToken.components(separatedBy: ".")
+        guard parts.count >= 2 else { return nil }
+        var payload = parts[1]
+            .replacingOccurrences(of: "-", with: "+")
+            .replacingOccurrences(of: "_", with: "/")
+        let remainder = payload.count % 4
+        if remainder > 0 {
+            payload += String(repeating: "=", count: 4 - remainder)
+        }
+        guard let data = Data(base64Encoded: payload, options: .ignoreUnknownCharacters),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            return nil
+        }
+        if let email = json["email"] as? String, !email.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return email.trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        return nil
     }
     
     private func refreshAccessToken(creds: AntigravityOAuthCreds, completion: @escaping @Sendable (Result<AntigravityOAuthCreds, Error>) -> Void) {
@@ -433,12 +454,12 @@ public final class AntigravityNetworkManager: Sendable {
         }
     }
     
-    private func fetchUsageWithToken(_ accessToken: String, credsEmail: String?, completion: @escaping @Sendable (Result<AntigravityUsageData, Error>) -> Void) {
+    private func fetchUsageWithToken(_ accessToken: String, idToken: String?, credsEmail: String?, completion: @escaping @Sendable (Result<AntigravityUsageData, Error>) -> Void) {
         loadCodeAssist(accessToken: accessToken) { [weak self] result in
             guard let self = self else { return }
             switch result {
             case .success(let codeAssistData):
-                let email = (codeAssistData.email != "user@google.com") ? codeAssistData.email : (credsEmail ?? codeAssistData.email)
+                let email = (codeAssistData.email != "user@google.com") ? codeAssistData.email : (self.extractEmailFromToken(idToken) ?? credsEmail ?? codeAssistData.email)
                 
                 // fetchAvailableModels returns display names; fall back to retrieveUserQuota
                 self.fetchAvailableModels(accessToken: accessToken, projectId: codeAssistData.projectId) { modelsResult in
@@ -509,7 +530,7 @@ public final class AntigravityNetworkManager: Sendable {
                 for (modelId, modelValue) in modelsDict {
                     guard let modelInfo = modelValue as? [String: Any] else { continue }
                     guard let quotaInfo = modelInfo["quotaInfo"] as? [String: Any],
-                          let fraction = quotaInfo["remainingFraction"] as? Double else {
+                          let fraction = (quotaInfo["remainingFraction"] as? NSNumber)?.doubleValue else {
                         continue
                     }
                     let label = (modelInfo["displayName"] as? String) ?? (modelInfo["label"] as? String) ?? modelId
@@ -519,6 +540,10 @@ public final class AntigravityNetworkManager: Sendable {
                         resetDate = fallback.date(from: resetStr)
                     }
                     result.append(AntigravityModelQuota(name: label, remainingFraction: fraction, resetTime: resetDate))
+                }
+                
+                if result.isEmpty {
+                    AntigravityStore.saveLastLog("fetchAvailableModels parsed 0 models with quotaInfo from \(modelsDict.count) models.")
                 }
                 
                 result.sort(by: { $0.name < $1.name })
