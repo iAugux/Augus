@@ -300,7 +300,12 @@ public final class AntigravityNetworkManager: Sendable {
             
             do {
                 if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
-                    guard let projectId = json["cloudaicompanionProject"] as? String, !projectId.isEmpty else {
+                    var projectId: String? = json["cloudaicompanionProject"] as? String
+                    if projectId == nil, let projDict = json["cloudaicompanionProject"] as? [String: Any] {
+                        projectId = projDict["id"] as? String ?? projDict["projectId"] as? String
+                    }
+                    
+                    guard let finalProjectId = projectId, !finalProjectId.isEmpty else {
                         let log = "loadCodeAssist response missing cloudaicompanionProject. Response: \(String(data: data, encoding: .utf8) ?? "")"
                         AntigravityStore.saveLastLog(log)
                         completion(.failure(NSError(domain: "AntigravityNetworkManager", code: -4, userInfo: [NSLocalizedDescriptionKey: "Could not retrieve bound Google Cloud project ID."])))
@@ -309,7 +314,7 @@ public final class AntigravityNetworkManager: Sendable {
                     
                     let manageUri = json["manageSubscriptionUri"] as? String
                     let email = self.extractEmail(from: manageUri)
-                    completion(.success(CodeAssistInfo(projectId: projectId, email: email)))
+                    completion(.success(CodeAssistInfo(projectId: finalProjectId, email: email)))
                 } else {
                     let log = "Invalid loadCodeAssist JSON payload."
                     AntigravityStore.saveLastLog(log)
