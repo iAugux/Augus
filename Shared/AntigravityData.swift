@@ -13,6 +13,8 @@ public struct AntigravityOAuthCreds: Codable, Sendable {
     public let tokenType: String?
     public let idToken: String?
     public let scope: String?
+    public let clientId: String?
+    public let clientSecret: String?
     
     enum CodingKeys: String, CodingKey {
         case accessToken = "access_token"
@@ -21,6 +23,8 @@ public struct AntigravityOAuthCreds: Codable, Sendable {
         case tokenType = "token_type"
         case idToken = "id_token"
         case scope = "scope"
+        case clientId = "client_id"
+        case clientSecret = "client_secret"
     }
 }
 
@@ -162,8 +166,8 @@ public final class AntigravityNetworkManager: Sendable {
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
         
         let parameters = [
-            "client_id": clientID,
-            "client_secret": clientSecret,
+            "client_id": creds.clientId ?? clientID,
+            "client_secret": creds.clientSecret ?? clientSecret,
             "refresh_token": creds.refreshToken,
             "grant_type": "refresh_token"
         ]
@@ -194,6 +198,14 @@ public final class AntigravityNetworkManager: Sendable {
             }
             
             do {
+                if let dict = try JSONSerialization.jsonObject(with: data) as? [String: Any], let err = dict["error"] {
+                    let desc = dict["error_description"] as? String ?? "\(err)"
+                    let errorMsg = "Google API Error: \(desc)"
+                    AntigravityStore.saveLastLog(errorMsg)
+                    completion(.failure(NSError(domain: "AntigravityNetworkManager", code: -3, userInfo: [NSLocalizedDescriptionKey: errorMsg])))
+                    return
+                }
+                
                 let tokenResponse = try JSONDecoder().decode(TokenResponse.self, from: data)
                 let newExpiry = (Date().timeIntervalSince1970 * 1000) + Double(tokenResponse.expires_in * 1000)
                 
@@ -203,7 +215,9 @@ public final class AntigravityNetworkManager: Sendable {
                     expiryDate: newExpiry,
                     tokenType: tokenResponse.token_type ?? creds.tokenType,
                     idToken: tokenResponse.id_token ?? creds.idToken,
-                    scope: tokenResponse.scope ?? creds.scope
+                    scope: tokenResponse.scope ?? creds.scope,
+                    clientId: creds.clientId,
+                    clientSecret: creds.clientSecret
                 )
                 
                 AntigravityStore.saveOAuthCreds(updated)
