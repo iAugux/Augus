@@ -11,6 +11,9 @@ struct AugusApp: App {
             ContentView()
                 .frame(minWidth: 393, idealWidth: 393, minHeight: 700, idealHeight: 700)
         }
+        .commands {
+            CommandGroup(replacing: .newItem) { }
+        }
 #else
         WindowGroup {
             ContentView()
