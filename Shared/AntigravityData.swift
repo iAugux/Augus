@@ -10,7 +10,7 @@ public struct AntigravityOAuthCreds: Codable, Sendable {
     public let accessToken: String
     public let refreshToken: String
     public let expiryDate: Double // Milliseconds since 1970
-    public let tokenType: String
+    public let tokenType: String?
     public let idToken: String?
     public let scope: String?
     
