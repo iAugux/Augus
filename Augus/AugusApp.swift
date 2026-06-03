@@ -9,7 +9,7 @@ struct AugusApp: App {
         WindowGroup {
             ContentView()
 #if os(macOS)
-                .frame(minWidth: 393, idealWidth: 393, minHeight: 852, idealHeight: 852)
+                .frame(minWidth: 393, idealWidth: 393, minHeight: 700, idealHeight: 700)
 #endif
         }
     }
