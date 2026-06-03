@@ -872,6 +872,9 @@ struct ContentView: View {
                 print("BlackSSL Cookies captured: \(cookies.count)")
             }
         }
+#if os(macOS)
+        .frame(minWidth: 500, minHeight: 600)
+#endif
     }
     
     private var codexWebViewSheet: some View {
@@ -911,6 +914,9 @@ struct ContentView: View {
                 print("Codex Cookies captured: \(cookies.count)")
             }
         }
+#if os(macOS)
+        .frame(minWidth: 500, minHeight: 600)
+#endif
     }
     
     // MARK: - Actions & Helpers
@@ -933,11 +939,11 @@ struct ContentView: View {
             break
         }
     }
-
+    
     private func copyToPasteboard(_ text: String) {
-        #if os(iOS)
+#if os(iOS)
         UIPasteboard.general.string = text
-        #endif
+#endif
     }
     
     private func refreshData() {
