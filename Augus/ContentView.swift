@@ -9,6 +9,9 @@ struct ContentView: View {
     @State private var usageData: BlackSSLUsageData? = BlackSSLStore.loadUsageData()
     @State private var codexData: CodexUsageData? = CodexStore.loadUsageData()
     @State private var geminiData: GeminiUsageData? = GeminiStore.loadUsageData()
+#if os(macOS)
+    @State private var antigravityData: AntigravityUsageData? = AntigravityStore.loadUsageData()
+#endif
     @State private var selectedTab: ServiceTab = .blackssl
     @State private var isShowingBlackSSLLogin = false
     @State private var isShowingCodexLogin = false
@@ -25,6 +28,9 @@ struct ContentView: View {
         case blackssl = "BlackSSL"
         case codex = "Codex"
         case gemini = "Gemini"
+#if os(macOS)
+        case antigravity = "Antigravity"
+#endif
         
         var id: String { rawValue }
         
@@ -36,6 +42,10 @@ struct ContentView: View {
                 return Color(red: 0x8C / 255.0, green: 0xA0 / 255.0, blue: 1.0)
             case .gemini:
                 return Color(red: 0x3D / 255.0, green: 0x8D / 255.0, blue: 0xF6 / 255.0)
+#if os(macOS)
+            case .antigravity:
+                return Color(red: 0x3D / 255.0, green: 0x8D / 255.0, blue: 0xF6 / 255.0)
+#endif
             }
         }
     }
@@ -50,21 +60,21 @@ struct ContentView: View {
             
             codexTabContent
                 .tabItem {
-                    Label {
-                        Text("Codex")
-                    } icon: {
-                        Image(.codex)
-                    }
+                    Label("Codex", image: .codex)
                 }
                 .tag(ServiceTab.codex)
-            
+
+#if os(macOS)
+            antigravityTabContent
+                .tabItem {
+                    Label("Antigravity", image: .antigravity)
+                }
+                .tag(ServiceTab.antigravity)
+#endif
+
             geminiTabContent
                 .tabItem {
-                    Label {
-                        Text("Gemini")
-                    } icon: {
-                        Image(.gemini)
-                    }
+                    Label("Gemini", image: .gemini)
                 }
                 .tag(ServiceTab.gemini)
         }
@@ -102,6 +112,11 @@ struct ContentView: View {
             if geminiData != nil {
                 refreshGeminiData()
             }
+#if os(macOS)
+            if antigravityData != nil {
+                refreshAntigravityData()
+            }
+#endif
             
             // Request local notification permissions
             UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { granted, error in
@@ -192,7 +207,7 @@ struct ContentView: View {
     private var headerView: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
-                Text(selectedTab == .blackssl ? "BlackSSL" : (selectedTab == .codex ? "Codex" : "Gemini"))
+                Text(selectedTab == .blackssl ? "BlackSSL" : (selectedTab == .codex ? "Codex" : (selectedTab == .gemini ? "Gemini" : "Antigravity")))
                     .font(.system(size: 28, weight: .bold, design: .rounded))
                     .foregroundStyle(.primary)
                 
@@ -227,6 +242,18 @@ struct ContentView: View {
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
+#if os(macOS)
+                case .antigravity:
+                    if let data = antigravityData {
+                        Text(data.email)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Text("Antigravity Monitor")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+#endif
                 }
             }
             
@@ -238,6 +265,9 @@ struct ContentView: View {
                 case .blackssl: return usageData != nil
                 case .codex: return codexData != nil
                 case .gemini: return geminiData != nil
+#if os(macOS)
+                case .antigravity: return antigravityData != nil
+#endif
                 }
             }()
             
@@ -1414,6 +1444,335 @@ struct ContentView: View {
             return "\(minutes)m left"
         }
     }
+
+    // MARK: - Antigravity Views & Helpers
+#if os(macOS)
+    private var antigravityTabContent: some View {
+        ZStack {
+            if colorScheme == .dark {
+                Color(red: 0.05, green: 0.05, blue: 0.08)
+                    .ignoresSafeArea()
+            } else {
+                Color(red: 0.94, green: 0.94, blue: 0.98)
+                    .ignoresSafeArea()
+            }
+            
+            glowingBlobs
+            
+            ScrollView {
+                VStack(spacing: 24) {
+                    headerView
+                    
+                    if let data = antigravityData {
+                        antigravityDashboardView(data: data)
+                    } else {
+                        antigravityWelcomeView
+                    }
+                }
+                .padding()
+            }
+        }
+    }
+    
+    private var antigravityWelcomeView: some View {
+        VStack(spacing: 24) {
+            Image(systemName: "sparkles")
+                .font(.system(size: 80))
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [.blue, .cyan],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .shadow(color: .blue.opacity(0.5), radius: 15, x: 0, y: 5)
+                .padding(.top, 40)
+                .onTapGesture(count: 2) {
+                    debugText = AntigravityStore.loadLastLog()
+                    isShowingDebugAlert = true
+                }
+            
+            VStack(spacing: 8) {
+                Text("Monitor Antigravity Quota")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .foregroundStyle(.primary)
+                
+#if os(macOS)
+                Text("Connect to Antigravity using ~/.antigravity/oauth_creds.json on your Mac.")
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 20)
+#else
+                Text("Copy the raw JSON contents of ~/.antigravity/oauth_creds.json on your Mac and paste it below.")
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 20)
+#endif
+            }
+            
+            VStack(alignment: .leading, spacing: 12) {
+#if !os(macOS)
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Token JSON Credentials")
+                        .font(.caption)
+                        .fontWeight(.bold)
+                        .foregroundColor(.secondary)
+                    
+                    ZStack(alignment: .topLeading) {
+                        if manualTokenInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                            Text("Paste raw oauth_creds.json here...")
+                                .foregroundColor(.secondary.opacity(0.4))
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 12)
+                                .font(.system(size: 11, design: .monospaced))
+                                .allowsHitTesting(false)
+                        }
+                        
+                        TextEditor(text: $manualTokenInput)
+                            .frame(height: 120)
+                            .font(.system(size: 11, design: .monospaced))
+                            .autocorrectionDisabled(true)
+                            .disableAutocapitalizationIfNeeded()
+                            .padding(6)
+                            .background(Color.clear)
+                    }
+                    .background(colorScheme == .dark ? Color(white: 0.15) : Color(white: 0.95))
+                    .cornerRadius(10)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color.primary.opacity(0.08), lineWidth: 1)
+                    )
+                }
+#endif
+                
+                Button {
+#if os(macOS)
+                    let fileURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".antigravity/oauth_creds.json")
+                    do {
+                        let rawData = try Data(contentsOf: fileURL)
+                        let creds = try JSONDecoder().decode(AntigravityOAuthCreds.self, from: rawData)
+                        AntigravityStore.saveOAuthCreds(creds)
+                        errorMessage = nil
+                        refreshAntigravityData()
+                    } catch {
+                        errorMessage = "Error reading ~/.antigravity/oauth_creds.json: \(error.localizedDescription)"
+                    }
+#else
+                    guard !manualTokenInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                        errorMessage = "Please paste your JSON credentials first."
+                        return
+                    }
+                    
+                    if let rawData = manualTokenInput.data(using: .utf8) {
+                        do {
+                            let creds = try JSONDecoder().decode(AntigravityOAuthCreds.self, from: rawData)
+                            AntigravityStore.saveOAuthCreds(creds)
+                            errorMessage = nil
+                            manualTokenInput = ""
+                            refreshAntigravityData()
+                        } catch {
+                            errorMessage = "Invalid JSON schema. Make sure you copy/paste the entire oauth_creds.json file."
+                        }
+                    }
+#endif
+                } label: {
+                    Text("Save & Connect")
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(
+                            LinearGradient(
+                                colors: [.blue, .cyan],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .cornerRadius(14)
+                        .shadow(color: .blue.opacity(0.3), radius: 10, x: 0, y: 4)
+                }
+                .padding(.top, 8)
+            }
+            .padding(.horizontal, 16)
+            .padding(.bottom, errorMessage == nil ? 20 : 0)
+            
+            if let error = errorMessage {
+                Text(error)
+                    .font(.caption)
+                    .foregroundColor(.red)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 20)
+            }
+        }
+        .padding()
+        .background(
+            VisualEffectView()
+                .clipShape(RoundedRectangle(cornerRadius: 24))
+        )
+        .background(
+            RoundedRectangle(cornerRadius: 24)
+                .fill(colorScheme == .dark ? Color(white: 0.1).opacity(0.4) : Color(white: 0.9).opacity(0.4))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 24)
+                .stroke(Color.primary.opacity(0.08), lineWidth: 1)
+        )
+        .padding(.top, 10)
+    }
+    
+    private func antigravityDashboardView(data: AntigravityUsageData) -> some View {
+        VStack(spacing: 24) {
+            VStack(alignment: .leading, spacing: 16) {
+                Text("Model Quota Limits")
+                    .font(.headline)
+                    .foregroundColor(.primary)
+                    .padding(.bottom, 4)
+                    .onTapGesture(count: 2) {
+                        debugText = AntigravityStore.loadLastLog()
+                        isShowingDebugAlert = true
+                    }
+                
+                if data.models.isEmpty {
+                    Text("No registered active model quotas found.")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .padding(.vertical, 8)
+                } else {
+                    ForEach(data.models) { mdl in
+                        VStack(alignment: .leading, spacing: 6) {
+                            HStack {
+                                Text(mdl.name)
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.primary)
+                                    .lineLimit(1)
+                                
+                                Spacer()
+                                
+                                Text(String(format: "%.0f%% remaining", mdl.remainingFraction * 100))
+                                    .font(.caption)
+                                    .foregroundColor(mdl.remainingFraction < 0.25 ? .red : (mdl.remainingFraction < 0.6 ? .orange : .blue))
+                            }
+                            
+                            GeometryReader { geo in
+                                ZStack(alignment: .leading) {
+                                    RoundedRectangle(cornerRadius: 3)
+                                        .fill(Color.primary.opacity(0.06))
+                                        .frame(height: 6)
+                                    
+                                    RoundedRectangle(cornerRadius: 3)
+                                        .fill(
+                                            LinearGradient(
+                                                colors: mdl.remainingFraction < 0.25 ? [.red, .orange] : (mdl.remainingFraction < 0.6 ? [.orange, .yellow] : [.blue, .cyan]),
+                                                startPoint: .leading,
+                                                endPoint: .trailing
+                                            )
+                                        )
+                                        .frame(width: geo.size.width * CGFloat(mdl.remainingFraction), height: 6)
+                                }
+                            }
+                            .frame(height: 6)
+                            
+                            if let reset = mdl.resetTime {
+                                Text("Resets: \(formatResetDate(reset)) (\(formatCountdown(reset)))")
+                                    .font(.system(size: 9))
+                                    .foregroundColor(.secondary)
+                                    .padding(.top, 2)
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    }
+                }
+                
+                Divider()
+                    .background(Color.primary.opacity(0.08))
+                
+                detailRow(title: "Google Account", value: data.email, icon: "person.crop.circle.fill", color: .blue)
+                detailRow(title: "Last Synced", value: formatLastScrapedDate(data.lastUpdated), icon: "arrow.clockwise.circle.fill", color: .orange)
+            }
+            .padding()
+            .background(
+                VisualEffectView()
+                    .clipShape(RoundedRectangle(cornerRadius: 24))
+            )
+            .background(
+                RoundedRectangle(cornerRadius: 24)
+                    .fill(colorScheme == .dark ? Color(white: 0.1).opacity(0.4) : Color(white: 0.9).opacity(0.4))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 24)
+                    .stroke(Color.primary.opacity(0.08), lineWidth: 1)
+            )
+            
+            HStack(spacing: 16) {
+                Button {
+                    refreshAntigravityData()
+                } label: {
+                    HStack {
+                        if isRefreshing {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                .scaleEffect(0.8)
+                        } else {
+                            Image(systemName: "arrow.clockwise")
+                        }
+                        Text("Refresh")
+                    }
+                    .foregroundColor(.primary)
+                    .fontWeight(.semibold)
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.primary.opacity(0.08))
+                    .cornerRadius(14)
+                }
+                .disabled(isRefreshing)
+                
+                Button {
+                    AntigravityStore.clear()
+                    antigravityData = nil
+                } label: {
+                    Text("Disconnect")
+                        .foregroundColor(.red)
+                        .fontWeight(.semibold)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.red.opacity(0.1))
+                        .cornerRadius(14)
+                }
+            }
+            
+            if let error = errorMessage {
+                Text(error)
+                    .font(.caption)
+                    .foregroundColor(.red)
+                    .multilineTextAlignment(.center)
+                    .padding(.top, 5)
+            }
+        }
+    }
+    
+    private func refreshAntigravityData() {
+        isRefreshing = true
+        errorMessage = nil
+        AntigravityNetworkManager.shared.fetchUsage { result in
+            DispatchQueue.main.async {
+                self.isRefreshing = false
+                switch result {
+                case .success(let data):
+                    self.antigravityData = data
+                case .failure(let error):
+                    self.errorMessage = "Failed to update Antigravity: \(error.localizedDescription)"
+                }
+            }
+        }
+    }
+    
+
+#endif
 }
 
 // MARK: - Visual Effect View Wrapper for Glassmorphism

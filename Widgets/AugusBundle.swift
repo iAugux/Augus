@@ -10,5 +10,8 @@ struct AugusBundle: WidgetBundle {
         BlackSSL()
         CodexWidget()
         GeminiWidget()
+#if os(macOS)
+        AntigravityWidget()
+#endif
     }
 }
