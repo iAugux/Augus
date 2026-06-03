@@ -435,38 +435,19 @@ public final class AntigravityNetworkManager: Sendable {
             guard let self = self else { return }
             switch result {
             case .success(let codeAssistData):
-                let projectId = codeAssistData.projectId
                 let email = codeAssistData.email
                 
-                // Try fetchAvailableModels first (newer API), fall back to retrieveUserQuota
-                self.fetchAvailableModels(accessToken: accessToken, projectId: projectId) { modelsResult in
-                    switch modelsResult {
-                    case .success(let models) where !models.isEmpty:
+                // retrieveUserQuota works even without a project ID
+                self.retrieveUserQuota(accessToken: accessToken, projectId: codeAssistData.projectId) { quotaResult in
+                    switch quotaResult {
+                    case .success(let models):
                         let usageData = AntigravityUsageData(models: models, lastUpdated: Date(), email: email)
                         AntigravityStore.saveUsageData(usageData)
-                        AntigravityStore.saveLastLog("Successfully updated Antigravity quotas via fetchAvailableModels for \(email). Found \(models.count) models.")
+                        AntigravityStore.saveLastLog("Successfully updated Antigravity quotas for \(email). Found \(models.count) model buckets.")
                         WidgetCenter.shared.reloadAllTimelines()
                         completion(.success(usageData))
-                    default:
-                        // Fall back to retrieveUserQuota
-                        guard let projectId = projectId else {
-                            let log = "No project ID available and fetchAvailableModels returned no models."
-                            AntigravityStore.saveLastLog(log)
-                            completion(.failure(NSError(domain: "AntigravityNetworkManager", code: -4, userInfo: [NSLocalizedDescriptionKey: log])))
-                            return
-                        }
-                        self.retrieveUserQuota(accessToken: accessToken, projectId: projectId) { quotaResult in
-                            switch quotaResult {
-                            case .success(let models):
-                                let usageData = AntigravityUsageData(models: models, lastUpdated: Date(), email: email)
-                                AntigravityStore.saveUsageData(usageData)
-                                AntigravityStore.saveLastLog("Successfully updated Antigravity quotas via retrieveUserQuota for \(email). Found \(models.count) model buckets.")
-                                WidgetCenter.shared.reloadAllTimelines()
-                                completion(.success(usageData))
-                            case .failure(let error):
-                                completion(.failure(error))
-                            }
-                        }
+                    case .failure(let error):
+                        completion(.failure(error))
                     }
                 }
             case .failure(let error):
@@ -529,7 +510,7 @@ public final class AntigravityNetworkManager: Sendable {
         task.resume()
     }
     
-    private func retrieveUserQuota(accessToken: String, projectId: String, completion: @escaping @Sendable (Result<[AntigravityModelQuota], Error>) -> Void) {
+    private func retrieveUserQuota(accessToken: String, projectId: String?, completion: @escaping @Sendable (Result<[AntigravityModelQuota], Error>) -> Void) {
         let url = URL(string: "https://cloudcode-pa.googleapis.com/v1internal:retrieveUserQuota")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -537,9 +518,10 @@ public final class AntigravityNetworkManager: Sendable {
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
         
-        let body: [String: Any] = [
-            "project": projectId
-        ]
+        var body: [String: Any] = [:]
+        if let projectId = projectId {
+            body["project"] = projectId
+        }
         
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
         
