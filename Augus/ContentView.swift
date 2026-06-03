@@ -1124,14 +1124,23 @@ struct ContentView: View {
                     .fontWeight(.bold)
                     .foregroundStyle(.primary)
                 
+#if os(macOS)
+                Text("Connect to Gemini using ~/.gemini/oauth_creds.json on your Mac.")
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 20)
+#else
                 Text("Copy the raw JSON contents of ~/.gemini/oauth_creds.json on your Mac and paste it below.")
                     .font(.body)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 20)
+#endif
             }
             
             VStack(alignment: .leading, spacing: 12) {
+#if !os(macOS)
                 VStack(alignment: .leading, spacing: 6) {
                     Text("Token JSON Credentials")
                         .font(.caption)
@@ -1163,8 +1172,21 @@ struct ContentView: View {
                             .stroke(Color.primary.opacity(0.08), lineWidth: 1)
                     )
                 }
+#endif
                 
                 Button {
+#if os(macOS)
+                    let fileURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".gemini/oauth_creds.json")
+                    do {
+                        let rawData = try Data(contentsOf: fileURL)
+                        let creds = try JSONDecoder().decode(GeminiOAuthCreds.self, from: rawData)
+                        GeminiStore.saveOAuthCreds(creds)
+                        errorMessage = nil
+                        refreshGeminiData()
+                    } catch {
+                        errorMessage = "Error reading ~/.gemini/oauth_creds.json: \(error.localizedDescription)"
+                    }
+#else
                     guard !manualTokenInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
                         errorMessage = "Please paste your JSON credentials first."
                         return
@@ -1181,6 +1203,7 @@ struct ContentView: View {
                             errorMessage = "Invalid JSON schema. Make sure you copy/paste the entire oauth_creds.json file."
                         }
                     }
+#endif
                 } label: {
                     Text("Save & Connect")
                         .fontWeight(.semibold)
