@@ -24,6 +24,14 @@ struct ContentView: View {
     @State private var manualTokenInput = ""
     @State private var notificationDelegate = NotificationDelegate()
     
+    @AppStorage("showBlackSSL") private var showBlackSSL = true
+    @AppStorage("showCodex") private var showCodex = true
+    @AppStorage("showGemini") private var showGemini = true
+#if os(macOS)
+    @AppStorage("showAntigravity") private var showAntigravity = true
+#endif
+    @State private var isShowingSettings = false
+    
     enum ServiceTab: String, CaseIterable, Identifiable {
         case blackssl = "BlackSSL"
         case codex = "Codex"
@@ -52,31 +60,39 @@ struct ContentView: View {
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            blacksslTabContent
-                .tabItem {
-                    Label("BlackSSL", systemImage: "globe.asia.australia.fill")
-                }
-                .tag(ServiceTab.blackssl)
+            if showBlackSSL {
+                blacksslTabContent
+                    .tabItem {
+                        Label("BlackSSL", systemImage: "globe.asia.australia.fill")
+                    }
+                    .tag(ServiceTab.blackssl)
+            }
             
-            codexTabContent
-                .tabItem {
-                    Label("Codex", image: .codex)
-                }
-                .tag(ServiceTab.codex)
+            if showCodex {
+                codexTabContent
+                    .tabItem {
+                        Label("Codex", image: .codex)
+                    }
+                    .tag(ServiceTab.codex)
+            }
 
 #if os(macOS)
-            antigravityTabContent
-                .tabItem {
-                    Label("Antigravity", image: .antigravity)
-                }
-                .tag(ServiceTab.antigravity)
+            if showAntigravity {
+                antigravityTabContent
+                    .tabItem {
+                        Label("Antigravity", image: .antigravity)
+                    }
+                    .tag(ServiceTab.antigravity)
+            }
 #endif
 
-            geminiTabContent
-                .tabItem {
-                    Label("Gemini", image: .gemini)
-                }
-                .tag(ServiceTab.gemini)
+            if showGemini {
+                geminiTabContent
+                    .tabItem {
+                        Label("Gemini", image: .gemini)
+                    }
+                    .tag(ServiceTab.gemini)
+            }
         }
         .tint(selectedTab.tintColor)
         .onChange(of: selectedTab) {
@@ -285,13 +301,75 @@ struct ContentView: View {
             .padding(.vertical, 5)
             .background(
                 Capsule()
-                    .fill(isConnected ? Color.green.opacity(0.1) : Color.orange.opacity(0.1))
+                    .fill(isConnected ? Color.green.opacity(0.15) : Color.orange.opacity(0.15))
             )
+            
+            Button {
+                isShowingSettings.toggle()
+            } label: {
+                Image(systemName: "gearshape.fill")
+                    .foregroundColor(.secondary)
+                    .padding(7)
+                    .background(Color.primary.opacity(0.08))
+                    .clipShape(Circle())
+            }
+            .buttonStyle(.plain)
+            .popover(isPresented: $isShowingSettings) {
+                settingsView
+            }
         }
         .padding(.vertical, 10)
     }
     
-    // MARK: - Welcome View
+    // MARK: - Settings View
+    private var settingsView: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Visible Tabs")
+                .font(.headline)
+                .padding(.bottom, 4)
+            
+            Toggle("BlackSSL", isOn: bindingFor(tab: .blackssl, value: $showBlackSSL))
+            Toggle("Codex", isOn: bindingFor(tab: .codex, value: $showCodex))
+            Toggle("Gemini", isOn: bindingFor(tab: .gemini, value: $showGemini))
+#if os(macOS)
+            Toggle("Antigravity", isOn: bindingFor(tab: .antigravity, value: $showAntigravity))
+#endif
+        }
+        .padding(20)
+        .frame(minWidth: 200)
+    }
+    
+    private func bindingFor(tab: ServiceTab, value: Binding<Bool>) -> Binding<Bool> {
+        Binding(
+            get: { value.wrappedValue },
+            set: { newValue in
+                let count = (showBlackSSL ? 1 : 0) + (showCodex ? 1 : 0) + (showGemini ? 1 : 0)
+#if os(macOS)
+                let activeCount = count + (showAntigravity ? 1 : 0)
+#else
+                let activeCount = count
+#endif
+                if !newValue && activeCount <= 1 {
+                    return // Prevent hiding the last tab
+                }
+                value.wrappedValue = newValue
+                
+                // If we are hiding the currently selected tab, switch to another one
+                if !newValue && selectedTab == tab {
+                    var newTab: ServiceTab? = nil
+                    if showBlackSSL && tab != .blackssl { newTab = .blackssl }
+                    else if showCodex && tab != .codex { newTab = .codex }
+                    else if showGemini && tab != .gemini { newTab = .gemini }
+#if os(macOS)
+                    if newTab == nil && showAntigravity && tab != .antigravity { newTab = .antigravity }
+#endif
+                    if let nt = newTab { selectedTab = nt }
+                }
+            }
+        )
+    }
+    
+    // MARK: - Helper Views
     private var loginWelcomeView: some View {
         VStack(spacing: 24) {
             Image(systemName: "globe.asia.australia.fill")
