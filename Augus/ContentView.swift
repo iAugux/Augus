@@ -7,6 +7,7 @@ import UniformTypeIdentifiers
 
 struct ContentView: View {
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.scenePhase) var scenePhase
     @State private var usageData: BlackSSLUsageData? = BlackSSLStore.loadUsageData()
     @State private var codexData: CodexUsageData? = CodexStore.loadUsageData()
     @State private var geminiData: GeminiUsageData? = GeminiStore.loadUsageData()
@@ -102,6 +103,12 @@ struct ContentView: View {
         )
         .onChange(of: selectedTab) {
             errorMessage = nil
+            refreshCurrentTab()
+        }
+        .onChange(of: scenePhase) {
+            if scenePhase == .active {
+                refreshCurrentTab()
+            }
         }
         .onOpenURL { url in
             handleOpenURL(url)
@@ -1093,6 +1100,21 @@ struct ContentView: View {
     }
 #endif
     
+    private func refreshCurrentTab() {
+        switch selectedTab {
+        case .blackssl:
+            refreshData()
+        case .codex:
+            refreshCodexData()
+        case .gemini:
+            refreshGeminiData()
+        case .antigravity:
+#if os(macOS)
+            refreshAntigravityData()
+#endif
+        }
+    }
+
     private func refreshData() {
         guard !isRefreshing else { return }
         isRefreshing = true
