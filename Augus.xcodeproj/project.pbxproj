@@ -56,10 +56,10 @@
 		B188B4772FCB34BB00DE99A6 /* Exceptions for "Shared" folder in "Widgets" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				AntigravityData.swift,
 				BlackSSLData.swift,
 				CodexData.swift,
 				GeminiData.swift,
-				AntigravityData.swift,
 			);
 			target = B188B4562FCB257D00DE99A6 /* Widgets */;
 		};

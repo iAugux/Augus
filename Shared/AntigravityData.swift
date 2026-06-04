@@ -305,7 +305,7 @@ public final class AntigravityNetworkManager: Sendable {
                 let manageUri = json["manageSubscriptionUri"] as? String
                 let email = self.extractEmail(from: manageUri)
                 
-                var projectId = self.extractProjectId(from: json)
+                let projectId = self.extractProjectId(from: json)
                 
                 if projectId != nil {
                     completion(.success(CodeAssistInfo(projectId: projectId, email: email)))

@@ -24,21 +24,14 @@ struct ContentView: View {
     @State private var manualTokenInput = ""
     @State private var notificationDelegate = NotificationDelegate()
     
-    @AppStorage("showBlackSSL") private var showBlackSSL = true
-    @AppStorage("showCodex") private var showCodex = true
-    @AppStorage("showGemini") private var showGemini = true
-#if os(macOS)
-    @AppStorage("showAntigravity") private var showAntigravity = true
-#endif
+    @AppStorage("tabsConfig") private var tabsConfig = TabConfigList(items: ContentView.defaultTabsConfig())
     @State private var isShowingSettings = false
     
-    enum ServiceTab: String, CaseIterable, Identifiable {
+    enum ServiceTab: String, CaseIterable, Identifiable, Codable {
         case blackssl = "BlackSSL"
         case codex = "Codex"
         case gemini = "Gemini"
-#if os(macOS)
         case antigravity = "Antigravity"
-#endif
         
         var id: String { rawValue }
         
@@ -50,51 +43,49 @@ struct ContentView: View {
                 return Color(red: 0x8C / 255.0, green: 0xA0 / 255.0, blue: 1.0)
             case .gemini:
                 return Color(red: 0x3D / 255.0, green: 0x8D / 255.0, blue: 0xF6 / 255.0)
-#if os(macOS)
             case .antigravity:
                 return Color(red: 0x3D / 255.0, green: 0x8D / 255.0, blue: 0xF6 / 255.0)
-#endif
             }
         }
     }
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            if showBlackSSL {
-                blacksslTabContent
-                    .tabItem {
-                        Label("BlackSSL", systemImage: "globe.asia.australia.fill")
-                    }
-                    .tag(ServiceTab.blackssl)
-            }
-            
-            if showCodex {
-                codexTabContent
-                    .tabItem {
-                        Label("Codex", image: .codex)
-                    }
-                    .tag(ServiceTab.codex)
-            }
-
+            ForEach(validatedTabsConfig.filter { $0.isVisible }) { config in
+                switch config.tab {
+                case .blackssl:
+                    blacksslTabContent
+                        .tabItem {
+                            Label("BlackSSL", systemImage: "globe.asia.australia.fill")
+                        }
+                        .tag(ServiceTab.blackssl)
+                case .codex:
+                    codexTabContent
+                        .tabItem {
+                            Label("Codex", image: .codex)
+                        }
+                        .tag(ServiceTab.codex)
+                case .gemini:
+                    geminiTabContent
+                        .tabItem {
+                            Label("Gemini", image: .gemini)
+                        }
+                        .tag(ServiceTab.gemini)
+                case .antigravity:
 #if os(macOS)
-            if showAntigravity {
-                antigravityTabContent
-                    .tabItem {
-                        Label("Antigravity", image: .antigravity)
-                    }
-                    .tag(ServiceTab.antigravity)
-            }
+                    antigravityTabContent
+                        .tabItem {
+                            Label("Antigravity", image: .antigravity)
+                        }
+                        .tag(ServiceTab.antigravity)
+#else
+                    EmptyView()
 #endif
-
-            if showGemini {
-                geminiTabContent
-                    .tabItem {
-                        Label("Gemini", image: .gemini)
-                    }
-                    .tag(ServiceTab.gemini)
+                }
             }
         }
         .tint(selectedTab.tintColor)
+        .hideWindowToolbarBackgroundIfNeeded()
         .onChange(of: selectedTab) {
             errorMessage = nil
         }
@@ -107,6 +98,11 @@ struct ContentView: View {
         .sheet(isPresented: $isShowingCodexLogin) {
             codexWebViewSheet
         }
+        #if !os(macOS)
+        .sheet(isPresented: $isShowingSettings) {
+            SettingsView(isPresented: $isShowingSettings, tabsConfig: $tabsConfig, selectedTab: $selectedTab)
+        }
+        #endif
         .alert("Scrape Diagnostics", isPresented: $isShowingDebugAlert) {
             Button("Copy Log") {
                 copyToPasteboard(debugText)
@@ -117,6 +113,14 @@ struct ContentView: View {
         }
         .onAppear {
             UNUserNotificationCenter.current().delegate = notificationDelegate
+            
+            // Ensure selectedTab is actually visible on launch
+            let visible = validatedTabsConfig.filter { $0.isVisible }
+            if !visible.contains(where: { $0.tab == selectedTab }) {
+                if let firstVisible = visible.first {
+                    selectedTab = firstVisible.tab
+                }
+            }
             
             // Auto refresh on open
             if usageData != nil {
@@ -171,6 +175,7 @@ struct ContentView: View {
                 }
                 .padding()
             }
+            .scrollIndicators(.hidden)
         }
     }
     
@@ -199,6 +204,7 @@ struct ContentView: View {
                 }
                 .padding()
             }
+            .scrollIndicators(.hidden)
         }
     }
     
@@ -258,8 +264,8 @@ struct ContentView: View {
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
-#if os(macOS)
                 case .antigravity:
+                    #if os(macOS)
                     if let data = antigravityData {
                         Text(data.email)
                             .font(.subheadline)
@@ -269,7 +275,11 @@ struct ContentView: View {
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
-#endif
+                    #else
+                    Text("Antigravity Monitor")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    #endif
                 }
             }
             
@@ -281,9 +291,12 @@ struct ContentView: View {
                 case .blackssl: return usageData != nil
                 case .codex: return codexData != nil
                 case .gemini: return geminiData != nil
-#if os(macOS)
-                case .antigravity: return antigravityData != nil
-#endif
+                case .antigravity:
+                    #if os(macOS)
+                    return antigravityData != nil
+                    #else
+                    return false
+                    #endif
                 }
             }()
             
@@ -314,59 +327,45 @@ struct ContentView: View {
                     .clipShape(Circle())
             }
             .buttonStyle(.plain)
+            .focusable(false)
+            #if os(macOS)
             .popover(isPresented: $isShowingSettings) {
-                settingsView
+                SettingsView(isPresented: $isShowingSettings, tabsConfig: $tabsConfig, selectedTab: $selectedTab)
             }
+            #endif
         }
         .padding(.vertical, 10)
     }
     
-    // MARK: - Settings View
-    private var settingsView: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Visible Tabs")
-                .font(.headline)
-                .padding(.bottom, 4)
-            
-            Toggle("BlackSSL", isOn: bindingFor(tab: .blackssl, value: $showBlackSSL))
-            Toggle("Codex", isOn: bindingFor(tab: .codex, value: $showCodex))
-            Toggle("Gemini", isOn: bindingFor(tab: .gemini, value: $showGemini))
-#if os(macOS)
-            Toggle("Antigravity", isOn: bindingFor(tab: .antigravity, value: $showAntigravity))
-#endif
-        }
-        .padding(20)
-        .frame(minWidth: 200)
+    // MARK: - Tab Configuration
+    static var supportedTabs: [ServiceTab] {
+        var tabs: [ServiceTab] = [.blackssl, .codex, .gemini]
+        #if os(macOS)
+        tabs.append(.antigravity)
+        #endif
+        return tabs
     }
     
-    private func bindingFor(tab: ServiceTab, value: Binding<Bool>) -> Binding<Bool> {
-        Binding(
-            get: { value.wrappedValue },
-            set: { newValue in
-                let count = (showBlackSSL ? 1 : 0) + (showCodex ? 1 : 0) + (showGemini ? 1 : 0)
-#if os(macOS)
-                let activeCount = count + (showAntigravity ? 1 : 0)
-#else
-                let activeCount = count
-#endif
-                if !newValue && activeCount <= 1 {
-                    return // Prevent hiding the last tab
-                }
-                value.wrappedValue = newValue
-                
-                // If we are hiding the currently selected tab, switch to another one
-                if !newValue && selectedTab == tab {
-                    var newTab: ServiceTab? = nil
-                    if showBlackSSL && tab != .blackssl { newTab = .blackssl }
-                    else if showCodex && tab != .codex { newTab = .codex }
-                    else if showGemini && tab != .gemini { newTab = .gemini }
-#if os(macOS)
-                    if newTab == nil && showAntigravity && tab != .antigravity { newTab = .antigravity }
-#endif
-                    if let nt = newTab { selectedTab = nt }
-                }
+    static func defaultTabsConfig() -> [TabConfig] {
+        [
+            TabConfig(tab: .blackssl, isVisible: true),
+            TabConfig(tab: .codex, isVisible: true),
+            TabConfig(tab: .gemini, isVisible: true),
+            TabConfig(tab: .antigravity, isVisible: true)
+        ]
+    }
+    
+    private var validatedTabsConfig: [TabConfig] {
+        let supported = Self.supportedTabs
+        var filtered = tabsConfig.items.filter { supported.contains($0.tab) }
+        
+        // Append missing ones
+        for tab in supported {
+            if !filtered.contains(where: { $0.tab == tab }) {
+                filtered.append(TabConfig(tab: tab, isVisible: true))
             }
-        )
+        }
+        return filtered
     }
     
     // MARK: - Helper Views
@@ -722,7 +721,7 @@ struct ContentView: View {
                     .background(Color.primary.opacity(0.08))
                     .cornerRadius(14)
                 }
-                .disabled(isRefreshing)
+                .buttonStyle(.plain)
                 
                 Button {
                     CodexStore.clear()
@@ -736,6 +735,7 @@ struct ContentView: View {
                         .background(Color.red.opacity(0.1))
                         .cornerRadius(14)
                 }
+                .buttonStyle(.plain)
             }
             
             if let error = errorMessage {
@@ -901,7 +901,7 @@ struct ContentView: View {
                     .background(Color.primary.opacity(0.08))
                     .cornerRadius(14)
                 }
-                .disabled(isRefreshing)
+                .buttonStyle(.plain)
                 
                 Button {
                     BlackSSLStore.clear()
@@ -915,6 +915,7 @@ struct ContentView: View {
                         .background(Color.red.opacity(0.1))
                         .cornerRadius(14)
                 }
+                .buttonStyle(.plain)
             }
             
             if let error = errorMessage {
@@ -1059,6 +1060,7 @@ struct ContentView: View {
     }
     
     private func refreshData() {
+        guard !isRefreshing else { return }
         isRefreshing = true
         errorMessage = nil
         BlackSSLNetworkManager.shared.fetchUsage { result in
@@ -1075,6 +1077,7 @@ struct ContentView: View {
     }
     
     private func refreshCodexData() {
+        guard !isRefreshing else { return }
         isRefreshing = true
         errorMessage = nil
         CodexNetworkManager.shared.fetchUsage { result in
@@ -1209,6 +1212,7 @@ struct ContentView: View {
                 }
                 .padding()
             }
+            .scrollIndicators(.hidden)
         }
     }
     
@@ -1469,7 +1473,7 @@ struct ContentView: View {
                     .background(Color.primary.opacity(0.08))
                     .cornerRadius(14)
                 }
-                .disabled(isRefreshing)
+                .buttonStyle(.plain)
                 
                 Button {
                     GeminiStore.clear()
@@ -1483,6 +1487,7 @@ struct ContentView: View {
                         .background(Color.red.opacity(0.1))
                         .cornerRadius(14)
                 }
+                .buttonStyle(.plain)
             }
             
             if let error = errorMessage {
@@ -1496,6 +1501,7 @@ struct ContentView: View {
     }
     
     private func refreshGeminiData() {
+        guard !isRefreshing else { return }
         isRefreshing = true
         errorMessage = nil
         GeminiNetworkManager.shared.fetchUsage { result in
@@ -1555,6 +1561,7 @@ struct ContentView: View {
                 }
                 .padding()
             }
+            .scrollIndicators(.hidden)
         }
     }
     
@@ -1815,7 +1822,7 @@ struct ContentView: View {
                     .background(Color.primary.opacity(0.08))
                     .cornerRadius(14)
                 }
-                .disabled(isRefreshing)
+                .buttonStyle(.plain)
                 
                 Button {
                     AntigravityStore.clear()
@@ -1829,6 +1836,7 @@ struct ContentView: View {
                         .background(Color.red.opacity(0.1))
                         .cornerRadius(14)
                 }
+                .buttonStyle(.plain)
             }
             
             if let error = errorMessage {
@@ -1842,6 +1850,7 @@ struct ContentView: View {
     }
     
     private func refreshAntigravityData() {
+        guard !isRefreshing else { return }
         isRefreshing = true
         errorMessage = nil
         AntigravityNetworkManager.shared.fetchUsage { result in
@@ -1888,5 +1897,37 @@ struct VisualEffectView: UIViewRepresentable {
 class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         completionHandler([.banner, .sound])
+    }
+}
+
+// MARK: - Tab Configuration Models
+struct TabConfig: Codable, Identifiable, Equatable {
+    let tab: ContentView.ServiceTab
+    var isVisible: Bool
+    
+    var id: String { tab.rawValue }
+}
+
+struct TabConfigList: Codable, RawRepresentable, Equatable {
+    var items: [TabConfig]
+    
+    init(items: [TabConfig]) {
+        self.items = items
+    }
+    
+    init?(rawValue: String) {
+        guard let data = rawValue.data(using: .utf8),
+              let decoded = try? JSONDecoder().decode([TabConfig].self, from: data) else {
+            return nil
+        }
+        self.items = decoded
+    }
+    
+    var rawValue: String {
+        guard let data = try? JSONEncoder().encode(items),
+              let str = String(data: data, encoding: .utf8) else {
+            return "[]"
+        }
+        return str
     }
 }
