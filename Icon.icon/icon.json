@@ -1,16 +1,21 @@
 {
-  "fill" : "automatic",
+  "fill" : {
+    "linear-gradient" : [
+      "display-p3:0.65000,0.85000,0.95000,1.00000",
+      "display-p3:0.95000,0.82000,0.98000,1.00000"
+    ]
+  },
   "groups" : [
     {
       "layers" : [
         {
-          "image-name" : "Artboard.png",
-          "name" : "Artboard",
+          "image-name" : "image 2.png",
+          "name" : "image 2",
           "position" : {
-            "scale" : 0.85,
+            "scale" : 1,
             "translation-in-points" : [
               0,
-              0
+              42.6015625
             ]
           }
         }
