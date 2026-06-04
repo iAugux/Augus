@@ -22,11 +22,7 @@ extension View {
     
     func hideWindowToolbarBackgroundIfNeeded() -> some View {
 #if os(macOS)
-        if #available(macOS 13.0, *) {
-            return self.toolbarBackground(.hidden, for: .windowToolbar)
-        } else {
-            return self
-        }
+        return self.toolbarBackground(.hidden, for: .windowToolbar)
 #else
         return self
 #endif
