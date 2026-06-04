@@ -113,6 +113,7 @@ public class AntigravityStore {
     }
 }
 
+#if os(macOS)
 // MARK: - Subprocess Runner (for local language server probing)
 public enum SubprocessRunnerError: LocalizedError, Sendable {
     case binaryNotFound(String)
@@ -834,3 +835,4 @@ private enum CodeValue: Decodable, Sendable {
         throw DecodingError.dataCorruptedError(in: container, debugDescription: "Unsupported code type")
     }
 }
+#endif
