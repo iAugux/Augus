@@ -345,12 +345,12 @@ public final class CodexNetworkManager: Sendable {
                     if let rateLimit = rateLimit {
                         if let primary = rateLimit["primary_window"] as? [String: Any] {
                             let rawUsed = (primary["used_percent"] as? NSNumber)?.doubleValue ?? 0.0
-                            primaryUsed = rawUsed > 1.0 ? rawUsed / 100.0 : rawUsed
+                            primaryUsed = rawUsed / 100.0
                             primaryReset = (primary["reset_at"] as? NSNumber)?.int64Value ?? 0
                         }
                         if let secondary = rateLimit["secondary_window"] as? [String: Any] {
                             let rawUsed = (secondary["used_percent"] as? NSNumber)?.doubleValue ?? 0.0
-                            secondaryUsed = rawUsed > 1.0 ? rawUsed / 100.0 : rawUsed
+                            secondaryUsed = rawUsed / 100.0
                             secondaryReset = (secondary["reset_at"] as? NSNumber)?.int64Value ?? 0
                         }
                     }
