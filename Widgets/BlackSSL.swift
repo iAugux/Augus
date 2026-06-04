@@ -133,6 +133,7 @@ struct BlackSSLEntryView : View {
             // Left Progress Block
             Button(intent: RefreshBlackSSLIntent()) {
                 leftProgressBlock(usage: usage)
+                    .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
 

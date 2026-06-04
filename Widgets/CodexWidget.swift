@@ -141,6 +141,7 @@ struct CodexEntryView: View {
             // Left Progress Block
             Button(intent: RefreshCodexIntent()) {
                 leftProgressBlock(usage: usage)
+                    .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
             
