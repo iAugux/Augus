@@ -266,18 +266,11 @@ struct CodexWidget: Widget {
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: CodexProvider()) { entry in
-            if #available(macOS 14.0, iOS 17.0, *) {
-                CodexEntryView(entry: entry)
-                    .containerBackground(for: .widget) {
-                        WidgetBackgroundView()
-                    }
-                    .widgetURL(URL(string: "augus://codex"))
-            } else {
-                CodexEntryView(entry: entry)
-                    .padding()
-                    .background(WidgetBackgroundView())
-                    .widgetURL(URL(string: "augus://codex"))
-            }
+            CodexEntryView(entry: entry)
+                .containerBackground(for: .widget) {
+                    WidgetBackgroundView()
+                }
+                .widgetURL(URL(string: "augus://codex"))
         }
         .configurationDisplayName("Codex Limits")
         .description("Shows Codex usage caps (5h and 7d rolling windows).")

@@ -275,18 +275,11 @@ struct AntigravityWidget: Widget {
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: AntigravityProvider()) { entry in
-            if #available(macOS 14.0, iOS 17.0, *) {
-                AntigravityEntryView(entry: entry)
-                    .containerBackground(for: .widget) {
-                        WidgetBackgroundView()
-                    }
-                    .widgetURL(URL(string: "augus://antigravity"))
-            } else {
-                AntigravityEntryView(entry: entry)
-                    .padding()
-                    .background(WidgetBackgroundView())
-                    .widgetURL(URL(string: "augus://antigravity"))
-            }
+            AntigravityEntryView(entry: entry)
+                .containerBackground(for: .widget) {
+                    WidgetBackgroundView()
+                }
+                .widgetURL(URL(string: "augus://antigravity"))
         }
         .configurationDisplayName("Antigravity Limits")
         .description("Tracks Google Antigravity request quotas.")

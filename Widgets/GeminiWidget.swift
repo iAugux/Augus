@@ -273,18 +273,11 @@ struct GeminiWidget: Widget {
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: GeminiProvider()) { entry in
-            if #available(macOS 14.0, iOS 17.0, *) {
-                GeminiEntryView(entry: entry)
-                    .containerBackground(for: .widget) {
-                        WidgetBackgroundView()
-                    }
-                    .widgetURL(URL(string: "augus://gemini"))
-            } else {
-                GeminiEntryView(entry: entry)
-                    .padding()
-                    .background(WidgetBackgroundView())
-                    .widgetURL(URL(string: "augus://gemini"))
-            }
+            GeminiEntryView(entry: entry)
+                .containerBackground(for: .widget) {
+                    WidgetBackgroundView()
+                }
+                .widgetURL(URL(string: "augus://gemini"))
         }
         .configurationDisplayName("Gemini Limits")
         .description("Tracks Google Gemini request quotas.")

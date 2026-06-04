@@ -306,18 +306,11 @@ struct BlackSSL: Widget {
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
-            if #available(macOS 14.0, iOS 17.0, *) {
-                BlackSSLEntryView(entry: entry)
-                    .containerBackground(for: .widget) {
-                        WidgetBackgroundView()
-                    }
-                    .widgetURL(URL(string: "augus://blackssl"))
-            } else {
-                BlackSSLEntryView(entry: entry)
-                    .padding()
-                    .background(WidgetBackgroundView())
-                    .widgetURL(URL(string: "augus://blackssl"))
-            }
+            BlackSSLEntryView(entry: entry)
+                .containerBackground(for: .widget) {
+                    WidgetBackgroundView()
+                }
+                .widgetURL(URL(string: "augus://blackssl"))
         }
         .configurationDisplayName("BlackSSL Status")
         .description("Shows traffic usage and subscription expiration of your BlackSSL account.")

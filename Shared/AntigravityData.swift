@@ -614,10 +614,8 @@ public struct AntigravityStatusProbe: Sendable {
                     timeout: timeout))
             return true
         } catch {
-            if #available(macOS 13.0, *) {
-                self.log
-                    .debug("[Antigravity] Port \(port) probe failed: \(error.localizedDescription, privacy: .public)")
-            }
+            self.log
+                .debug("[Antigravity] Port \(port) probe failed: \(error.localizedDescription, privacy: .public)")
             return false
         }
     }
