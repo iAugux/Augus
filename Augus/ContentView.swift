@@ -626,13 +626,15 @@ struct ContentView: View {
                     refreshCodexData()
                 } label: {
                     HStack {
-                        if isRefreshing {
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                .scaleEffect(0.8)
-                        } else {
-                            Image(systemName: "arrow.clockwise")
+                        ZStack {
+                            if isRefreshing {
+                                ProgressView()
+                                    .controlSize(.small)
+                            } else {
+                                Image(systemName: "arrow.clockwise")
+                            }
                         }
+                        .frame(width: 16, height: 16)
                         Text("Refresh")
                     }
                     .foregroundColor(.primary)
@@ -803,13 +805,15 @@ struct ContentView: View {
                     refreshData()
                 } label: {
                     HStack {
-                        if isRefreshing {
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                .scaleEffect(0.8)
-                        } else {
-                            Image(systemName: "arrow.clockwise")
+                        ZStack {
+                            if isRefreshing {
+                                ProgressView()
+                                    .controlSize(.small)
+                            } else {
+                                Image(systemName: "arrow.clockwise")
+                            }
                         }
+                        .frame(width: 16, height: 16)
                         Text("Refresh")
                     }
                     .foregroundColor(.primary)
@@ -1369,13 +1373,15 @@ struct ContentView: View {
                     refreshGeminiData()
                 } label: {
                     HStack {
-                        if isRefreshing {
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                .scaleEffect(0.8)
-                        } else {
-                            Image(systemName: "arrow.clockwise")
+                        ZStack {
+                            if isRefreshing {
+                                ProgressView()
+                                    .controlSize(.small)
+                            } else {
+                                Image(systemName: "arrow.clockwise")
+                            }
                         }
+                        .frame(width: 16, height: 16)
                         Text("Refresh")
                     }
                     .foregroundColor(.primary)
@@ -1713,13 +1719,15 @@ struct ContentView: View {
                     refreshAntigravityData()
                 } label: {
                     HStack {
-                        if isRefreshing {
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                .scaleEffect(0.8)
-                        } else {
-                            Image(systemName: "arrow.clockwise")
+                        ZStack {
+                            if isRefreshing {
+                                ProgressView()
+                                    .controlSize(.small)
+                            } else {
+                                Image(systemName: "arrow.clockwise")
+                            }
                         }
+                        .frame(width: 16, height: 16)
                         Text("Refresh")
                     }
                     .foregroundColor(.primary)
