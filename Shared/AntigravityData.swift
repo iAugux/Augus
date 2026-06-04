@@ -114,40 +114,131 @@ public class AntigravityStore {
 }
 
 // MARK: - Subprocess Runner (for local language server probing)
+public enum SubprocessRunnerError: LocalizedError, Sendable {
+    case binaryNotFound(String)
+    case launchFailed(String)
+    case timedOut(String)
+    case nonZeroExit(code: Int32, stderr: String)
 
-public struct SubprocessResult {
-    let stdout: String
-    let stderr: String
-    let exitCode: Int
+    public var errorDescription: String? {
+        switch self {
+        case let .binaryNotFound(binary):
+            return "Missing CLI '\(binary)'."
+        case let .launchFailed(details):
+            return "Failed to launch process: \(details)"
+        case let .timedOut(label):
+            return "Command timed out: \(label)"
+        case let .nonZeroExit(code, stderr):
+            let trimmed = stderr.trimmingCharacters(in: .whitespacesAndNewlines)
+            if trimmed.isEmpty {
+                return "Command failed with exit code \(code)."
+            }
+            return "Command failed (\(code)): \(trimmed)"
+        }
+    }
+}
+
+public struct SubprocessResult: Sendable {
+    public let stdout: String
+    public let stderr: String
+    public let exitCode: Int
 }
 
 public enum SubprocessRunner {
-    public static func run(binary: String, arguments: [String], environment: [String: String]? = nil, timeout: TimeInterval, label: String) async throws -> SubprocessResult {
-        let task = Process()
-        task.executableURL = URL(fileURLWithPath: binary)
-        task.arguments = arguments
-        if let environment = environment {
-            task.environment = environment
+    public static func run(
+        binary: String,
+        arguments: [String],
+        environment: [String: String]? = nil,
+        timeout: TimeInterval,
+        label: String) async throws -> SubprocessResult
+    {
+        guard FileManager.default.isExecutableFile(atPath: binary) else {
+            throw SubprocessRunnerError.binaryNotFound(binary)
         }
-        
-        let outPipe = Pipe()
-        let errPipe = Pipe()
-        task.standardOutput = outPipe
-        task.standardError = errPipe
-        
-        try task.run()
-        
-        // Timeout handling: simply wait.
-        task.waitUntilExit()
-        
-        let outData = outPipe.fileHandleForReading.readDataToEndOfFile()
-        let errData = errPipe.fileHandleForReading.readDataToEndOfFile()
-        
-        return SubprocessResult(
-            stdout: String(data: outData, encoding: .utf8) ?? "",
-            stderr: String(data: errData, encoding: .utf8) ?? "",
-            exitCode: Int(task.terminationStatus)
-        )
+
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: binary)
+        process.arguments = arguments
+        if let environment = environment {
+            process.environment = environment
+        }
+
+        let stdoutPipe = Pipe()
+        let stderrPipe = Pipe()
+        process.standardOutput = stdoutPipe
+        process.standardError = stderrPipe
+        process.standardInput = nil
+
+        let stdoutTask = Task<Data, Never> {
+            stdoutPipe.fileHandleForReading.readDataToEndOfFile()
+        }
+        let stderrTask = Task<Data, Never> {
+            stderrPipe.fileHandleForReading.readDataToEndOfFile()
+        }
+
+        do {
+            try process.run()
+        } catch {
+            stdoutTask.cancel()
+            stderrTask.cancel()
+            try? stdoutPipe.fileHandleForReading.close()
+            try? stderrPipe.fileHandleForReading.close()
+            throw SubprocessRunnerError.launchFailed(error.localizedDescription)
+        }
+
+        var processGroup: pid_t?
+        let pid = process.processIdentifier
+        if setpgid(pid, pid) == 0 {
+            processGroup = pid
+        }
+
+        let exitCodeTask = Task<Int32, Never> {
+            process.waitUntilExit()
+            return process.terminationStatus
+        }
+
+        do {
+            let exitCode = try await withThrowingTaskGroup(of: Int32.self) { group in
+                group.addTask { await exitCodeTask.value }
+                group.addTask {
+                    try await Task.sleep(nanoseconds: UInt64(timeout * 1_000_000_000))
+                    throw SubprocessRunnerError.timedOut(label)
+                }
+                let code = try await group.next()!
+                group.cancelAll()
+                return code
+            }
+
+            let stdoutData = await stdoutTask.value
+            let stderrData = await stderrTask.value
+            let stdout = String(data: stdoutData, encoding: .utf8) ?? ""
+            let stderr = String(data: stderrData, encoding: .utf8) ?? ""
+
+            return SubprocessResult(stdout: stdout, stderr: stderr, exitCode: Int(exitCode))
+        } catch {
+            if process.isRunning {
+                process.terminate()
+                if let pgid = processGroup {
+                    kill(-pgid, SIGTERM)
+                }
+                let killDeadline = Date().addingTimeInterval(0.4)
+                while process.isRunning, Date() < killDeadline {
+                    usleep(50000)
+                }
+                if process.isRunning {
+                    if let pgid = processGroup {
+                        kill(-pgid, SIGKILL)
+                    }
+                    kill(process.processIdentifier, SIGKILL)
+                }
+            }
+            exitCodeTask.cancel()
+            stdoutTask.cancel()
+            stderrTask.cancel()
+            try? stdoutPipe.fileHandleForReading.close()
+            try? stderrPipe.fileHandleForReading.close()
+            throw error
+        }
     }
 }
 
@@ -243,7 +334,7 @@ public enum AntigravityStatusProbeError: LocalizedError, Sendable, Equatable {
 public struct AntigravityStatusProbe: Sendable {
     public var timeout: TimeInterval = 8.0
 
-    private static let processName = "language_server_macos"
+    private static let processName = "language_server"
     private static let getUserStatusPath = "/exa.language_server_pb.LanguageServerService/GetUserStatus"
     private static let commandModelConfigPath = "/exa.language_server_pb.LanguageServerService/GetCommandModelConfigs"
     private static let unleashPath = "/exa.language_server_pb.LanguageServerService/GetUnleashData"
@@ -468,7 +559,7 @@ public struct AntigravityStatusProbe: Sendable {
         let env = ProcessInfo.processInfo.environment
         let result = try await SubprocessRunner.run(
             binary: lsof,
-            arguments: ["-nP", "-iTCP", "-sTCP:LISTEN", "-p", String(pid)],
+            arguments: ["-a", "-nP", "-iTCP", "-sTCP:LISTEN", "-p", String(pid)],
             environment: env,
             timeout: timeout,
             label: "antigravity-lsof")

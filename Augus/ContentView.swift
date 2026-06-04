@@ -1627,7 +1627,7 @@ struct ContentView: View {
                     .foregroundStyle(.primary)
                 
 #if os(macOS)
-                Text("Ensure Codeium or Cursor is running on your Mac. Antigravity will automatically detect the language server port and CSRF token via process inspection.")
+                Text("Ensure Antigravity (via CodexBar) is running in the background. The extension port and CSRF token will be automatically detected via process inspection.")
                     .font(.body)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
