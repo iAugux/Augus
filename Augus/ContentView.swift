@@ -3,6 +3,7 @@
 
 import SwiftUI
 import UserNotifications
+import UniformTypeIdentifiers
 
 struct ContentView: View {
     @Environment(\.colorScheme) var colorScheme
@@ -1059,6 +1060,39 @@ struct ContentView: View {
 #endif
     }
     
+#if os(macOS)
+    private func getRealHomeDirectory() -> URL {
+        if let pw = getpwuid(getuid()), let home = pw.pointee.pw_dir {
+            let path = FileManager.default.string(withFileSystemRepresentation: home, length: strlen(home))
+            return URL(fileURLWithPath: path)
+        }
+        return URL(fileURLWithPath: "/Users/\(NSUserName())")
+    }
+
+    private func selectFile(defaultSubpath: String? = nil, completion: @escaping (URL?) -> Void) {
+        let panel = NSOpenPanel()
+        panel.allowsMultipleSelection = false
+        panel.canChooseDirectories = false
+        panel.canChooseFiles = true
+        panel.showsHiddenFiles = true
+        panel.allowedContentTypes = [.json]
+        
+        var directoryURL = getRealHomeDirectory()
+        if let subpath = defaultSubpath {
+            directoryURL = directoryURL.appendingPathComponent(subpath)
+        }
+        panel.directoryURL = directoryURL
+        
+        panel.begin { response in
+            if response == .OK {
+                completion(panel.url)
+            } else {
+                completion(nil)
+            }
+        }
+    }
+#endif
+    
     private func refreshData() {
         guard !isRefreshing else { return }
         isRefreshing = true
@@ -1241,7 +1275,7 @@ struct ContentView: View {
                     .foregroundStyle(.primary)
                 
 #if os(macOS)
-                Text("Connect to Gemini using ~/.gemini/oauth_creds.json on your Mac.")
+                Text("Copy the raw JSON contents of ~/.gemini/oauth_creds.json on your Mac and paste it below, or select the file directly.")
                     .font(.body)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -1256,7 +1290,33 @@ struct ContentView: View {
             }
             
             VStack(alignment: .leading, spacing: 12) {
-#if !os(macOS)
+#if os(macOS)
+                Button {
+                    selectFile(defaultSubpath: ".gemini") { url in
+                        guard let url = url else { return }
+                        do {
+                            let rawData = try Data(contentsOf: url)
+                            let creds = try JSONDecoder().decode(GeminiOAuthCreds.self, from: rawData)
+                            GeminiStore.saveOAuthCreds(creds)
+                            errorMessage = nil
+                            refreshGeminiData()
+                        } catch {
+                            errorMessage = "Error reading selected file: \(error.localizedDescription)"
+                        }
+                    }
+                } label: {
+                    Text("Select oauth_creds.json File...")
+                        .fontWeight(.semibold)
+                        .foregroundColor(.primary)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.primary.opacity(0.08))
+                        .cornerRadius(14)
+                }
+                .buttonStyle(.plain)
+                .padding(.bottom, 4)
+#endif
+                
                 VStack(alignment: .leading, spacing: 6) {
                     Text("Token JSON Credentials")
                         .font(.caption)
@@ -1288,21 +1348,8 @@ struct ContentView: View {
                             .stroke(Color.primary.opacity(0.08), lineWidth: 1)
                     )
                 }
-#endif
                 
                 Button {
-#if os(macOS)
-                    let fileURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".gemini/oauth_creds.json")
-                    do {
-                        let rawData = try Data(contentsOf: fileURL)
-                        let creds = try JSONDecoder().decode(GeminiOAuthCreds.self, from: rawData)
-                        GeminiStore.saveOAuthCreds(creds)
-                        errorMessage = nil
-                        refreshGeminiData()
-                    } catch {
-                        errorMessage = "Error reading ~/.gemini/oauth_creds.json: \(error.localizedDescription)"
-                    }
-#else
                     guard !manualTokenInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
                         errorMessage = "Please paste your JSON credentials first."
                         return
@@ -1319,7 +1366,6 @@ struct ContentView: View {
                             errorMessage = "Invalid JSON schema. Make sure you copy/paste the entire oauth_creds.json file."
                         }
                     }
-#endif
                 } label: {
                     Text("Save & Connect")
                         .fontWeight(.semibold)
@@ -1590,7 +1636,7 @@ struct ContentView: View {
                     .foregroundStyle(.primary)
                 
 #if os(macOS)
-                Text("Connect to Antigravity using ~/.codexbar/antigravity/oauth_creds.json on your Mac.")
+                Text("Copy the raw JSON contents of ~/.codexbar/antigravity/oauth_creds.json on your Mac and paste it below, or select the file directly.")
                     .font(.body)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -1605,7 +1651,33 @@ struct ContentView: View {
             }
             
             VStack(alignment: .leading, spacing: 12) {
-#if !os(macOS)
+#if os(macOS)
+                Button {
+                    selectFile(defaultSubpath: ".codexbar/antigravity") { url in
+                        guard let url = url else { return }
+                        do {
+                            let rawData = try Data(contentsOf: url)
+                            let creds = try JSONDecoder().decode(AntigravityOAuthCreds.self, from: rawData)
+                            AntigravityStore.saveOAuthCreds(creds)
+                            errorMessage = nil
+                            refreshAntigravityData()
+                        } catch {
+                            errorMessage = "Error reading selected file: \(error.localizedDescription)"
+                        }
+                    }
+                } label: {
+                    Text("Select oauth_creds.json File...")
+                        .fontWeight(.semibold)
+                        .foregroundColor(.primary)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.primary.opacity(0.08))
+                        .cornerRadius(14)
+                }
+                .buttonStyle(.plain)
+                .padding(.bottom, 4)
+#endif
+                
                 VStack(alignment: .leading, spacing: 6) {
                     Text("Token JSON Credentials")
                         .font(.caption)
@@ -1637,21 +1709,8 @@ struct ContentView: View {
                             .stroke(Color.primary.opacity(0.08), lineWidth: 1)
                     )
                 }
-#endif
                 
                 Button {
-#if os(macOS)
-                    let fileURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".codexbar/antigravity/oauth_creds.json")
-                    do {
-                        let rawData = try Data(contentsOf: fileURL)
-                        let creds = try JSONDecoder().decode(AntigravityOAuthCreds.self, from: rawData)
-                        AntigravityStore.saveOAuthCreds(creds)
-                        errorMessage = nil
-                        refreshAntigravityData()
-                    } catch {
-                        errorMessage = "Error reading ~/.codexbar/antigravity/oauth_creds.json: \(error.localizedDescription)"
-                    }
-#else
                     guard !manualTokenInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
                         errorMessage = "Please paste your JSON credentials first."
                         return
@@ -1668,7 +1727,6 @@ struct ContentView: View {
                             errorMessage = "Invalid JSON schema. Make sure you copy/paste the entire oauth_creds.json file."
                         }
                     }
-#endif
                 } label: {
                     Text("Save & Connect")
                         .fontWeight(.semibold)
