@@ -237,41 +237,26 @@ struct SettingsView: View {
         case .codex:
             ZStack {
                 LinearGradient(colors: [Color.green.opacity(0.15), Color.teal.opacity(0.15)], startPoint: .topLeading, endPoint: .bottomTrailing)
-                Image(systemName: "cpu.fill")
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [.green, .teal],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .font(.system(size: 14))
+                Image(.codex)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 14, height: 14)
             }
         case .gemini:
             ZStack {
-                LinearGradient(colors: [.blue.opacity(0.15), .cyan.opacity(0.15)], startPoint: .topLeading, endPoint: .bottomTrailing)
-                Image(systemName: "sparkles")
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [.blue, .cyan],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .font(.system(size: 14))
+                LinearGradient(colors: [.indigo.opacity(0.15), .purple.opacity(0.15)], startPoint: .topLeading, endPoint: .bottomTrailing)
+                Image(.gemini)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 14, height: 14)
             }
         case .antigravity:
             ZStack {
-                LinearGradient(colors: [.blue.opacity(0.15), .cyan.opacity(0.15)], startPoint: .topLeading, endPoint: .bottomTrailing)
-                Image(systemName: "sparkles")
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [.blue, .cyan],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .font(.system(size: 14))
+                LinearGradient(colors: [.orange.opacity(0.15), .red.opacity(0.15)], startPoint: .topLeading, endPoint: .bottomTrailing)
+                Image(.antigravity)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 14, height: 14)
             }
         }
     }

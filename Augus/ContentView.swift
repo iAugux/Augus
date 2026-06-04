@@ -87,6 +87,19 @@ struct ContentView: View {
         }
         .tint(selectedTab.tintColor)
         .hideWindowToolbarBackgroundIfNeeded()
+        .background(
+            ZStack {
+                Button(action: { selectVisibleTab(at: 0) }) { EmptyView() }
+                    .keyboardShortcut("1", modifiers: .command)
+                Button(action: { selectVisibleTab(at: 1) }) { EmptyView() }
+                    .keyboardShortcut("2", modifiers: .command)
+                Button(action: { selectVisibleTab(at: 2) }) { EmptyView() }
+                    .keyboardShortcut("3", modifiers: .command)
+                Button(action: { selectVisibleTab(at: 3) }) { EmptyView() }
+                    .keyboardShortcut("4", modifiers: .command)
+            }
+            .opacity(0)
+        )
         .onChange(of: selectedTab) {
             errorMessage = nil
         }
@@ -367,6 +380,12 @@ struct ContentView: View {
             }
         }
         return filtered
+    }
+    
+    private func selectVisibleTab(at index: Int) {
+        let visible = validatedTabsConfig.filter { $0.isVisible }
+        guard index >= 0, index < visible.count else { return }
+        selectedTab = visible[index].tab
     }
     
     // MARK: - Helper Views
@@ -723,6 +742,7 @@ struct ContentView: View {
                     .cornerRadius(14)
                 }
                 .buttonStyle(.plain)
+                .keyboardShortcut(.defaultAction)
                 
                 Button {
                     CodexStore.clear()
@@ -737,6 +757,7 @@ struct ContentView: View {
                         .cornerRadius(14)
                 }
                 .buttonStyle(.plain)
+                .focusable(false)
             }
             
             if let error = errorMessage {
@@ -903,6 +924,7 @@ struct ContentView: View {
                     .cornerRadius(14)
                 }
                 .buttonStyle(.plain)
+                .keyboardShortcut(.defaultAction)
                 
                 Button {
                     BlackSSLStore.clear()
@@ -917,6 +939,7 @@ struct ContentView: View {
                         .cornerRadius(14)
                 }
                 .buttonStyle(.plain)
+                .focusable(false)
             }
             
             if let error = errorMessage {
@@ -1067,29 +1090,6 @@ struct ContentView: View {
             return URL(fileURLWithPath: path)
         }
         return URL(fileURLWithPath: "/Users/\(NSUserName())")
-    }
-
-    private func selectFile(defaultSubpath: String? = nil, completion: @escaping (URL?) -> Void) {
-        let panel = NSOpenPanel()
-        panel.allowsMultipleSelection = false
-        panel.canChooseDirectories = false
-        panel.canChooseFiles = true
-        panel.showsHiddenFiles = true
-        panel.allowedContentTypes = [.json]
-        
-        var directoryURL = getRealHomeDirectory()
-        if let subpath = defaultSubpath {
-            directoryURL = directoryURL.appendingPathComponent(subpath)
-        }
-        panel.directoryURL = directoryURL
-        
-        panel.begin { response in
-            if response == .OK {
-                completion(panel.url)
-            } else {
-                completion(nil)
-            }
-        }
     }
 #endif
     
@@ -1290,32 +1290,7 @@ struct ContentView: View {
             }
             
             VStack(alignment: .leading, spacing: 12) {
-#if os(macOS)
-                Button {
-                    selectFile(defaultSubpath: ".gemini") { url in
-                        guard let url = url else { return }
-                        do {
-                            let rawData = try Data(contentsOf: url)
-                            let creds = try JSONDecoder().decode(GeminiOAuthCreds.self, from: rawData)
-                            GeminiStore.saveOAuthCreds(creds)
-                            errorMessage = nil
-                            refreshGeminiData()
-                        } catch {
-                            errorMessage = "Error reading selected file: \(error.localizedDescription)"
-                        }
-                    }
-                } label: {
-                    Text("Select oauth_creds.json File...")
-                        .fontWeight(.semibold)
-                        .foregroundColor(.primary)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.primary.opacity(0.08))
-                        .cornerRadius(14)
-                }
-                .buttonStyle(.plain)
-                .padding(.bottom, 4)
-#endif
+
                 
                 VStack(alignment: .leading, spacing: 6) {
                     Text("Token JSON Credentials")
@@ -1350,6 +1325,18 @@ struct ContentView: View {
                 }
                 
                 Button {
+#if os(macOS)
+                    let fileURL = getRealHomeDirectory().appendingPathComponent(".gemini/oauth_creds.json")
+                    do {
+                        let rawData = try Data(contentsOf: fileURL)
+                        let creds = try JSONDecoder().decode(GeminiOAuthCreds.self, from: rawData)
+                        GeminiStore.saveOAuthCreds(creds)
+                        errorMessage = nil
+                        refreshGeminiData()
+                    } catch {
+                        errorMessage = "Error reading ~/.gemini/oauth_creds.json: \(error.localizedDescription)"
+                    }
+#else
                     guard !manualTokenInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
                         errorMessage = "Please paste your JSON credentials first."
                         return
@@ -1366,6 +1353,7 @@ struct ContentView: View {
                             errorMessage = "Invalid JSON schema. Make sure you copy/paste the entire oauth_creds.json file."
                         }
                     }
+#endif
                 } label: {
                     Text("Save & Connect")
                         .fontWeight(.semibold)
@@ -1382,6 +1370,7 @@ struct ContentView: View {
                         .cornerRadius(14)
                         .shadow(color: .blue.opacity(0.3), radius: 10, x: 0, y: 4)
                 }
+                .buttonStyle(.plain)
                 .padding(.top, 8)
             }
             .padding(.horizontal, 16)
@@ -1520,6 +1509,7 @@ struct ContentView: View {
                     .cornerRadius(14)
                 }
                 .buttonStyle(.plain)
+                .keyboardShortcut(.defaultAction)
                 
                 Button {
                     GeminiStore.clear()
@@ -1534,6 +1524,7 @@ struct ContentView: View {
                         .cornerRadius(14)
                 }
                 .buttonStyle(.plain)
+                .focusable(false)
             }
             
             if let error = errorMessage {
@@ -1636,7 +1627,7 @@ struct ContentView: View {
                     .foregroundStyle(.primary)
                 
 #if os(macOS)
-                Text("Copy the raw JSON contents of ~/.codexbar/antigravity/oauth_creds.json on your Mac and paste it below, or select the file directly.")
+                Text("Ensure Codeium or Cursor is running on your Mac. Antigravity will automatically detect the language server port and CSRF token via process inspection.")
                     .font(.body)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -1650,34 +1641,9 @@ struct ContentView: View {
 #endif
             }
             
+
             VStack(alignment: .leading, spacing: 12) {
-#if os(macOS)
-                Button {
-                    selectFile(defaultSubpath: ".codexbar/antigravity") { url in
-                        guard let url = url else { return }
-                        do {
-                            let rawData = try Data(contentsOf: url)
-                            let creds = try JSONDecoder().decode(AntigravityOAuthCreds.self, from: rawData)
-                            AntigravityStore.saveOAuthCreds(creds)
-                            errorMessage = nil
-                            refreshAntigravityData()
-                        } catch {
-                            errorMessage = "Error reading selected file: \(error.localizedDescription)"
-                        }
-                    }
-                } label: {
-                    Text("Select oauth_creds.json File...")
-                        .fontWeight(.semibold)
-                        .foregroundColor(.primary)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.primary.opacity(0.08))
-                        .cornerRadius(14)
-                }
-                .buttonStyle(.plain)
-                .padding(.bottom, 4)
-#endif
-                
+#if !os(macOS)
                 VStack(alignment: .leading, spacing: 6) {
                     Text("Token JSON Credentials")
                         .font(.caption)
@@ -1709,8 +1675,12 @@ struct ContentView: View {
                             .stroke(Color.primary.opacity(0.08), lineWidth: 1)
                     )
                 }
+#endif
                 
                 Button {
+#if os(macOS)
+                    refreshAntigravityData()
+#else
                     guard !manualTokenInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
                         errorMessage = "Please paste your JSON credentials first."
                         return
@@ -1727,6 +1697,7 @@ struct ContentView: View {
                             errorMessage = "Invalid JSON schema. Make sure you copy/paste the entire oauth_creds.json file."
                         }
                     }
+#endif
                 } label: {
                     Text("Save & Connect")
                         .fontWeight(.semibold)
@@ -1735,14 +1706,15 @@ struct ContentView: View {
                         .padding()
                         .background(
                             LinearGradient(
-                                colors: [.blue, .cyan],
+                                colors: [.cyan, .blue],
                                 startPoint: .leading,
                                 endPoint: .trailing
                             )
                         )
                         .cornerRadius(14)
-                        .shadow(color: .blue.opacity(0.3), radius: 10, x: 0, y: 4)
+                        .shadow(color: .cyan.opacity(0.3), radius: 10, x: 0, y: 4)
                 }
+                .buttonStyle(.plain)
                 .padding(.top, 8)
             }
             .padding(.horizontal, 16)
@@ -1881,6 +1853,7 @@ struct ContentView: View {
                     .cornerRadius(14)
                 }
                 .buttonStyle(.plain)
+                .keyboardShortcut(.defaultAction)
                 
                 Button {
                     AntigravityStore.clear()
@@ -1895,6 +1868,7 @@ struct ContentView: View {
                         .cornerRadius(14)
                 }
                 .buttonStyle(.plain)
+                .focusable(false)
             }
             
             if let error = errorMessage {

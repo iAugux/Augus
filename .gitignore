@@ -1,0 +1,59 @@
+# Xcode generated files
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+build/
+DerivedData/
+*.moved-aside
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+
+## Obj-C/Swift specific
+*.hmap
+
+## App packaging
+*.ipa
+*.app
+*.pkg
+*.dSYM.zip
+*.dSYM
+*.app.dSYM*
+
+## Playgrounds
+timeline.xctimeline
+playground.xcworkspace
+
+# Swift Package Manager
+.build/
+
+# CocoaPods
+Pods/
+
+# Carthage
+Carthage/Build/
+
+# Accio dependency management
+Dependencies/
+.accio/
+
+# fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/test_output
+
+# AppCode
+.idea/
+
+*.xcuserstate
+vendor/
+.vendor/
+.bundle/
+.tmp/
+.samples/
+.samples.nosync/
+.resources.nosync/
+
+SDKVersion.swift

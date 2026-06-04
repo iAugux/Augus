@@ -3,6 +3,7 @@
 
 import Foundation
 import WidgetKit
+import os.log
 
 // MARK: - Antigravity Models & Credentials
 
@@ -112,522 +113,633 @@ public class AntigravityStore {
     }
 }
 
-// MARK: - Antigravity Network Manager
+// MARK: - Subprocess Runner (for local language server probing)
+
+public struct SubprocessResult {
+    let stdout: String
+    let stderr: String
+    let exitCode: Int
+}
+
+public enum SubprocessRunner {
+    public static func run(binary: String, arguments: [String], environment: [String: String]? = nil, timeout: TimeInterval, label: String) async throws -> SubprocessResult {
+        let task = Process()
+        task.executableURL = URL(fileURLWithPath: binary)
+        task.arguments = arguments
+        if let environment = environment {
+            task.environment = environment
+        }
+        
+        let outPipe = Pipe()
+        let errPipe = Pipe()
+        task.standardOutput = outPipe
+        task.standardError = errPipe
+        
+        try task.run()
+        
+        // Timeout handling: simply wait.
+        task.waitUntilExit()
+        
+        let outData = outPipe.fileHandleForReading.readDataToEndOfFile()
+        let errData = errPipe.fileHandleForReading.readDataToEndOfFile()
+        
+        return SubprocessResult(
+            stdout: String(data: outData, encoding: .utf8) ?? "",
+            stderr: String(data: errData, encoding: .utf8) ?? "",
+            exitCode: Int(task.terminationStatus)
+        )
+    }
+}
+
+// MARK: - Antigravity Network Manager (adapted for local language server)
 
 public final class AntigravityNetworkManager: Sendable {
     public static let shared = AntigravityNetworkManager()
     
     private init() {}
     
-    // Google Client ID and Client Secret extracted from Antigravity CLI (Code Assist)
-    private let clientID = "681255809395-oo8ft2oprdrnp9e3aqf6av3hmdib135j.apps.googleusercontent.com"
-    private let clientSecret = "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"
-    
-    private var userAgent: String {
-        #if os(macOS)
-        return "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15"
-        #else
-        return "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Mobile/15E148 Safari/604.1"
-        #endif
-    }
-    
     public func fetchUsage(completion: @escaping @Sendable (Result<AntigravityUsageData, Error>) -> Void) {
-        guard let creds = AntigravityStore.loadOAuthCreds() else {
-            let error = NSError(domain: "AntigravityNetworkManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "No Antigravity OAuth credentials found. Please paste your token JSON in the App first."])
-            completion(.failure(error))
-            return
-        }
-        
-        // Refresh token if expired or about to expire in 5 minutes
-        let currentMs = Date().timeIntervalSince1970 * 1000
-        let bufferMs: Double = 5 * 60 * 1000
-        
-        if currentMs + bufferMs >= creds.expiryDate {
-            AntigravityStore.saveLastLog("Access token expired or expiring soon. Refreshing token...")
-            refreshAccessToken(creds: creds) { [weak self] refreshResult in
-                guard let self = self else { return }
-                switch refreshResult {
-                case .success(let updatedCreds):
-                    self.fetchUsageWithToken(updatedCreds.accessToken, idToken: updatedCreds.idToken, credsEmail: updatedCreds.email, completion: completion)
-                case .failure(let error):
-                    let log = "Failed to refresh token: \(error.localizedDescription)"
-                    AntigravityStore.saveLastLog(log)
-                    completion(.failure(error))
-                }
-            }
-        } else {
-            fetchUsageWithToken(creds.accessToken, idToken: creds.idToken, credsEmail: creds.email, completion: completion)
-        }
-    }
-    
-    private func extractEmailFromToken(_ idToken: String?) -> String? {
-        guard let idToken = idToken else { return nil }
-        let parts = idToken.components(separatedBy: ".")
-        guard parts.count >= 2 else { return nil }
-        var payload = parts[1]
-            .replacingOccurrences(of: "-", with: "+")
-            .replacingOccurrences(of: "_", with: "/")
-        let remainder = payload.count % 4
-        if remainder > 0 {
-            payload += String(repeating: "=", count: 4 - remainder)
-        }
-        guard let data = Data(base64Encoded: payload, options: .ignoreUnknownCharacters),
-              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-            return nil
-        }
-        if let email = json["email"] as? String, !email.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            return email.trimmingCharacters(in: .whitespacesAndNewlines)
-        }
-        return nil
-    }
-    
-    private func refreshAccessToken(creds: AntigravityOAuthCreds, completion: @escaping @Sendable (Result<AntigravityOAuthCreds, Error>) -> Void) {
-        let url = URL(string: "https://oauth2.googleapis.com/token")!
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-        
-        let parameters = [
-            "client_id": creds.clientId ?? clientID,
-            "client_secret": creds.clientSecret ?? clientSecret,
-            "refresh_token": creds.refreshToken,
-            "grant_type": "refresh_token"
-        ]
-        
-        let formBody = parameters.map { key, value in
-            "\(key)=\(value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"
-        }.joined(separator: "&")
-        
-        request.httpBody = formBody.data(using: .utf8)
-        
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                completion(.failure(error))
-                return
-            }
-            
-            guard let data = data else {
-                completion(.failure(NSError(domain: "AntigravityNetworkManager", code: -2, userInfo: [NSLocalizedDescriptionKey: "No data received during token refresh."])))
-                return
-            }
-            
-            struct TokenResponse: Codable {
-                let access_token: String
-                let expires_in: Int
-                let token_type: String?
-                let id_token: String?
-                let scope: String?
-            }
-            
+        Task {
             do {
-                if let dict = try JSONSerialization.jsonObject(with: data) as? [String: Any], let err = dict["error"] {
-                    let desc = dict["error_description"] as? String ?? "\(err)"
-                    let errorMsg = "Google API Error: \(desc)"
-                    AntigravityStore.saveLastLog(errorMsg)
-                    completion(.failure(NSError(domain: "AntigravityNetworkManager", code: -3, userInfo: [NSLocalizedDescriptionKey: errorMsg])))
-                    return
+                let probe = AntigravityStatusProbe()
+                let snapshot = try await probe.fetch()
+                
+                let models = snapshot.modelQuotas.map { quota in
+                    AntigravityModelQuota(
+                        name: quota.label,
+                        remainingFraction: quota.remainingFraction ?? 0,
+                        resetTime: quota.resetTime
+                    )
                 }
                 
-                let tokenResponse = try JSONDecoder().decode(TokenResponse.self, from: data)
-                let newExpiry = (Date().timeIntervalSince1970 * 1000) + Double(tokenResponse.expires_in * 1000)
-                
-                let updated = AntigravityOAuthCreds(
-                    accessToken: tokenResponse.access_token,
-                    refreshToken: creds.refreshToken,
-                    expiryDate: newExpiry,
-                    tokenType: tokenResponse.token_type ?? creds.tokenType,
-                    idToken: tokenResponse.id_token ?? creds.idToken,
-                    scope: tokenResponse.scope ?? creds.scope,
-                    clientId: creds.clientId,
-                    clientSecret: creds.clientSecret,
-                    email: creds.email
+                let usageData = AntigravityUsageData(
+                    models: models,
+                    lastUpdated: Date(),
+                    email: snapshot.accountEmail ?? "unknown@example.com"
                 )
                 
-                AntigravityStore.saveOAuthCreds(updated)
-                AntigravityStore.saveLastLog("Successfully refreshed Google OAuth token.")
-                completion(.success(updated))
+                AntigravityStore.saveUsageData(usageData)
+                AntigravityStore.saveLastLog("Successfully fetched Antigravity status from language server. Found \(models.count) models.")
+                WidgetCenter.shared.reloadAllTimelines()
+                
+                completion(.success(usageData))
             } catch {
-                let body = String(data: data, encoding: .utf8) ?? "Unable to decode UTF8"
-                let logMsg = "Failed to parse token response JSON. Response: \(body.prefix(300))"
-                AntigravityStore.saveLastLog(logMsg)
+                AntigravityStore.saveLastLog("Failed to fetch Antigravity status: \(error.localizedDescription)")
                 completion(.failure(error))
             }
         }
-        task.resume()
     }
-    
-    private struct CodeAssistInfo {
-        let projectId: String?
-        let email: String
+}
+
+// MARK: - Antigravity Status Probe from CodexBar
+
+public struct AntigravityModelQuotaInternal: Sendable {
+    public let label: String
+    public let modelId: String
+    public let remainingFraction: Double?
+    public let resetTime: Date?
+    public let resetDescription: String?
+
+    public var remainingPercent: Double {
+        guard let remainingFraction else { return 0 }
+        return max(0, min(100, remainingFraction * 100))
     }
-    
-    private func loadCodeAssist(accessToken: String, completion: @escaping @Sendable (Result<CodeAssistInfo, Error>) -> Void) {
-        let url = URL(string: "https://cloudcode-pa.googleapis.com/v1internal:loadCodeAssist")!
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-        
-        let body: [String: Any] = [
-            "metadata": [
-                "ideType": "ANTIGRAVITY",
-                "platform": "PLATFORM_UNSPECIFIED",
-                "pluginType": "GEMINI"
-            ]
-        ]
-        
-        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
-        
-        let task = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
-            guard let self = self else { return }
-            if let error = error {
-                AntigravityStore.saveLastLog("loadCodeAssist request failed: \(error.localizedDescription)")
-                completion(.failure(error))
-                return
-            }
-            
-            guard let data = data else {
-                let log = "No data returned from loadCodeAssist."
-                AntigravityStore.saveLastLog(log)
-                completion(.failure(NSError(domain: "AntigravityNetworkManager", code: -3, userInfo: [NSLocalizedDescriptionKey: log])))
-                return
-            }
-            
-            do {
-                guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-                    AntigravityStore.saveLastLog("Invalid loadCodeAssist JSON payload.")
-                    completion(.failure(NSError(domain: "AntigravityNetworkManager", code: -5, userInfo: [NSLocalizedDescriptionKey: "Invalid loadCodeAssist JSON payload."])))
-                    return
-                }
-                
-                let manageUri = json["manageSubscriptionUri"] as? String
-                let email = self.extractEmail(from: manageUri)
-                
-                let projectId = self.extractProjectId(from: json)
-                
-                if projectId != nil {
-                    completion(.success(CodeAssistInfo(projectId: projectId, email: email)))
-                    return
-                }
-                
-                // No project ID yet — try onboarding
-                let tierId = self.pickOnboardTier(from: json)
-                if let tierId = tierId {
-                    AntigravityStore.saveLastLog("No project ID found. Attempting onboarding with tier: \(tierId)")
-                    self.onboardUser(accessToken: accessToken, tierId: tierId) { [weak self] onboardResult in
-                        guard let self = self else { return }
-                        switch onboardResult {
-                        case .success(let onboardProjectId):
-                            if let pid = onboardProjectId {
-                                completion(.success(CodeAssistInfo(projectId: pid, email: email)))
-                            } else {
-                                // Retry loadCodeAssist after onboard
-                                self.retryLoadCodeAssist(accessToken: accessToken, email: email, retries: 3, completion: completion)
-                            }
-                        case .failure:
-                            // Even if onboard fails, try without project ID
-                            completion(.success(CodeAssistInfo(projectId: nil, email: email)))
-                        }
-                    }
-                } else {
-                    // No tier to onboard with, proceed without project ID
-                    AntigravityStore.saveLastLog("loadCodeAssist: no project ID and no onboard tier available. Proceeding without project.")
-                    completion(.success(CodeAssistInfo(projectId: nil, email: email)))
-                }
-            } catch {
-                AntigravityStore.saveLastLog("Failed to parse loadCodeAssist: \(error.localizedDescription). Response: \(String(data: data, encoding: .utf8) ?? "")")
-                completion(.failure(error))
-            }
+}
+
+public struct AntigravityStatusSnapshot: Sendable {
+    public let modelQuotas: [AntigravityModelQuotaInternal]
+    public let accountEmail: String?
+    public let accountPlan: String?
+}
+
+public struct AntigravityPlanInfoSummary: Sendable, Codable, Equatable {
+    public let planName: String?
+    public let planDisplayName: String?
+    public let displayName: String?
+    public let productName: String?
+    public let planShortName: String?
+}
+
+public enum AntigravityStatusProbeError: LocalizedError, Sendable, Equatable {
+    case notRunning
+    case missingCSRFToken
+    case portDetectionFailed(String)
+    case apiError(String)
+    case parseFailed(String)
+    case timedOut
+
+    public var errorDescription: String? {
+        switch self {
+        case .notRunning: return "Antigravity language server not detected. Launch Antigravity and retry."
+        case .missingCSRFToken: return "Antigravity CSRF token not found. Restart Antigravity and retry."
+        case let .portDetectionFailed(message): return "Antigravity port detection failed: \(message)"
+        case let .apiError(message): return "Antigravity API error: \(message)"
+        case let .parseFailed(message): return "Could not parse Antigravity quota: \(message)"
+        case .timedOut: return "Antigravity quota request timed out."
         }
-        task.resume()
     }
-    
-    private func extractProjectId(from json: [String: Any]) -> String? {
-        if let str = json["cloudaicompanionProject"] as? String, !str.isEmpty {
-            return str
+}
+
+public struct AntigravityStatusProbe: Sendable {
+    public var timeout: TimeInterval = 8.0
+
+    private static let processName = "language_server_macos"
+    private static let getUserStatusPath = "/exa.language_server_pb.LanguageServerService/GetUserStatus"
+    private static let commandModelConfigPath = "/exa.language_server_pb.LanguageServerService/GetCommandModelConfigs"
+    private static let unleashPath = "/exa.language_server_pb.LanguageServerService/GetUnleashData"
+    private static let log = Logger(subsystem: "com.steipete.codexbar", category: "antigravity")
+
+    public init(timeout: TimeInterval = 8.0) {
+        self.timeout = timeout
+    }
+
+    public func fetch() async throws -> AntigravityStatusSnapshot {
+        let processInfo = try await Self.detectProcessInfo(timeout: self.timeout)
+        let ports = try await Self.listeningPorts(pid: processInfo.pid, timeout: self.timeout)
+        let connectPort = try await Self.findWorkingPort(
+            ports: ports,
+            csrfToken: processInfo.csrfToken,
+            timeout: self.timeout)
+        let context = RequestContext(
+            httpsPort: connectPort,
+            httpPort: processInfo.extensionPort,
+            csrfToken: processInfo.csrfToken,
+            timeout: self.timeout)
+
+        do {
+            let response = try await Self.makeRequest(
+                payload: RequestPayload(
+                    path: Self.getUserStatusPath,
+                    body: Self.defaultRequestBody()),
+                context: context)
+            return try Self.parseUserStatusResponse(response)
+        } catch {
+            let response = try await Self.makeRequest(
+                payload: RequestPayload(
+                    path: Self.commandModelConfigPath,
+                    body: Self.defaultRequestBody()),
+                context: context)
+            return try Self.parseCommandModelResponse(response)
         }
-        if let dict = json["cloudaicompanionProject"] as? [String: Any] {
-            if let id = dict["id"] as? String, !id.isEmpty { return id }
-            if let pid = dict["projectId"] as? String, !pid.isEmpty { return pid }
+    }
+
+    public func fetchPlanInfoSummary() async throws -> AntigravityPlanInfoSummary? {
+        let processInfo = try await Self.detectProcessInfo(timeout: self.timeout)
+        let ports = try await Self.listeningPorts(pid: processInfo.pid, timeout: self.timeout)
+        let connectPort = try await Self.findWorkingPort(
+            ports: ports,
+            csrfToken: processInfo.csrfToken,
+            timeout: self.timeout)
+        let response = try await Self.makeRequest(
+            payload: RequestPayload(
+                path: Self.getUserStatusPath,
+                body: Self.defaultRequestBody()),
+            context: RequestContext(
+                httpsPort: connectPort,
+                httpPort: processInfo.extensionPort,
+                csrfToken: processInfo.csrfToken,
+                timeout: self.timeout))
+        return try Self.parsePlanInfoSummary(response)
+    }
+
+    public static func isRunning(timeout: TimeInterval = 4.0) async -> Bool {
+        await (try? self.detectProcessInfo(timeout: timeout)) != nil
+    }
+
+    public static func detectVersion(timeout: TimeInterval = 4.0) async -> String? {
+        let running = await Self.isRunning(timeout: timeout)
+        return running ? "running" : nil
+    }
+
+    // MARK: - Parsing
+
+    public static func parseUserStatusResponse(_ data: Data) throws -> AntigravityStatusSnapshot {
+        let decoder = JSONDecoder()
+        let response = try decoder.decode(UserStatusResponse.self, from: data)
+        if let invalid = Self.invalidCode(response.code) {
+            throw AntigravityStatusProbeError.apiError(invalid)
+        }
+        guard let userStatus = response.userStatus else {
+            throw AntigravityStatusProbeError.parseFailed("Missing userStatus")
+        }
+
+        let modelConfigs = userStatus.cascadeModelConfigData?.clientModelConfigs ?? []
+        let models = modelConfigs.compactMap(Self.quotaFromConfig(_:))
+        let email = userStatus.email
+        let planName = userStatus.planStatus?.planInfo?.preferredName
+
+        return AntigravityStatusSnapshot(
+            modelQuotas: models,
+            accountEmail: email,
+            accountPlan: planName)
+    }
+
+    static func parsePlanInfoSummary(_ data: Data) throws -> AntigravityPlanInfoSummary? {
+        let decoder = JSONDecoder()
+        let response = try decoder.decode(UserStatusResponse.self, from: data)
+        if let invalid = Self.invalidCode(response.code) {
+            throw AntigravityStatusProbeError.apiError(invalid)
+        }
+        guard let userStatus = response.userStatus else {
+            throw AntigravityStatusProbeError.parseFailed("Missing userStatus")
+        }
+        guard let planInfo = userStatus.planStatus?.planInfo else { return nil }
+        return AntigravityPlanInfoSummary(
+            planName: planInfo.planName,
+            planDisplayName: planInfo.planDisplayName,
+            displayName: planInfo.displayName,
+            productName: planInfo.productName,
+            planShortName: planInfo.planShortName)
+    }
+
+    static func parseCommandModelResponse(_ data: Data) throws -> AntigravityStatusSnapshot {
+        let decoder = JSONDecoder()
+        let response = try decoder.decode(CommandModelConfigResponse.self, from: data)
+        if let invalid = Self.invalidCode(response.code) {
+            throw AntigravityStatusProbeError.apiError(invalid)
+        }
+        let modelConfigs = response.clientModelConfigs ?? []
+        let models = modelConfigs.compactMap(Self.quotaFromConfig(_:))
+        return AntigravityStatusSnapshot(modelQuotas: models, accountEmail: nil, accountPlan: nil)
+    }
+
+    private static func quotaFromConfig(_ config: ModelConfig) -> AntigravityModelQuotaInternal? {
+        guard let quota = config.quotaInfo else { return nil }
+        let reset = quota.resetTime.flatMap { Self.parseDate($0) }
+        return AntigravityModelQuotaInternal(
+            label: config.label,
+            modelId: config.modelOrAlias.model,
+            remainingFraction: quota.remainingFraction,
+            resetTime: reset,
+            resetDescription: nil)
+    }
+
+    private static func invalidCode(_ code: CodeValue?) -> String? {
+        guard let code else { return nil }
+        if code.isOK { return nil }
+        return "\(code.rawValue)"
+    }
+
+    private static func parseDate(_ value: String) -> Date? {
+        if let date = ISO8601DateFormatter().date(from: value) {
+            return date
+        }
+        if let seconds = Double(value) {
+            return Date(timeIntervalSince1970: seconds)
         }
         return nil
     }
-    
-    private func pickOnboardTier(from json: [String: Any]) -> String? {
-        if let tiers = json["allowedTiers"] as? [[String: Any]] {
-            if let defaultTier = tiers.first(where: { ($0["isDefault"] as? Bool) == true }),
-               let id = defaultTier["id"] as? String, !id.isEmpty {
-                return id
-            }
-            if let first = tiers.first, let id = first["id"] as? String, !id.isEmpty {
-                return id
-            }
+
+    // MARK: - Port detection
+
+    private struct ProcessInfoResult: Sendable {
+        let pid: Int
+        let extensionPort: Int?
+        let csrfToken: String
+        let commandLine: String
+    }
+
+    private static func detectProcessInfo(timeout: TimeInterval) async throws -> ProcessInfoResult {
+        let env = ProcessInfo.processInfo.environment
+        let result = try await SubprocessRunner.run(
+            binary: "/bin/ps",
+            arguments: ["-ax", "-o", "pid=,command="],
+            environment: env,
+            timeout: timeout,
+            label: "antigravity-ps")
+
+        let lines = result.stdout.split(separator: "\n")
+        for line in lines {
+            let text = String(line)
+            guard let match = Self.matchProcessLine(text) else { continue }
+            let lower = match.command.lowercased()
+            guard lower.contains(Self.processName) else { continue }
+            guard Self.isAntigravityCommandLine(lower) else { continue }
+            guard let token = Self.extractFlag("--csrf_token", from: match.command) else { continue }
+            let port = Self.extractPort("--extension_server_port", from: match.command)
+            return ProcessInfoResult(pid: match.pid, extensionPort: port, csrfToken: token, commandLine: match.command)
         }
-        if let paidTier = json["paidTier"] as? [String: Any], let id = paidTier["id"] as? String, !id.isEmpty {
-            return id
+
+        throw AntigravityStatusProbeError.notRunning
+    }
+
+    private struct ProcessLineMatch {
+        let pid: Int
+        let command: String
+    }
+
+    private static func matchProcessLine(_ line: String) -> ProcessLineMatch? {
+        let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+        let parts = trimmed.split(separator: " ", maxSplits: 1, omittingEmptySubsequences: true)
+        guard parts.count == 2, let pid = Int(parts[0]) else { return nil }
+        return ProcessLineMatch(pid: pid, command: String(parts[1]))
+    }
+
+    private static func isAntigravityCommandLine(_ command: String) -> Bool {
+        if command.contains("--app_data_dir") && command.contains("antigravity") { return true }
+        if command.contains("/antigravity/") || command.contains("\\antigravity\\") { return true }
+        return false
+    }
+
+    private static func extractFlag(_ flag: String, from command: String) -> String? {
+        let pattern = "\(NSRegularExpression.escapedPattern(for: flag))[=\\s]+([^\\s]+)"
+        guard let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive) else { return nil }
+        let range = NSRange(command.startIndex..<command.endIndex, in: command)
+        guard let match = regex.firstMatch(in: command, options: [], range: range),
+              let tokenRange = Range(match.range(at: 1), in: command) else { return nil }
+        return String(command[tokenRange])
+    }
+
+    private static func extractPort(_ flag: String, from command: String) -> Int? {
+        guard let raw = extractFlag(flag, from: command) else { return nil }
+        return Int(raw)
+    }
+
+    private static func listeningPorts(pid: Int, timeout: TimeInterval) async throws -> [Int] {
+        let lsof = ["/usr/sbin/lsof", "/usr/bin/lsof"].first(where: {
+            FileManager.default.isExecutableFile(atPath: $0)
+        })
+
+        guard let lsof else {
+            throw AntigravityStatusProbeError.portDetectionFailed("lsof not available")
         }
-        if let currentTier = json["currentTier"] as? [String: Any], let id = currentTier["id"] as? String, !id.isEmpty {
-            return id
+
+        let env = ProcessInfo.processInfo.environment
+        let result = try await SubprocessRunner.run(
+            binary: lsof,
+            arguments: ["-nP", "-iTCP", "-sTCP:LISTEN", "-p", String(pid)],
+            environment: env,
+            timeout: timeout,
+            label: "antigravity-lsof")
+
+        let ports = Self.parseListeningPorts(result.stdout)
+        if ports.isEmpty {
+            throw AntigravityStatusProbeError.portDetectionFailed("no listening ports found")
+        }
+        return ports
+    }
+
+    private static func parseListeningPorts(_ output: String) -> [Int] {
+        guard let regex = try? NSRegularExpression(pattern: #":(\d+)\s+\(LISTEN\)"#) else { return [] }
+        let range = NSRange(output.startIndex..<output.endIndex, in: output)
+        var ports: Set<Int> = []
+        regex.enumerateMatches(in: output, options: [], range: range) { match, _, _ in
+            guard let match,
+                  let range = Range(match.range(at: 1), in: output),
+                  let value = Int(output[range]) else { return }
+            ports.insert(value)
+        }
+        return ports.sorted()
+    }
+
+    private static func findWorkingPort(
+        ports: [Int],
+        csrfToken: String,
+        timeout: TimeInterval) async throws -> Int
+    {
+        for port in ports {
+            let ok = await Self.testPortConnectivity(port: port, csrfToken: csrfToken, timeout: timeout)
+            if ok { return port }
+        }
+        throw AntigravityStatusProbeError.portDetectionFailed("no working API port found")
+    }
+
+    private static func testPortConnectivity(
+        port: Int,
+        csrfToken: String,
+        timeout: TimeInterval) async -> Bool
+    {
+        do {
+            _ = try await self.makeRequest(
+                payload: RequestPayload(
+                    path: self.unleashPath,
+                    body: self.unleashRequestBody()),
+                context: RequestContext(
+                    httpsPort: port,
+                    httpPort: nil,
+                    csrfToken: csrfToken,
+                    timeout: timeout))
+            return true
+        } catch {
+            if #available(macOS 13.0, *) {
+                self.log
+                    .debug("[Antigravity] Port \(port) probe failed: \(error.localizedDescription, privacy: .public)")
+            }
+            return false
+        }
+    }
+
+    // MARK: - HTTP
+
+    private struct RequestPayload {
+        let path: String
+        let body: [String: Any]
+    }
+
+    private struct RequestContext: Sendable {
+        let httpsPort: Int
+        let httpPort: Int?
+        let csrfToken: String
+        let timeout: TimeInterval
+    }
+
+    private static func defaultRequestBody() -> [String: Any] {
+        [
+            "metadata": [
+                "ideName": "antigravity",
+                "extensionName": "antigravity",
+                "ideVersion": "unknown",
+                "locale": "en",
+            ],
+        ]
+    }
+
+    private static func unleashRequestBody() -> [String: Any] {
+        [
+            "context": [
+                "properties": [
+                    "devMode": "false",
+                    "extensionVersion": "unknown",
+                    "hasAnthropicModelAccess": "true",
+                    "ide": "antigravity",
+                    "ideVersion": "unknown",
+                    "installationId": "codexbar",
+                    "language": "UNSPECIFIED",
+                    "os": "macos",
+                    "requestedModelId": "MODEL_UNSPECIFIED",
+                ],
+            ],
+        ]
+    }
+
+    private static func makeRequest(
+        payload: RequestPayload,
+        context: RequestContext) async throws -> Data
+    {
+        do {
+            return try await self.sendRequest(
+                scheme: "https",
+                port: context.httpsPort,
+                payload: payload,
+                context: context)
+        } catch {
+            guard let httpPort = context.httpPort, httpPort != context.httpsPort else { throw error }
+            return try await Self.sendRequest(
+                scheme: "http",
+                port: httpPort,
+                payload: payload,
+                context: context)
+        }
+    }
+
+    private static func sendRequest(
+        scheme: String,
+        port: Int,
+        payload: RequestPayload,
+        context: RequestContext) async throws -> Data
+    {
+        guard let url = URL(string: "\(scheme)://127.0.0.1:\(port)\(payload.path)") else {
+            throw AntigravityStatusProbeError.apiError("Invalid URL")
+        }
+
+        let body = try JSONSerialization.data(withJSONObject: payload.body, options: [])
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.httpBody = body
+        request.timeoutInterval = context.timeout
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue(String(body.count), forHTTPHeaderField: "Content-Length")
+        request.setValue("1", forHTTPHeaderField: "Connect-Protocol-Version")
+        request.setValue(context.csrfToken, forHTTPHeaderField: "X-Codeium-Csrf-Token")
+
+        let config = URLSessionConfiguration.ephemeral
+        config.timeoutIntervalForRequest = context.timeout
+        config.timeoutIntervalForResource = context.timeout
+        let session = URLSession(configuration: config, delegate: InsecureSessionDelegate(), delegateQueue: nil)
+        defer { session.invalidateAndCancel() }
+
+        let (data, response) = try await session.data(for: request)
+        guard let http = response as? HTTPURLResponse else {
+            throw AntigravityStatusProbeError.apiError("Invalid response")
+        }
+        guard http.statusCode == 200 else {
+            let message = String(data: data, encoding: .utf8) ?? ""
+            throw AntigravityStatusProbeError.apiError("HTTP \(http.statusCode): \(message)")
+        }
+        return data
+    }
+}
+
+private final class InsecureSessionDelegate: NSObject, URLSessionDelegate {
+    func urlSession(
+        _ session: URLSession,
+        didReceive challenge: URLAuthenticationChallenge,
+        completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void)
+    {
+        if let trust = challenge.protectionSpace.serverTrust {
+            completionHandler(.useCredential, URLCredential(trust: trust))
+        } else {
+            completionHandler(.performDefaultHandling, nil)
+        }
+    }
+}
+
+private struct UserStatusResponse: Decodable {
+    let code: CodeValue?
+    let message: String?
+    let userStatus: UserStatus?
+}
+
+private struct CommandModelConfigResponse: Decodable {
+    let code: CodeValue?
+    let message: String?
+    let clientModelConfigs: [ModelConfig]?
+}
+
+private struct UserStatus: Decodable {
+    let email: String?
+    let planStatus: PlanStatus?
+    let cascadeModelConfigData: ModelConfigData?
+}
+
+private struct PlanStatus: Decodable {
+    let planInfo: PlanInfo?
+}
+
+private struct PlanInfo: Decodable {
+    let planName: String?
+    let planDisplayName: String?
+    let displayName: String?
+    let productName: String?
+    let planShortName: String?
+
+    var preferredName: String? {
+        let candidates = [
+            planDisplayName,
+            displayName,
+            productName,
+            planName,
+            planShortName,
+        ]
+        for candidate in candidates {
+            guard let value = candidate?.trimmingCharacters(in: .whitespacesAndNewlines) else { continue }
+            if !value.isEmpty { return value }
         }
         return nil
     }
-    
-    private func onboardUser(accessToken: String, tierId: String, completion: @escaping @Sendable (Result<String?, Error>) -> Void) {
-        let url = URL(string: "https://cloudcode-pa.googleapis.com/v1internal:onboardUser")!
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-        
-        let body: [String: Any] = [
-            "tierId": tierId,
-            "metadata": [
-                "ideType": "ANTIGRAVITY",
-                "platform": "PLATFORM_UNSPECIFIED",
-                "pluginType": "GEMINI"
-            ]
-        ]
-        
-        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
-        
-        let task = URLSession.shared.dataTask(with: request) { [weak self] data, _, error in
-            if let error = error {
-                AntigravityStore.saveLastLog("onboardUser request failed: \(error.localizedDescription)")
-                completion(.failure(error))
-                return
-            }
-            guard let data = data,
-                  let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-                completion(.success(nil))
-                return
-            }
-            let innerResponse = json["response"] as? [String: Any] ?? json
-            let projectId = self?.extractProjectId(from: innerResponse)
-            if let projectId = projectId {
-                AntigravityStore.saveLastLog("onboardUser: got project ID \(projectId)")
-            }
-            completion(.success(projectId))
+}
+
+private struct ModelConfigData: Decodable {
+    let clientModelConfigs: [ModelConfig]?
+}
+
+private struct ModelConfig: Decodable {
+    let label: String
+    let modelOrAlias: ModelAlias
+    let quotaInfo: QuotaInfo?
+}
+
+private struct ModelAlias: Decodable {
+    let model: String
+}
+
+private struct QuotaInfo: Decodable {
+    let remainingFraction: Double?
+    let resetTime: String?
+}
+
+private enum CodeValue: Decodable {
+    case int(Int)
+    case string(String)
+
+    var isOK: Bool {
+        switch self {
+        case let .int(value):
+            return value == 0
+        case let .string(value):
+            let lower = value.lowercased()
+            return lower == "ok" || lower == "success" || value == "0"
         }
-        task.resume()
     }
-    
-    private func retryLoadCodeAssist(accessToken: String, email: String, retries: Int, completion: @escaping @Sendable (Result<CodeAssistInfo, Error>) -> Void) {
-        guard retries > 0 else {
-            completion(.success(CodeAssistInfo(projectId: nil, email: email)))
+
+    var rawValue: String {
+        switch self {
+        case let .int(value): "\(value)"
+        case let .string(value): value
+        }
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        if let value = try? container.decode(Int.self) {
+            self = .int(value)
             return
         }
-        
-        DispatchQueue.global().asyncAfter(deadline: .now() + 2.0) { [weak self] in
-            guard let self = self else { return }
-            let url = URL(string: "https://cloudcode-pa.googleapis.com/v1internal:loadCodeAssist")!
-            var request = URLRequest(url: url)
-            request.httpMethod = "POST"
-            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-            request.setValue(self.userAgent, forHTTPHeaderField: "User-Agent")
-            
-            let body: [String: Any] = [
-                "metadata": [
-                    "ideType": "ANTIGRAVITY",
-                    "platform": "PLATFORM_UNSPECIFIED",
-                    "pluginType": "GEMINI"
-                ]
-            ]
-            request.httpBody = try? JSONSerialization.data(withJSONObject: body)
-            
-            let task = URLSession.shared.dataTask(with: request) { [weak self] data, _, _ in
-                guard let self = self, let data = data,
-                      let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-                    self?.retryLoadCodeAssist(accessToken: accessToken, email: email, retries: retries - 1, completion: completion)
-                    return
-                }
-                if let projectId = self.extractProjectId(from: json) {
-                    completion(.success(CodeAssistInfo(projectId: projectId, email: email)))
-                } else {
-                    self.retryLoadCodeAssist(accessToken: accessToken, email: email, retries: retries - 1, completion: completion)
-                }
-            }
-            task.resume()
+        if let value = try? container.decode(String.self) {
+            self = .string(value)
+            return
         }
-    }
-    
-    private func fetchUsageWithToken(_ accessToken: String, idToken: String?, credsEmail: String?, completion: @escaping @Sendable (Result<AntigravityUsageData, Error>) -> Void) {
-        loadCodeAssist(accessToken: accessToken) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let codeAssistData):
-                let email = (codeAssistData.email != "user@google.com") ? codeAssistData.email : (self.extractEmailFromToken(idToken) ?? credsEmail ?? codeAssistData.email)
-                
-                // fetchAvailableModels returns display names; fall back to retrieveUserQuota
-                self.fetchAvailableModels(accessToken: accessToken, projectId: codeAssistData.projectId) { modelsResult in
-                    switch modelsResult {
-                    case .success(let models) where !models.isEmpty:
-                        let usageData = AntigravityUsageData(models: models, lastUpdated: Date(), email: email)
-                        AntigravityStore.saveUsageData(usageData)
-                        AntigravityStore.saveLastLog("Successfully updated Antigravity quotas for \(email). Found \(models.count) models.")
-                        WidgetCenter.shared.reloadAllTimelines()
-                        completion(.success(usageData))
-                    default:
-                        self.retrieveUserQuota(accessToken: accessToken, projectId: codeAssistData.projectId) { quotaResult in
-                            switch quotaResult {
-                            case .success(let models):
-                                let usageData = AntigravityUsageData(models: models, lastUpdated: Date(), email: email)
-                                AntigravityStore.saveUsageData(usageData)
-                                AntigravityStore.saveLastLog("Successfully updated Antigravity quotas for \(email). Found \(models.count) model buckets.")
-                                WidgetCenter.shared.reloadAllTimelines()
-                                completion(.success(usageData))
-                            case .failure(let error):
-                                completion(.failure(error))
-                            }
-                        }
-                    }
-                }
-            case .failure(let error):
-                completion(.failure(error))
-            }
-        }
-    }
-    
-    private func fetchAvailableModels(accessToken: String, projectId: String?, completion: @escaping @Sendable (Result<[AntigravityModelQuota], Error>) -> Void) {
-        let url = URL(string: "https://cloudcode-pa.googleapis.com/v1internal:fetchAvailableModels")!
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-        
-        var body: [String: Any] = [:]
-        if let projectId = projectId {
-            body["project"] = projectId
-        }
-        
-        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
-        
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                completion(.failure(error))
-                return
-            }
-            guard let data = data else {
-                completion(.success([]))
-                return
-            }
-            
-            do {
-                guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-                      let modelsDict = json["models"] as? [String: Any] else {
-                    completion(.success([]))
-                    return
-                }
-                
-                let isoFormatter = ISO8601DateFormatter()
-                isoFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-                var result: [AntigravityModelQuota] = []
-                
-                for (modelId, modelValue) in modelsDict {
-                    guard let modelInfo = modelValue as? [String: Any] else { continue }
-                    guard let quotaInfo = modelInfo["quotaInfo"] as? [String: Any],
-                          let fraction = (quotaInfo["remainingFraction"] as? NSNumber)?.doubleValue else {
-                        continue
-                    }
-                    let label = (modelInfo["displayName"] as? String) ?? (modelInfo["label"] as? String) ?? modelId
-                    var resetDate = (quotaInfo["resetTime"] as? String).flatMap { isoFormatter.date(from: $0) }
-                    if resetDate == nil, let resetStr = quotaInfo["resetTime"] as? String {
-                        let fallback = ISO8601DateFormatter()
-                        resetDate = fallback.date(from: resetStr)
-                    }
-                    result.append(AntigravityModelQuota(name: label, remainingFraction: fraction, resetTime: resetDate))
-                }
-                
-                if result.isEmpty {
-                    AntigravityStore.saveLastLog("fetchAvailableModels parsed 0 models with quotaInfo from \(modelsDict.count) models.")
-                }
-                
-                result.sort(by: { $0.name < $1.name })
-                completion(.success(result))
-            } catch {
-                AntigravityStore.saveLastLog("fetchAvailableModels parse error: \(error.localizedDescription)")
-                completion(.success([]))
-            }
-        }
-        task.resume()
-    }
-    
-    private func retrieveUserQuota(accessToken: String, projectId: String?, completion: @escaping @Sendable (Result<[AntigravityModelQuota], Error>) -> Void) {
-        let url = URL(string: "https://cloudcode-pa.googleapis.com/v1internal:retrieveUserQuota")!
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-        
-        var body: [String: Any] = [:]
-        if let projectId = projectId {
-            body["project"] = projectId
-        }
-        
-        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
-        
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                let log = "retrieveUserQuota request failed: \(error.localizedDescription)"
-                AntigravityStore.saveLastLog(log)
-                completion(.failure(error))
-                return
-            }
-            
-            guard let data = data else {
-                let log = "No data returned from retrieveUserQuota."
-                AntigravityStore.saveLastLog(log)
-                completion(.failure(NSError(domain: "AntigravityNetworkManager", code: -6, userInfo: [NSLocalizedDescriptionKey: log])))
-                return
-            }
-            
-            struct QuotaResponse: Codable {
-                struct Bucket: Codable {
-                    let resetTime: String?
-                    let modelId: String?
-                    let remainingFraction: Double?
-                }
-                let buckets: [Bucket]?
-            }
-            
-            do {
-                let responseObj = try JSONDecoder().decode(QuotaResponse.self, from: data)
-                var models: [AntigravityModelQuota] = []
-                
-                let isoFormatter = ISO8601DateFormatter()
-                
-                if let buckets = responseObj.buckets {
-                    for bucket in buckets {
-                        guard let modelId = bucket.modelId, let fraction = bucket.remainingFraction else {
-                            continue
-                        }
-                        
-                        let resetDate = bucket.resetTime.flatMap { isoFormatter.date(from: $0) }
-                        models.append(AntigravityModelQuota(name: modelId, remainingFraction: fraction, resetTime: resetDate))
-                    }
-                }
-                
-                models.sort(by: { $0.name < $1.name })
-                completion(.success(models))
-            } catch {
-                let log = "Failed to parse retrieveUserQuota JSON: \(error.localizedDescription). Response: \(String(data: data, encoding: .utf8) ?? "")"
-                AntigravityStore.saveLastLog(log)
-                completion(.failure(error))
-            }
-        }
-        task.resume()
-    }
-    
-    private func extractEmail(from uri: String?) -> String {
-        guard let uri = uri, let url = URL(string: uri),
-              let components = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
-            return "user@google.com"
-        }
-        return components.queryItems?.first(where: { $0.name == "Email" })?.value ?? "user@google.com"
+        throw DecodingError.dataCorruptedError(in: container, debugDescription: "Unsupported code type")
     }
 }
