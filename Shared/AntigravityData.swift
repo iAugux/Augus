@@ -454,7 +454,7 @@ public struct AntigravityStatusProbe: Sendable {
         return AntigravityStatusSnapshot(modelQuotas: models, accountEmail: nil, accountPlan: nil)
     }
 
-    private static func quotaFromConfig(_ config: ModelConfig) -> AntigravityModelQuotaInternal? {
+    nonisolated private static func quotaFromConfig(_ config: ModelConfig) -> AntigravityModelQuotaInternal? {
         guard let quota = config.quotaInfo else { return nil }
         let reset = quota.resetTime.flatMap { Self.parseDate($0) }
         return AntigravityModelQuotaInternal(
@@ -465,13 +465,13 @@ public struct AntigravityStatusProbe: Sendable {
             resetDescription: nil)
     }
 
-    private static func invalidCode(_ code: CodeValue?) -> String? {
+    nonisolated private static func invalidCode(_ code: CodeValue?) -> String? {
         guard let code else { return nil }
         if code.isOK { return nil }
         return "\(code.rawValue)"
     }
 
-    private static func parseDate(_ value: String) -> Date? {
+    nonisolated private static func parseDate(_ value: String) -> Date? {
         if let date = ISO8601DateFormatter().date(from: value) {
             return date
         }
@@ -800,11 +800,11 @@ private struct QuotaInfo: Decodable {
     let resetTime: String?
 }
 
-private enum CodeValue: Decodable {
+private enum CodeValue: Decodable, Sendable {
     case int(Int)
     case string(String)
 
-    var isOK: Bool {
+    nonisolated var isOK: Bool {
         switch self {
         case let .int(value):
             return value == 0
@@ -814,7 +814,7 @@ private enum CodeValue: Decodable {
         }
     }
 
-    var rawValue: String {
+    nonisolated var rawValue: String {
         switch self {
         case let .int(value): "\(value)"
         case let .string(value): value
