@@ -3,6 +3,7 @@
 
 import WidgetKit
 import SwiftUI
+import AppIntents
 
 struct Provider: TimelineProvider {
     func placeholder(in context: Context) -> SimpleEntry {
@@ -130,40 +131,11 @@ struct BlackSSLEntryView : View {
     private func mediumWidgetView(_ usage: BlackSSLUsageData) -> some View {
         HStack(spacing: 32) {
             // Left Progress Block
-            VStack(spacing: 12) {
-                Text("Updated: \(formatTime(entry.date))")
-                    .font(.system(size: 8))
-                    .foregroundColor(.secondary.opacity(0.4))
-
-                ZStack {
-                    Circle()
-                        .stroke(Color.primary.opacity(0.05), lineWidth: 7)
-                        .frame(width: 70, height: 70)
-                    Circle()
-                        .trim(from: 0.0, to: CGFloat(usage.usagePercentage))
-                        .stroke(
-                            progressGradient(for: usage.usagePercentage),
-                            style: StrokeStyle(lineWidth: 7, lineCap: .round)
-                        )
-                        .frame(width: 70, height: 70)
-                        .rotationEffect(.degrees(-90))
-                    
-                    VStack(spacing: 2) {
-                        Text(String(format: "%.1f%%", usage.usagePercentage * 100))
-                            .font(.system(size: 18, weight: .bold, design: .rounded))
-                            .foregroundColor(.primary)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.7)
-                        Text("Used")
-                            .font(.system(size: 8))
-                            .foregroundColor(.secondary)
-                    }
-                }
-                
-                Text("\(BlackSSLNetworkManager.formatBytes(usage.remaining)) left")
-                    .font(.system(size: 10, weight: .medium))
-                    .foregroundColor(.green)
+            Button(intent: RefreshBlackSSLIntent()) {
+                leftProgressBlock(usage: usage)
             }
+            .buttonStyle(.plain)
+
             
             // Right Information Block
             VStack(alignment: .leading, spacing: 6) {
@@ -279,6 +251,43 @@ struct BlackSSLEntryView : View {
             }
         }
         return "Unknown"
+    }
+
+    private func leftProgressBlock(usage: BlackSSLUsageData) -> some View {
+        VStack(spacing: 12) {
+            Text("Updated: \(formatTime(entry.date))")
+                .font(.system(size: 8))
+                .foregroundColor(.secondary.opacity(0.4))
+
+            ZStack {
+                Circle()
+                    .stroke(Color.primary.opacity(0.05), lineWidth: 7)
+                    .frame(width: 70, height: 70)
+                Circle()
+                    .trim(from: 0.0, to: CGFloat(usage.usagePercentage))
+                    .stroke(
+                        progressGradient(for: usage.usagePercentage),
+                        style: StrokeStyle(lineWidth: 7, lineCap: .round)
+                    )
+                    .frame(width: 70, height: 70)
+                    .rotationEffect(.degrees(-90))
+                
+                VStack(spacing: 2) {
+                    Text(String(format: "%.1f%%", usage.usagePercentage * 100))
+                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                        .foregroundColor(.primary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                    Text("Used")
+                        .font(.system(size: 8))
+                        .foregroundColor(.secondary)
+                }
+            }
+            
+            Text("\(BlackSSLNetworkManager.formatBytes(usage.remaining)) left")
+                .font(.system(size: 10, weight: .medium))
+                .foregroundColor(.green)
+        }
     }
     
     private func progressGradient(for percentage: Double) -> LinearGradient {

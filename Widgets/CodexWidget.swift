@@ -3,6 +3,7 @@
 
 import WidgetKit
 import SwiftUI
+import AppIntents
 
 // MARK: - Codex Widget Implementation
 
@@ -134,45 +135,14 @@ struct CodexEntryView: View {
     
     // MARK: - Medium Widget View
     private func mediumWidgetView(_ usage: CodexUsageData) -> some View {
-        let primaryRemaining = 1.0 - usage.primaryUsedPercent
         let secondaryRemaining = 1.0 - usage.secondaryUsedPercent
         
         return HStack(spacing: 32) {
             // Left Progress Block
-            VStack(spacing: 12) {
-                Text("Updated: \(formatTime(entry.date))")
-                    .font(.system(size: 8))
-                    .foregroundColor(.secondary.opacity(0.4))
-
-                ZStack {
-                    Circle()
-                        .stroke(Color.primary.opacity(0.05), lineWidth: 7)
-                        .frame(width: 70, height: 70)
-                    Circle()
-                        .trim(from: 0.0, to: CGFloat(primaryRemaining))
-                        .stroke(
-                            progressGradient(for: primaryRemaining),
-                            style: StrokeStyle(lineWidth: 7, lineCap: .round)
-                        )
-                        .frame(width: 70, height: 70)
-                        .rotationEffect(.degrees(-90))
-                    
-                    VStack(spacing: 2) {
-                        Text(formatPercent(primaryRemaining))
-                            .font(.system(size: 18, weight: .bold, design: .rounded))
-                            .foregroundColor(.primary)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.7)
-                        Text("5h Left")
-                            .font(.system(size: 8))
-                            .foregroundColor(.secondary)
-                    }
-                }
-                
-                Text(usage.primaryResetCountdownText)
-                    .font(.system(size: 10, weight: .medium))
-                    .foregroundColor(.green)
+            Button(intent: RefreshCodexIntent()) {
+                leftProgressBlock(usage: usage)
             }
+            .buttonStyle(.plain)
             
             // Right Information Block
             VStack(alignment: .leading, spacing: 6) {
@@ -215,6 +185,44 @@ struct CodexEntryView: View {
                 .font(.system(size: 9))
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
+        }
+    }
+    
+    private func leftProgressBlock(usage: CodexUsageData) -> some View {
+        let primaryRemaining = 1.0 - usage.primaryUsedPercent
+        return VStack(spacing: 12) {
+            Text("Updated: \(formatTime(entry.date))")
+                .font(.system(size: 8))
+                .foregroundColor(.secondary.opacity(0.4))
+
+            ZStack {
+                Circle()
+                    .stroke(Color.primary.opacity(0.05), lineWidth: 7)
+                    .frame(width: 70, height: 70)
+                Circle()
+                    .trim(from: 0.0, to: CGFloat(primaryRemaining))
+                    .stroke(
+                        progressGradient(for: primaryRemaining),
+                        style: StrokeStyle(lineWidth: 7, lineCap: .round)
+                    )
+                    .frame(width: 70, height: 70)
+                    .rotationEffect(.degrees(-90))
+                
+                VStack(spacing: 2) {
+                    Text(formatPercent(primaryRemaining))
+                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                        .foregroundColor(.primary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                    Text("5h Left")
+                        .font(.system(size: 8))
+                        .foregroundColor(.secondary)
+                }
+            }
+            
+            Text(usage.primaryResetCountdownText)
+                .font(.system(size: 10, weight: .medium))
+                .foregroundColor(.green)
         }
     }
     
