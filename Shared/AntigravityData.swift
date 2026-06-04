@@ -50,7 +50,12 @@ public struct AntigravityUsageData: Codable, Sendable {
     public let email: String
     
     public init(models: [AntigravityModelQuota], lastUpdated: Date, email: String) {
-        self.models = models
+        self.models = models.sorted { a, b in
+            if a.remainingFraction != b.remainingFraction {
+                return a.remainingFraction > b.remainingFraction
+            }
+            return a.name < b.name
+        }
         self.lastUpdated = lastUpdated
         self.email = email
     }
