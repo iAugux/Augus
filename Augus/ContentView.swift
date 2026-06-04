@@ -1079,8 +1079,17 @@ struct ContentView: View {
             isShowingBlackSSLLogin = false
             isShowingCodexLogin = false
             selectedTab = .gemini
+        case "antigravity":
+            isShowingBlackSSLLogin = false
+            isShowingCodexLogin = false
+            selectedTab = .antigravity
         default:
             break
+        }
+        
+        // Ensure data is fetched when opened via widget, even if already on the target tab
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            refreshCurrentTab()
         }
     }
     
