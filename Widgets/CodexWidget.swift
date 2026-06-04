@@ -18,16 +18,28 @@ struct CodexProvider: TimelineProvider {
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<CodexEntry>) -> ()) {
         let latestData = CodexStore.loadUsageData()
-        let entry: CodexEntry
-        if let data = latestData {
-            entry = CodexEntry(date: Date(), usage: data, error: nil)
-        } else {
-            entry = CodexEntry(date: Date(), usage: nil, error: "Not logged in")
-        }
         
-        let nextUpdate = Calendar.current.date(byAdding: .minute, value: 15, to: Date())!
-        let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
-        completion(timeline)
+        CodexNetworkManager.shared.fetchUsage { result in
+            let entry: CodexEntry
+            switch result {
+            case .success(let data):
+                entry = CodexEntry(date: Date(), usage: data, error: nil)
+            case .failure(let error):
+                entry = CodexEntry(date: Date(), usage: latestData, error: error.localizedDescription)
+            }
+            
+            let fifteenMinutesFromNow = Calendar.current.date(byAdding: .minute, value: 15, to: Date())!
+            var nextUpdate = fifteenMinutesFromNow
+            if let data = entry.usage {
+                let primaryResetDate = Date(timeIntervalSince1970: TimeInterval(data.primaryResetAt))
+                if primaryResetDate > Date() && primaryResetDate < fifteenMinutesFromNow {
+                    nextUpdate = primaryResetDate.addingTimeInterval(15)
+                }
+            }
+            
+            let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
+            completion(timeline)
+        }
     }
     
     private var mockUsage: CodexUsageData {
@@ -182,7 +194,7 @@ struct CodexEntryView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     metricRow(icon: "hourglass.badge.plus", iconColor: .green, label: "5h Reset", value: usage.primaryResetCountdownText)
                     metricRow(icon: "calendar.badge.clock", iconColor: .blue, label: "7d Reset", value: usage.secondaryResetCountdownText)
-                    metricRow(icon: "chart.bar.fill", iconColor: .teal, label: "7d Left", value: formatPercent(secondaryRemaining))
+                    metricRow(icon: "chart.bar.fill", iconColor: .teal, label: "7d Left", value: formatPercent(secondaryRemaining), isValueBold: true)
                     metricRow(icon: "star.fill", iconColor: .purple, label: "Plan", value: usage.planType.uppercased())
                     metricRow(icon: "envelope.fill", iconColor: .orange, label: "Account", value: usage.email)
                 }
@@ -207,7 +219,7 @@ struct CodexEntryView: View {
     }
     
     // MARK: - Row Helper
-    private func metricRow(icon: String, iconColor: Color, label: String, value: String) -> some View {
+    private func metricRow(icon: String, iconColor: Color, label: String, value: String, isValueBold: Bool = false) -> some View {
         HStack(spacing: 6) {
             Image(systemName: icon)
                 .font(.system(size: 11))
@@ -221,7 +233,7 @@ struct CodexEntryView: View {
             Spacer()
             
             Text(value)
-                .font(.system(size: 11, weight: .medium))
+                .font(.system(size: 11, weight: isValueBold ? .bold : .medium))
                 .foregroundColor(.primary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)

@@ -110,6 +110,11 @@ struct ContentView: View {
                 refreshCurrentTab()
             }
         }
+#if os(macOS)
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
+            refreshCurrentTab()
+        }
+#endif
         .onOpenURL { url in
             handleOpenURL(url)
         }

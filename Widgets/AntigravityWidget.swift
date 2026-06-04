@@ -20,17 +20,29 @@ struct AntigravityProvider: TimelineProvider {
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<AntigravityEntry>) -> ()) {
         let latestData = AntigravityStore.loadUsageData()
-        let entry: AntigravityEntry
-        if let data = latestData {
-            entry = AntigravityEntry(date: Date(), usage: data, error: nil)
-        } else {
-            entry = AntigravityEntry(date: Date(), usage: nil, error: "Not logged in")
-        }
         
-        // Refresh every 15 minutes
-        let nextUpdate = Calendar.current.date(byAdding: .minute, value: 15, to: Date())!
-        let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
-        completion(timeline)
+        AntigravityNetworkManager.shared.fetchUsage { result in
+            let entry: AntigravityEntry
+            switch result {
+            case .success(let data):
+                entry = AntigravityEntry(date: Date(), usage: data, error: nil)
+            case .failure(let error):
+                entry = AntigravityEntry(date: Date(), usage: latestData, error: error.localizedDescription)
+            }
+            
+            let fifteenMinutesFromNow = Calendar.current.date(byAdding: .minute, value: 15, to: Date())!
+            var nextUpdate = fifteenMinutesFromNow
+            if let models = entry.usage?.models {
+                for model in models {
+                    if let resetTime = model.resetTime, resetTime > Date() && resetTime < fifteenMinutesFromNow {
+                        nextUpdate = min(nextUpdate, resetTime.addingTimeInterval(15))
+                    }
+                }
+            }
+            
+            let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
+            completion(timeline)
+        }
     }
     
     private var mockUsage: AntigravityUsageData {
