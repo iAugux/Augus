@@ -638,7 +638,7 @@ struct ContentView: View {
                     
                     // Inside Circle Texts
                     VStack(spacing: 2) {
-                        Text(formatCodexPercent(primaryRemaining))
+                        Text(formatPercent(primaryRemaining))
                             .font(.system(size: 24, weight: .bold, design: .rounded))
                             .foregroundColor(.primary)
                         
@@ -653,7 +653,7 @@ struct ContentView: View {
                 HStack(spacing: 40) {
                     VStack(alignment: .center) {
                         let primaryRemaining = 1.0 - data.primaryUsedPercent
-                        Text(formatCodexPercent(primaryRemaining))
+                        Text(formatPercent(primaryRemaining))
                             .font(.title3)
                             .fontWeight(.bold)
                             .foregroundColor(.primary)
@@ -664,7 +664,7 @@ struct ContentView: View {
                     
                     VStack(alignment: .center) {
                         let secondaryRemaining = 1.0 - data.secondaryUsedPercent
-                        Text(formatCodexPercent(secondaryRemaining))
+                        Text(formatPercent(secondaryRemaining))
                             .font(.title3)
                             .fontWeight(.bold)
                             .foregroundColor(.primary)
@@ -808,7 +808,7 @@ struct ContentView: View {
                     
                     // Inside Circle Texts
                     VStack(spacing: 2) {
-                        Text(String(format: "%.1f%%", data.usagePercentage * 100))
+                        Text(formatPercent(data.usagePercentage))
                             .font(.system(size: 24, weight: .bold, design: .rounded))
                             .foregroundColor(.primary)
                         
@@ -1248,12 +1248,13 @@ struct ContentView: View {
         }
     }
     
-    private func formatCodexPercent(_ fraction: Double) -> String {
+    private func formatPercent(_ fraction: Double) -> String {
         let percentage = fraction * 100
-        if percentage.truncatingRemainder(dividingBy: 1) == 0 {
+        let formatted = String(format: "%.1f", percentage)
+        if formatted.hasSuffix(".0") {
             return String(format: "%.0f%%", percentage)
         } else {
-            return String(format: "%.1f%%", percentage)
+            return "\(formatted)%"
         }
     }
     
