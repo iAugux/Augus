@@ -5,6 +5,11 @@ struct RefreshCodexIntent: AppIntent {
     static var title: LocalizedStringResource = "Refresh Codex"
     static var description = IntentDescription("Refreshes the Codex usage data.")
 
+    @available(macOS 26.0, iOS 26.0, watchOS 26.0, tvOS 26.0, *)
+    static var supportedModes: IntentModes {
+        return .background
+    }
+
     init() {}
     
     func perform() async throws -> some IntentResult {

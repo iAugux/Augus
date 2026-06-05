@@ -687,10 +687,20 @@ public final class BlackSSLNetworkManager: Sendable {
     public static func formatBytes(_ bytes: Int64) -> String {
         let gb = Double(bytes) / (1024.0 * 1024.0 * 1024.0)
         if gb >= 1.0 {
-            return String(format: "%.2f GB", gb)
+            return formatNumber(gb) + " GB"
         }
         let mb = Double(bytes) / (1024.0 * 1024.0)
-        return String(format: "%.2f MB", mb)
+        return formatNumber(mb) + " MB"
+    }
+    
+    private static func formatNumber(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 2
+        formatter.numberStyle = .decimal
+        formatter.usesGroupingSeparator = false
+        formatter.locale = Locale(identifier: "en_US")
+        return formatter.string(from: NSNumber(value: value)) ?? String(format: "%.2f", value)
     }
 }
 
