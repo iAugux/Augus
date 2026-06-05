@@ -258,10 +258,11 @@ struct CodexEntryView: View {
     
     private func formatPercent(_ fraction: Double) -> String {
         let percentage = fraction * 100
-        if percentage.truncatingRemainder(dividingBy: 1) == 0 {
+        let formatted = String(format: "%.1f", percentage)
+        if formatted.hasSuffix(".0") {
             return String(format: "%.0f%%", percentage)
         } else {
-            return String(format: "%.1f%%", percentage)
+            return "\(formatted)%"
         }
     }
     

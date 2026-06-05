@@ -106,7 +106,7 @@ struct BlackSSLEntryView : View {
                     .rotationEffect(.degrees(-90))
                 
                 VStack(spacing: 0) {
-                    Text(String(format: "%.1f%%", usage.usagePercentage * 100))
+                    Text(formatPercent(usage.usagePercentage))
                         .font(.system(size: 16, weight: .bold, design: .rounded))
                         .foregroundColor(.primary)
                         .lineLimit(1)
@@ -216,6 +216,16 @@ struct BlackSSLEntryView : View {
         return formatter.string(from: date)
     }
     
+    private func formatPercent(_ fraction: Double) -> String {
+        let percentage = fraction * 100
+        let formatted = String(format: "%.1f", percentage)
+        if formatted.hasSuffix(".0") {
+            return String(format: "%.0f%%", percentage)
+        } else {
+            return "\(formatted)%"
+        }
+    }
+    
     private func formatExpirationDate(_ timestamp: Int64?) -> String {
         guard let ts = timestamp, ts > 0 else { return "Unlimited" }
         let date = Date(timeIntervalSince1970: TimeInterval(ts))
@@ -274,7 +284,7 @@ struct BlackSSLEntryView : View {
                     .rotationEffect(.degrees(-90))
                 
                 VStack(spacing: 2) {
-                    Text(String(format: "%.1f%%", usage.usagePercentage * 100))
+                    Text(formatPercent(usage.usagePercentage))
                         .font(.system(size: 18, weight: .bold, design: .rounded))
                         .foregroundColor(.primary)
                         .lineLimit(1)
