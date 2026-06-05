@@ -331,6 +331,7 @@ struct BlackSSL: Widget {
                     WidgetBackgroundView()
                 }
                 .widgetURL(URL(string: "augus://blackssl"))
+
         }
         .configurationDisplayName("BlackSSL Status")
         .description("Shows traffic usage and subscription expiration of your BlackSSL account.")
