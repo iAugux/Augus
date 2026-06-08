@@ -1,3 +1,4 @@
+#if os(macOS)
 import SwiftUI
 import Combine
 import WidgetKit
@@ -77,5 +78,4 @@ class MenuBarViewModel: ObservableObject {
         }
     }
 }
-import SwiftUI
-import WidgetKit
+#endif

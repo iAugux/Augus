@@ -1,3 +1,4 @@
+#if os(macOS)
 import SwiftUI
 import WidgetKit
 
@@ -78,3 +79,4 @@ struct MenuBarWidgetView: View {
         NSApp.activate(ignoringOtherApps: true)
     }
 }
+#endif
