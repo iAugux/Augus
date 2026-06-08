@@ -338,6 +338,7 @@ public final class BlackSSLNetworkManager: Sendable {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.timeoutInterval = 15.0
+        request.cachePolicy = .reloadIgnoringLocalCacheData
         request.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15", forHTTPHeaderField: "User-Agent")
         
         if let cookies = BlackSSLStore.loadCookies() {
@@ -372,6 +373,7 @@ public final class BlackSSLNetworkManager: Sendable {
             var request = URLRequest(url: url)
             request.httpMethod = "GET"
             request.timeoutInterval = 15.0
+            request.cachePolicy = .reloadIgnoringLocalCacheData
             request.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15", forHTTPHeaderField: "User-Agent")
             
             let task = URLSession.shared.dataTask(with: request) { _, response, error in

@@ -223,6 +223,7 @@ public final class CodexNetworkManager: Sendable {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.timeoutInterval = 15.0
+        request.cachePolicy = .reloadIgnoringLocalCacheData
         request.httpShouldHandleCookies = false
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
         
@@ -297,6 +298,7 @@ public final class CodexNetworkManager: Sendable {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.timeoutInterval = 15.0
+        request.cachePolicy = .reloadIgnoringLocalCacheData
         request.httpShouldHandleCookies = false
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
