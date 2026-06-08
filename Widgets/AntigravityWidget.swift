@@ -1,5 +1,4 @@
 
-#if os(macOS)
 // Created by Augus on 6/01/26
 // Copyright © 2026 Augus <iAugux@gmail.com>
 
@@ -298,5 +297,3 @@ struct AntigravityWidget: Widget {
         .supportedFamilies([.systemSmall, .systemMedium])
     }
 }
-
-#endif
