@@ -2,6 +2,7 @@
 // Copyright © 2026 Augus <iAugux@gmail.com>
 
 import Foundation
+import AppIntents
 import WidgetKit
 
 public struct SerializableCookie: Codable, Sendable {
@@ -388,3 +389,5 @@ public final class CodexNetworkManager: Sendable {
     }
 }
 
+import SwiftUI
+import WidgetKit

@@ -2,6 +2,7 @@
 // Copyright © 2026 Augus <iAugux@gmail.com>
 
 import Foundation
+import AppIntents
 import WidgetKit
 import UserNotifications
 
@@ -707,3 +708,5 @@ public final class BlackSSLNetworkManager: Sendable {
 }
 
 
+import SwiftUI
+import WidgetKit

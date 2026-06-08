@@ -57,10 +57,16 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				AntigravityData.swift,
+				AntigravityUI.swift,
 				BlackSSLData.swift,
+				BlackSSLUI.swift,
 				CodexData.swift,
+				CodexUI.swift,
 				GeminiData.swift,
+				GeminiUI.swift,
 				Icons.xcassets,
+				RefreshCodexIntent.swift,
+				RefreshBlackSSLIntent.swift,
 			);
 			target = B188B4562FCB257D00DE99A6 /* Widgets */;
 		};
@@ -408,6 +414,7 @@
 				INFOPLIST_KEY_CFBundleURLTypes = "{\n    CFBundleURLName = \"com.iAugus.Augus\";\n    CFBundleURLSchemes =     (\n        augus\n    );\n}";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_LSUIElement = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -451,6 +458,7 @@
 				INFOPLIST_KEY_CFBundleURLTypes = "{\n    CFBundleURLName = \"com.iAugus.Augus\";\n    CFBundleURLSchemes =     (\n        augus\n    );\n}";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_LSUIElement = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;

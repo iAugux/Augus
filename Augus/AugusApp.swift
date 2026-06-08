@@ -7,6 +7,11 @@ import SwiftUI
 struct AugusApp: App {
     var body: some Scene {
 #if os(macOS)
+        MenuBarExtra("Augus", systemImage: "sparkles") {
+            MenuBarWidgetView()
+        }
+        .menuBarExtraStyle(.window)
+
         Window("Augus", id: "main") {
             ContentView()
                 .frame(minWidth: 393, idealWidth: 393, minHeight: 700, idealHeight: 700)
@@ -21,3 +26,5 @@ struct AugusApp: App {
 #endif
     }
 }
+import SwiftUI
+import Combine

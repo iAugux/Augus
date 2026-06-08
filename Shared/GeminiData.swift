@@ -2,6 +2,7 @@
 // Copyright © 2026 Augus <iAugux@gmail.com>
 
 import Foundation
+import AppIntents
 import WidgetKit
 
 // MARK: - Gemini Models & Credentials
@@ -390,3 +391,5 @@ public final class GeminiNetworkManager: Sendable {
         return components.queryItems?.first(where: { $0.name == "Email" })?.value ?? "user@google.com"
     }
 }
+import SwiftUI
+import WidgetKit

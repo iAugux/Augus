@@ -2,6 +2,7 @@
 // Copyright © 2026 Augus <iAugux@gmail.com>
 
 import Foundation
+import AppIntents
 import WidgetKit
 import os.log
 
@@ -839,3 +840,5 @@ private enum CodeValue: Decodable, Sendable {
     }
 }
 #endif
+import SwiftUI
+import WidgetKit
