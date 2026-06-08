@@ -71,8 +71,10 @@ struct AntigravityEntryView: View {
         ZStack {
             if let usage = entry.usage {
                 switch family {
-                case .systemLarge:
-                    largeWidgetView(usage)
+                case .systemSmall:
+                    smallWidgetView(usage)
+                case .systemMedium:
+                    mediumWidgetView(usage)
                 default:
                     largeWidgetView(usage)
                 }
@@ -81,141 +83,155 @@ struct AntigravityEntryView: View {
             }
         }
     }
+    // MARK: - Model Combiner (Widget Only)
+    private func compactModels(_ originalModels: [AntigravityModelQuota]) -> [AntigravityModelQuota] {
+        var groups: [String: [AntigravityModelQuota]] = [:]
+        
+        for model in originalModels {
+            if model.name.localizedCaseInsensitiveContains("gpt") {
+                continue
+            }
+            
+            let key: String
+            if model.name.localizedCaseInsensitiveContains("gemini") {
+                if model.name.localizedCaseInsensitiveContains("pro") {
+                    key = "Gemini Pro"
+                } else if model.name.localizedCaseInsensitiveContains("flash") {
+                    key = "Gemini Flash"
+                } else {
+                    key = "Gemini"
+                }
+            } else if model.name.localizedCaseInsensitiveContains("claude") {
+                key = "Claude"
+            } else {
+                key = model.name
+            }
+            
+            groups[key, default: []].append(model)
+        }
+        
+        var combined: [AntigravityModelQuota] = []
+        for (key, models) in groups {
+            let avgFraction = models.map { $0.remainingFraction }.reduce(0, +) / Double(models.count)
+            let earliestReset = models.compactMap { $0.resetTime }.min()
+            
+            combined.append(AntigravityModelQuota(name: key, remainingFraction: avgFraction, resetTime: earliestReset))
+        }
+        
+        return combined.sorted { a, b in
+            if a.remainingFraction != b.remainingFraction {
+                return a.remainingFraction > b.remainingFraction
+            }
+            return a.name < b.name
+        }
+    }
     
+    private func getCombinedFractions(_ models: [AntigravityModelQuota]) -> (gemini: Double, claude: Double) {
+        let geminis = models.filter { $0.name.localizedCaseInsensitiveContains("Gemini") }
+        let claudes = models.filter { $0.name.localizedCaseInsensitiveContains("Claude") }
+        
+        let geminiFrac = geminis.isEmpty ? 0 : geminis.map { $0.remainingFraction }.reduce(0, +) / Double(geminis.count)
+        let claudeFrac = claudes.isEmpty ? 0 : claudes.map { $0.remainingFraction }.reduce(0, +) / Double(claudes.count)
+        
+        return (geminiFrac, claudeFrac)
+    }
+
     // MARK: - Small Widget View
     private func smallWidgetView(_ usage: AntigravityUsageData) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            if usage.models.isEmpty {
-                Text("No quotas")
-                    .font(.system(size: 10))
-                    .foregroundColor(.secondary)
-            } else {
-                ForEach(usage.models.prefix(5)) { model in
-                    let shortName = model.name
-                        .replacingOccurrences(of: "antigravity-", with: "")
-                        .replacingOccurrences(of: "preview", with: "pv")
-                    
-                    VStack(alignment: .leading, spacing: 1) {
-                        HStack {
-                            Text(shortName)
-                                .font(.system(size: 8, weight: .medium))
-                                .foregroundColor(.primary)
-                                .lineLimit(1)
-                            Spacer()
-                            Text(String(format: "%.0f%%", model.remainingFraction * 100))
-                                .font(.system(size: 8, weight: .semibold, design: .rounded))
-                                .foregroundColor(model.remainingFraction < 0.25 ? .red : (model.remainingFraction < 0.6 ? .orange : .blue))
-                        }
-                        
-                        GeometryReader { geo in
-                          ZStack(alignment: .leading) {
-                              RoundedRectangle(cornerRadius: 1.5)
-                                  .fill(Color.primary.opacity(0.05))
-                                  .frame(height: 3)
-                              RoundedRectangle(cornerRadius: 1.5)
-                                  .fill(model.remainingFraction < 0.25 ? Color.red : (model.remainingFraction < 0.6 ? Color.orange : Color.blue))
-                                  .frame(width: geo.size.width * CGFloat(model.remainingFraction), height: 3)
-                          }
-                        }
-                        .frame(height: 3)
-                    }
-                    .padding(.vertical, 1)
+        VStack(spacing: 6) {
+            let models = compactModels(usage.models)
+            let fractions = getCombinedFractions(models)
+            
+            HStack(alignment: .firstTextBaseline) {
+                Text("Antigravity")
+                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                    .foregroundColor(.primary)
+                Spacer()
+                Text(formatTime(entry.date))
+                    .font(.system(size: 8))
+                    .foregroundColor(.secondary.opacity(0.4))
+            }
+            
+            Spacer(minLength: 0)
+            
+            ZStack {
+                // Outer Ring (Gemini)
+                Circle()
+                    .stroke(Color.primary.opacity(0.05), lineWidth: 6)
+                    .frame(width: 70, height: 70)
+                Circle()
+                    .trim(from: 0.0, to: CGFloat(fractions.gemini))
+                    .stroke(
+                        antigravityGradient(for: fractions.gemini),
+                        style: StrokeStyle(lineWidth: 6, lineCap: .round)
+                    )
+                    .frame(width: 70, height: 70)
+                    .rotationEffect(.degrees(-90))
+                
+                // Inner Ring (Claude)
+                Circle()
+                    .stroke(Color.primary.opacity(0.05), lineWidth: 6)
+                    .frame(width: 52, height: 52)
+                Circle()
+                    .trim(from: 0.0, to: CGFloat(fractions.claude))
+                    .stroke(
+                        claudeGradient(for: fractions.claude),
+                        style: StrokeStyle(lineWidth: 6, lineCap: .round)
+                    )
+                    .frame(width: 52, height: 52)
+                    .rotationEffect(.degrees(-90))
+                
+                VStack(spacing: 1) {
+                    Text(String(format: "%.0f%%", fractions.gemini * 100))
+                        .font(.system(size: 11, weight: .bold, design: .rounded))
+                        .foregroundColor(.blue)
+                    Text(String(format: "%.0f%%", fractions.claude * 100))
+                        .font(.system(size: 9, weight: .bold, design: .rounded))
+                        .foregroundColor(.orange)
                 }
             }
+            
             Spacer(minLength: 0)
         }
     }
     
     // MARK: - Medium Widget View
     private func mediumWidgetView(_ usage: AntigravityUsageData) -> some View {
-        HStack(spacing: 16) {
-            // Left progress ring for the primary model (e.g. antigravity-2.5-pro or first available)
-            let primary = usage.models.first(where: { $0.name.contains("pro") }) ?? usage.models.first
+        HStack(spacing: 24) {
+            let models = compactModels(usage.models)
+            let fractions = getCombinedFractions(models)
             
-            if let primary = primary {
-                VStack(spacing: 8) {
-                    ZStack {
-                        Circle()
-                            .stroke(Color.primary.opacity(0.05), lineWidth: 6)
-                            .frame(width: 60, height: 60)
-                        Circle()
-                            .trim(from: 0.0, to: CGFloat(primary.remainingFraction))
-                            .stroke(
-                                primary.remainingFraction < 0.25 ? Color.red : (primary.remainingFraction < 0.6 ? Color.orange : Color.blue),
-                                style: StrokeStyle(lineWidth: 6, lineCap: .round)
-                            )
-                            .frame(width: 60, height: 60)
-                            .rotationEffect(.degrees(-90))
-                        
-                        VStack(spacing: 1) {
-                            Text(String(format: "%.0f%%", primary.remainingFraction * 100))
-                                .font(.system(size: 14, weight: .bold, design: .rounded))
-                                .foregroundColor(.primary)
-                            
-                            let shortLabel: String = {
-                                if primary.name.contains("pro") { return "Pro" }
-                                if primary.name.contains("flash") { return "Flash" }
-                                return "Model"
-                            }()
-                            Text(shortLabel)
-                                .font(.system(size: 8))
-                                .foregroundColor(.secondary)
-                        }
-                    }
+            // Left Progress Block
+            VStack(spacing: 8) {
+                Text("Updated: \(formatTime(entry.date))")
+                    .font(.system(size: 8))
+                    .foregroundColor(.secondary.opacity(0.4))
                     
-                    if let reset = primary.resetTime {
-                        Text(formatCountdown(reset))
-                            .font(.system(size: 9, weight: .medium, design: .rounded))
-                            .foregroundColor(.blue)
-                    } else {
-                        Text("Active")
-                            .font(.system(size: 9))
-                            .foregroundColor(.secondary)
-                    }
-                }
-                .frame(width: 70)
+                concentricRingsView(fractions: fractions, outerSize: 76, innerSize: 56, lineWidth: 7, showText: true)
+                
+                Text("Gemini & Claude")
+                    .font(.system(size: 9))
+                    .foregroundColor(.secondary)
             }
+            .frame(width: 80)
             
             // Right detailed list of models
-            VStack(alignment: .leading, spacing: 4) {
-                if usage.models.isEmpty {
+            VStack(alignment: .leading, spacing: 6) {
+                HStack {
+                    Text("Antigravity")
+                        .font(.system(size: 13, weight: .bold, design: .rounded))
+                        .foregroundColor(.primary)
+                    Spacer()
+                }
+                
+                if models.isEmpty {
                     Text("No models registered.")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 } else {
-                    ForEach(usage.models.prefix(5)) { model in
-                        let nameLabel = model.name.replacingOccurrences(of: "antigravity-", with: "")
-                        VStack(spacing: 2) {
-                            HStack(spacing: 2) {
-                                Text(nameLabel)
-                                    .font(.system(size: 9, weight: .medium))
-                                    .foregroundColor(.primary)
-                                    .lineLimit(1)
-                                
-                                Spacer()
-                                
-                                if let reset = model.resetTime {
-                                    Text(formatTime(reset))
-                                        .font(.system(size: 8))
-                                        .foregroundColor(.secondary)
-                                }
-                                
-                                Text(String(format: "%.0f%%", model.remainingFraction * 100))
-                                    .font(.system(size: 9, weight: .bold, design: .rounded))
-                                    .foregroundColor(model.remainingFraction < 0.25 ? .red : (model.remainingFraction < 0.6 ? .orange : .blue))
-                                    .frame(width: 30, alignment: .trailing)
-                            }
-                            GeometryReader { geo in
-                                ZStack(alignment: .leading) {
-                                    RoundedRectangle(cornerRadius: 1.5)
-                                        .fill(Color.primary.opacity(0.05))
-                                        .frame(height: 3)
-                                    RoundedRectangle(cornerRadius: 1.5)
-                                        .fill(model.remainingFraction < 0.25 ? Color.red : (model.remainingFraction < 0.6 ? Color.orange : Color.blue))
-                                        .frame(width: geo.size.width * CGFloat(model.remainingFraction), height: 3)
-                                }
-                            }
-                            .frame(height: 3)
+                    VStack(alignment: .leading, spacing: 4) {
+                        ForEach(models.prefix(4)) { model in
+                            modelRow(model: model, size: 11)
                         }
                     }
                 }
@@ -225,52 +241,155 @@ struct AntigravityEntryView: View {
     
     // MARK: - Large Widget View
     private func largeWidgetView(_ usage: AntigravityUsageData) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            if usage.models.isEmpty {
+        VStack(alignment: .leading, spacing: 14) {
+            let uncombinedModels = usage.models.filter { 
+                $0.name.localizedCaseInsensitiveContains("gemini") || $0.name.localizedCaseInsensitiveContains("claude") 
+            }.sorted { a, b in
+                if a.remainingFraction != b.remainingFraction {
+                    return a.remainingFraction > b.remainingFraction
+                }
+                return a.name < b.name
+            }
+            let fractions = getCombinedFractions(uncombinedModels)
+            
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Updated: \(formatTime(entry.date))")
+                    .font(.system(size: 8))
+                    .foregroundColor(.secondary.opacity(0.4))
+                
+                HStack(alignment: .center, spacing: 16) {
+                    concentricRingsView(fractions: fractions, outerSize: 48, innerSize: 34, lineWidth: 5, showText: true)
+                    
+                    Text("Antigravity")
+                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                        .foregroundColor(.blue)
+                }
+            }
+            
+            if uncombinedModels.isEmpty {
                 Text("No models registered.")
                     .font(.caption)
                     .foregroundColor(.secondary)
             } else {
-                ForEach(usage.models.prefix(12)) { model in
-                    let nameLabel = model.name.replacingOccurrences(of: "antigravity-", with: "")
-                    VStack(spacing: 2) {
-                        HStack(alignment: .lastTextBaseline, spacing: 4) {
-                            Text(nameLabel)
-                                .font(.system(size: 13, weight: .medium))
-                                .foregroundColor(.primary)
-                                .lineLimit(1)
-                            
-                            Spacer()
-                            
-                            if let reset = model.resetTime {
-                                Text(formatTime(reset))
-                                    .font(.system(size: 11))
-                                    .foregroundColor(.secondary)
-                            }
-                            
-                            Text(String(format: "%.0f%%", model.remainingFraction * 100))
-                                .font(.system(size: 13, weight: .bold, design: .rounded))
-                                .foregroundColor(model.remainingFraction < 0.25 ? .red : (model.remainingFraction < 0.6 ? .orange : .blue))
-                                .frame(width: 40, alignment: .trailing)
-                        }
-                        
-                        GeometryReader { geo in
-                            ZStack(alignment: .leading) {
-                                RoundedRectangle(cornerRadius: 1.5)
-                                    .fill(Color.primary.opacity(0.05))
-                                    .frame(height: 4)
-                                RoundedRectangle(cornerRadius: 1.5)
-                                    .fill(model.remainingFraction < 0.25 ? Color.red : (model.remainingFraction < 0.6 ? Color.orange : Color.blue))
-                                    .frame(width: geo.size.width * CGFloat(model.remainingFraction), height: 4)
-                            }
-                        }
-                        .frame(height: 4)
+                VStack(alignment: .leading, spacing: 12) {
+                    ForEach(uncombinedModels.prefix(12)) { model in
+                        modelRow(model: model, size: 14)
                     }
                 }
             }
             Spacer(minLength: 0)
         }
-        .padding(8)
+    }
+    
+    // MARK: - UI Helpers
+    
+    @ViewBuilder
+    private func concentricRingsView(fractions: (gemini: Double, claude: Double), outerSize: CGFloat, innerSize: CGFloat, lineWidth: CGFloat, showText: Bool) -> some View {
+        ZStack {
+            // Outer Ring (Gemini)
+            Circle()
+                .stroke(Color.primary.opacity(0.05), lineWidth: lineWidth)
+                .frame(width: outerSize, height: outerSize)
+            Circle()
+                .trim(from: 0.0, to: CGFloat(fractions.gemini))
+                .stroke(
+                    antigravityGradient(for: fractions.gemini),
+                    style: StrokeStyle(lineWidth: lineWidth, lineCap: .round)
+                )
+                .frame(width: outerSize, height: outerSize)
+                .rotationEffect(.degrees(-90))
+            
+            // Inner Ring (Claude)
+            Circle()
+                .stroke(Color.primary.opacity(0.05), lineWidth: lineWidth)
+                .frame(width: innerSize, height: innerSize)
+            Circle()
+                .trim(from: 0.0, to: CGFloat(fractions.claude))
+                .stroke(
+                    claudeGradient(for: fractions.claude),
+                    style: StrokeStyle(lineWidth: lineWidth, lineCap: .round)
+                )
+                .frame(width: innerSize, height: innerSize)
+                .rotationEffect(.degrees(-90))
+            
+            if showText {
+                VStack(spacing: 1) {
+                    Text(String(format: "%.0f%%", fractions.gemini * 100))
+                        .font(.system(size: outerSize * 0.18, weight: .bold, design: .rounded))
+                        .foregroundColor(.blue)
+                    Text(String(format: "%.0f%%", fractions.claude * 100))
+                        .font(.system(size: innerSize * 0.2, weight: .bold, design: .rounded))
+                        .foregroundColor(Color(red: 217/255.0, green: 119/255.0, blue: 87/255.0))
+                }
+            }
+        }
+    }
+    
+    private func modelRow(model: AntigravityModelQuota, size: CGFloat) -> some View {
+        HStack(spacing: 8) {
+            let isClaude = model.name.localizedCaseInsensitiveContains("claude")
+            let isGemini = model.name.localizedCaseInsensitiveContains("gemini")
+            let iconColor: Color = {
+                if model.name.localizedCaseInsensitiveContains("pro") { return .blue }
+                if model.name.localizedCaseInsensitiveContains("flash") { return .teal }
+                if isClaude { return Color(red: 217/255.0, green: 119/255.0, blue: 87/255.0) }
+                return .gray
+            }()
+            
+            if isClaude || isGemini {
+                Image(isClaude ? .claude : .gemini)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .foregroundColor(iconColor)
+                    .frame(width: size + 4, height: size + 4, alignment: .center)
+            } else {
+                Image(systemName: "cpu")
+                    .font(.system(size: size))
+                    .foregroundColor(iconColor)
+                    .frame(width: size + 4, alignment: .center)
+            }
+            
+            let cleanName = model.name
+                .replacingOccurrences(of: "antigravity-", with: "")
+                .replacingOccurrences(of: "Gemini ", with: "")
+                .replacingOccurrences(of: "Claude ", with: "")
+            
+            Text(cleanName)
+                .font(.system(size: size, weight: .medium))
+                .foregroundColor(.secondary)
+            
+            Spacer()
+            
+            Text(String(format: "%.0f%%", model.remainingFraction * 100))
+                .font(.system(size: size, weight: .bold, design: .rounded))
+                .foregroundColor(model.remainingFraction < 0.25 ? .red : .primary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+        }
+    }
+    
+    private func antigravityGradient(for fraction: Double) -> LinearGradient {
+        let colors: [Color]
+        if fraction > 0.4 {
+            colors = [Color.blue, Color(red: 0.4, green: 0.7, blue: 1.0)]
+        } else if fraction > 0.15 {
+            colors = [Color.orange, Color.yellow]
+        } else {
+            colors = [Color.red, Color(red: 0.9, green: 0.4, blue: 0.4)]
+        }
+        return LinearGradient(colors: colors, startPoint: .topLeading, endPoint: .bottomTrailing)
+    }
+    
+    private func claudeGradient(for fraction: Double) -> LinearGradient {
+        let colors: [Color]
+        if fraction > 0.4 {
+            colors = [Color.orange, Color.yellow]
+        } else if fraction > 0.15 {
+            colors = [Color(red: 0.95, green: 0.5, blue: 0.1), Color(red: 0.8, green: 0.3, blue: 0.1)]
+        } else {
+            colors = [Color.red, Color(red: 0.8, green: 0.2, blue: 0.2)]
+        }
+        return LinearGradient(colors: colors, startPoint: .topLeading, endPoint: .bottomTrailing)
     }
     
     // MARK: - Not Connected View
