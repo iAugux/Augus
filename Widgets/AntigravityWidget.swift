@@ -1,4 +1,4 @@
-
+#if os(macOS)
 // Created by Augus on 6/01/26
 // Copyright © 2026 Augus <iAugux@gmail.com>
 
@@ -71,12 +71,10 @@ struct AntigravityEntryView: View {
         ZStack {
             if let usage = entry.usage {
                 switch family {
-                case .systemSmall:
-                    smallWidgetView(usage)
-                case .systemMedium:
-                    mediumWidgetView(usage)
+                case .systemLarge:
+                    largeWidgetView(usage)
                 default:
-                    smallWidgetView(usage)
+                    largeWidgetView(usage)
                 }
             } else {
                 notConnectedView
@@ -245,6 +243,75 @@ struct AntigravityEntryView: View {
         }
     }
     
+    // MARK: - Large Widget View
+    private func largeWidgetView(_ usage: AntigravityUsageData) -> some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Antigravity Quota")
+                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                        .foregroundColor(.blue)
+                    Text(usage.email)
+                        .font(.system(size: 12))
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                }
+                Spacer()
+                Image(systemName: "sparkles")
+                    .font(.title)
+                    .foregroundColor(.blue)
+            }
+            
+            Divider()
+                .background(Color.primary.opacity(0.06))
+            
+            if usage.models.isEmpty {
+                Text("No models registered.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            } else {
+                ForEach(usage.models.prefix(8)) { model in
+                    let nameLabel = model.name.replacingOccurrences(of: "antigravity-", with: "")
+                    HStack(spacing: 8) {
+                        Text(nameLabel)
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(.primary)
+                            .lineLimit(1)
+                        
+                        Spacer()
+                        
+                        if let reset = model.resetTime {
+                            Text(formatTime(reset))
+                                .font(.system(size: 12))
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        Text(String(format: "%.0f%%", model.remainingFraction * 100))
+                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .foregroundColor(model.remainingFraction < 0.25 ? .red : (model.remainingFraction < 0.6 ? .orange : .blue))
+                            .frame(width: 45, alignment: .trailing)
+                    }
+                    .padding(.vertical, 2)
+                    
+                    GeometryReader { geo in
+                      ZStack(alignment: .leading) {
+                          RoundedRectangle(cornerRadius: 2)
+                              .fill(Color.primary.opacity(0.05))
+                              .frame(height: 6)
+                          RoundedRectangle(cornerRadius: 2)
+                              .fill(model.remainingFraction < 0.25 ? Color.red : (model.remainingFraction < 0.6 ? Color.orange : Color.blue))
+                              .frame(width: geo.size.width * CGFloat(model.remainingFraction), height: 6)
+                      }
+                    }
+                    .frame(height: 6)
+                    .padding(.bottom, 6)
+                }
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(4)
+    }
+    
     // MARK: - Not Connected View
     private var notConnectedView: some View {
         VStack(spacing: 8) {
@@ -294,6 +361,8 @@ struct AntigravityWidget: Widget {
         }
         .configurationDisplayName("Antigravity Limits")
         .description("Tracks Google Antigravity request quotas.")
-        .supportedFamilies([.systemSmall, .systemMedium])
+        .supportedFamilies([.systemLarge])
     }
 }
+
+#endif
