@@ -352,9 +352,17 @@ struct AntigravityEntryView: View {
             let cleanName = model.name
                 .replacingOccurrences(of: "antigravity-", with: "")
             
-            Text(cleanName)
-                .font(.system(size: size, weight: .medium))
-                .foregroundColor(.secondary)
+            HStack(alignment: .firstTextBaseline, spacing: 4) {
+                Text(cleanName)
+                    .font(.system(size: size, weight: .medium))
+                    .foregroundColor(.secondary)
+                
+                if let resetTime = model.resetTime, resetTime > Date() {
+                    Text("(\(formatCountdown(resetTime)))")
+                        .font(.system(size: size - 1, weight: .regular))
+                        .foregroundColor(.secondary.opacity(0.6))
+                }
+            }
             
             Spacer()
             
@@ -415,13 +423,13 @@ struct AntigravityEntryView: View {
     
     private func formatCountdown(_ date: Date) -> String {
         let diff = date.timeIntervalSince(Date())
-        guard diff > 0 else { return "Resetting" }
+        guard diff > 0 else { return "0m" }
         let hours = Int(diff) / 3600
         let minutes = (Int(diff) % 3600) / 60
         if hours > 0 {
             return "\(hours)h \(minutes)m"
         } else {
-            return "\(minutes)m left"
+            return "\(minutes)m"
         }
     }
 }
