@@ -351,8 +351,6 @@ struct AntigravityEntryView: View {
             
             let cleanName = model.name
                 .replacingOccurrences(of: "antigravity-", with: "")
-                .replacingOccurrences(of: "Gemini ", with: "")
-                .replacingOccurrences(of: "Claude ", with: "")
             
             Text(cleanName)
                 .font(.system(size: size, weight: .medium))
