@@ -60,6 +60,7 @@
 				BlackSSLData.swift,
 				CodexData.swift,
 				GeminiData.swift,
+				Icons.xcassets,
 			);
 			target = B188B4562FCB257D00DE99A6 /* Widgets */;
 		};
