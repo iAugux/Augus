@@ -9,6 +9,7 @@ struct RefreshCodexIntent: AppIntent {
         return .background
     }
     
+    @MainActor
     func perform() async throws -> some IntentResult {
         await withCheckedContinuation { continuation in
             CodexNetworkManager.shared.fetchUsage { _ in

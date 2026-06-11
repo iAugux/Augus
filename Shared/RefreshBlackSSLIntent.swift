@@ -9,6 +9,7 @@ struct RefreshBlackSSLIntent: AppIntent {
         return .background
     }
     
+    @MainActor
     func perform() async throws -> some IntentResult {
         await withCheckedContinuation { continuation in
             BlackSSLNetworkManager.shared.fetchUsage { _ in
