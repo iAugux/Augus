@@ -2,12 +2,18 @@
 // Copyright © 2026 Augus <iAugux@gmail.com>
 
 import SwiftUI
+#if os(macOS)
+import ServiceManagement
+#endif
 
 struct SettingsView: View {
     @Environment(\.colorScheme) var colorScheme
     @Binding var isPresented: Bool
     @Binding var tabsConfig: TabConfigList
     @Binding var selectedTab: ContentView.ServiceTab
+#if os(macOS)
+    @AppStorage("isLaunchAtLogin") private var isLaunchAtLogin: Bool = true
+#endif
     
     private var validatedTabsConfig: [TabConfig] {
         let supported = ContentView.supportedTabs
@@ -112,10 +118,104 @@ struct SettingsView: View {
     }
     #endif
     
+    @AppStorage("isMenuBarIconColored") private var isMenuBarIconColored: Bool = false
+    
     // MARK: - Shared ScrollView Content
     private var scrollViewContent: some View {
         ScrollView {
             VStack(spacing: 12) {
+                // Menu Bar Settings Section
+                VStack(spacing: 12) {
+                    HStack {
+                        Text("Menu Bar Icon")
+                            .font(.system(size: 13, weight: .semibold, design: .rounded))
+                            .foregroundColor(.secondary)
+                        Spacer()
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.top, 4)
+                    
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Dynamic Colors")
+                                .font(.system(.body, design: .rounded))
+                                .fontWeight(.semibold)
+                                .foregroundColor(.primary)
+                            Text("Colorize based on remaining quota")
+                                .font(.system(size: 11))
+                                .foregroundColor(.secondary)
+                        }
+                        Spacer()
+                        Toggle("", isOn: $isMenuBarIconColored)
+                            .labelsHidden()
+                            .toggleStyle(.switch)
+                            .tint(.blue)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 10)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(colorScheme == .dark ? Color(white: 0.1).opacity(0.5) : Color(white: 0.95).opacity(0.5))
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(Color.primary.opacity(0.06), lineWidth: 1)
+                    )
+#if os(macOS)
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Launch at Login")
+                                .font(.system(.body, design: .rounded))
+                                .fontWeight(.semibold)
+                                .foregroundColor(.primary)
+                            Text("Automatically start Augus when you log in")
+                                .font(.system(size: 11))
+                                .foregroundColor(.secondary)
+                        }
+                        Spacer()
+                        Toggle("", isOn: Binding(get: { isLaunchAtLogin }, set: { newValue in
+                            isLaunchAtLogin = newValue
+                            do {
+                                if newValue {
+                                    if SMAppService.mainApp.status != .enabled {
+                                        try SMAppService.mainApp.register()
+                                    }
+                                } else {
+                                    if SMAppService.mainApp.status == .enabled {
+                                        try SMAppService.mainApp.unregister()
+                                    }
+                                }
+                            } catch {
+                                print("Failed to update SMAppService: \(error)")
+                            }
+                        }))
+                        .labelsHidden()
+                        .toggleStyle(.switch)
+                        .tint(.blue)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 10)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(colorScheme == .dark ? Color(white: 0.1).opacity(0.5) : Color(white: 0.95).opacity(0.5))
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(Color.primary.opacity(0.06), lineWidth: 1)
+                    )
+#endif
+                }
+                .padding(.bottom, 8)
+                
+                // Tabs Settings Section
+                HStack {
+                    Text("Tabs Visibility")
+                        .font(.system(size: 13, weight: .semibold, design: .rounded))
+                        .foregroundColor(.secondary)
+                    Spacer()
+                }
+                .padding(.horizontal, 12)
+                
                 let list = validatedTabsConfig
                 ForEach(0..<list.count, id: \.self) { index in
                     let config = list[index]
@@ -182,7 +282,8 @@ struct SettingsView: View {
                             }
                         ))
                         .labelsHidden()
-                        .toggleStyle(SwitchToggleStyle(tint: config.tab.tintColor))
+                        .toggleStyle(.switch)
+                        .tint(config.tab.tintColor)
                     }
                     .padding(.horizontal, 12)
                     .padding(.vertical, 10)

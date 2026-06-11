@@ -65,8 +65,8 @@
 				GeminiData.swift,
 				GeminiUI.swift,
 				Icons.xcassets,
-				RefreshCodexIntent.swift,
 				RefreshBlackSSLIntent.swift,
+				RefreshCodexIntent.swift,
 			);
 			target = B188B4562FCB257D00DE99A6 /* Widgets */;
 		};
