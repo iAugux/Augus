@@ -17,7 +17,7 @@ extension View {
 }
 
 struct MenuBarWidgetView: View {
-    @StateObject private var viewModel = MenuBarViewModel()
+    @ObservedObject var viewModel: MenuBarViewModel
     @Environment(\.openWindow) private var openWindow
     
     private func formatTime(_ date: Date) -> String {

@@ -22,9 +22,33 @@ class MenuBarViewModel: ObservableObject {
     }
     
     private func setupTimer() {
-        // Refresh every 15 minutes
+        // Refresh every 15 minutes for non-Codex
         timer = Timer.scheduledTimer(withTimeInterval: 15 * 60, repeats: true) { [weak self] _ in
             self?.refreshData()
+        }
+        
+        // Start randomized Codex refresh
+        scheduleNextCodexRefresh()
+    }
+    
+    private func scheduleNextCodexRefresh() {
+        let randomInterval = TimeInterval.random(in: 50...70)
+        DispatchQueue.main.asyncAfter(deadline: .now() + randomInterval) { [weak self] in
+            self?.fetchCodex()
+            self?.scheduleNextCodexRefresh()
+        }
+    }
+    
+    private func fetchCodex() {
+        CodexNetworkManager.shared.fetchUsage { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let data):
+                    self?.codexEntry = CodexEntry(date: Date(), usage: data, error: nil)
+                case .failure(let error):
+                    self?.codexEntry = CodexEntry(date: Date(), usage: CodexStore.loadUsageData(), error: error.localizedDescription)
+                }
+            }
         }
     }
     
@@ -37,18 +61,6 @@ class MenuBarViewModel: ObservableObject {
                     self?.blackSSLEntry = BlackSSLEntry(date: Date(), usage: data, error: nil)
                 case .failure(let error):
                     self?.blackSSLEntry = BlackSSLEntry(date: Date(), usage: BlackSSLStore.loadUsageData(), error: error.localizedDescription)
-                }
-            }
-        }
-        
-        // Fetch Codex
-        CodexNetworkManager.shared.fetchUsage { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let data):
-                    self?.codexEntry = CodexEntry(date: Date(), usage: data, error: nil)
-                case .failure(let error):
-                    self?.codexEntry = CodexEntry(date: Date(), usage: CodexStore.loadUsageData(), error: error.localizedDescription)
                 }
             }
         }
