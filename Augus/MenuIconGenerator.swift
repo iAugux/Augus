@@ -26,21 +26,21 @@ func generateMenuIcon(codexUsage: CodexUsageData?, isColored: Bool) -> NSImage {
             
             // Outer ring: 5h remaining
             Circle()
-                .stroke(Color.white.opacity(0.3), lineWidth: 1.5)
+                .stroke(Color.white.opacity(0.3), lineWidth: 2.0)
             Circle()
                 .trim(from: 0.0, to: CGFloat(primaryRemaining))
-                .stroke(pColor, style: StrokeStyle(lineWidth: 1.5, lineCap: .round))
+                .stroke(pColor, style: StrokeStyle(lineWidth: 2.0, lineCap: .round))
                 .rotationEffect(.degrees(-90))
             
             // Inner ring: 7d remaining
             Circle()
-                .stroke(Color.white.opacity(0.3), lineWidth: 1.5)
-                .padding(3.5)
+                .stroke(Color.white.opacity(0.3), lineWidth: 2.0)
+                .padding(4.0)
             Circle()
                 .trim(from: 0.0, to: CGFloat(secondaryRemaining))
-                .stroke(sColor, style: StrokeStyle(lineWidth: 1.5, lineCap: .round))
+                .stroke(sColor, style: StrokeStyle(lineWidth: 2.0, lineCap: .round))
                 .rotationEffect(.degrees(-90))
-                .padding(3.5)
+                .padding(4.0)
         } else {
             Image(systemName: "cpu")
                 .resizable()
