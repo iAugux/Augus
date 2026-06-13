@@ -192,6 +192,7 @@ struct GeminiEntryView: View {
                         ForEach(models.prefix(4)) { model in
                             modelRow(model: model, size: 11)
                         }
+                        accountRow(email: usage.email, size: 11)
                     }
                 }
             }
