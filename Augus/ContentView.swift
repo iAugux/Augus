@@ -4,6 +4,7 @@
 import SwiftUI
 import UserNotifications
 import UniformTypeIdentifiers
+import WidgetKit
 
 struct ContentView: View {
     @Environment(\.colorScheme) var colorScheme
@@ -108,6 +109,10 @@ struct ContentView: View {
         .onChange(of: scenePhase) {
             if scenePhase == .active {
                 refreshCurrentTab()
+            } else if scenePhase == .background {
+                #if os(iOS)
+                WidgetCenter.shared.reloadAllTimelines()
+                #endif
             }
         }
 #if os(macOS)
