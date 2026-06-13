@@ -124,6 +124,7 @@ struct SettingsView: View {
     private var scrollViewContent: some View {
         ScrollView {
             VStack(spacing: 12) {
+#if os(macOS)
                 // Menu Bar Settings Section
                 VStack(spacing: 12) {
                     HStack {
@@ -161,7 +162,6 @@ struct SettingsView: View {
                         RoundedRectangle(cornerRadius: 16)
                             .stroke(Color.primary.opacity(0.06), lineWidth: 1)
                     )
-#if os(macOS)
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Launch at Login")
@@ -203,9 +203,9 @@ struct SettingsView: View {
                         RoundedRectangle(cornerRadius: 16)
                             .stroke(Color.primary.opacity(0.06), lineWidth: 1)
                     )
-#endif
                 }
                 .padding(.bottom, 8)
+#endif
                 
                 // Tabs Settings Section
                 HStack {
